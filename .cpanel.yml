@@ -1,0 +1,41 @@
+---
+# cPanel Git Deployment Configuration for Neofox Productivity Platform
+
+deployment:
+  tasks:
+    # Deploy files to the public_html directory
+    - export DEPLOYPATH=/home2/sunburni/public_html/neofoxmedia/foxhole/tests/v1/
+
+    # Create necessary directories
+    - /bin/mkdir -p $DEPLOYPATH
+    - /bin/mkdir -p $DEPLOYPATH/sessions
+    - /bin/mkdir -p $DEPLOYPATH/config
+    - /bin/mkdir -p $DEPLOYPATH/includes
+    - /bin/mkdir -p $DEPLOYPATH/assets/css
+    - /bin/mkdir -p $DEPLOYPATH/assets/js
+    - /bin/mkdir -p $DEPLOYPATH/admin
+    - /bin/mkdir -p $DEPLOYPATH/manager
+    - /bin/mkdir -p $DEPLOYPATH/employee
+    - /bin/mkdir -p $DEPLOYPATH/api
+
+    # Copy all files from repository to deployment path
+    - /bin/cp -R * $DEPLOYPATH
+
+    # Set proper permissions
+    - /bin/chmod 755 $DEPLOYPATH
+    - /bin/chmod 755 $DEPLOYPATH/sessions
+    - /bin/chmod 644 $DEPLOYPATH/*.php
+    - /bin/chmod 644 $DEPLOYPATH/config/*.php
+    - /bin/chmod 644 $DEPLOYPATH/includes/*.php
+    - /bin/chmod 644 $DEPLOYPATH/admin/*.php
+    - /bin/chmod 644 $DEPLOYPATH/manager/*.php
+    - /bin/chmod 644 $DEPLOYPATH/employee/*.php
+    - /bin/chmod 644 $DEPLOYPATH/api/*.php
+    - /bin/chmod 644 $DEPLOYPATH/assets/css/*.css
+    - /bin/chmod 644 $DEPLOYPATH/assets/js/*.js
+    - /bin/chmod 644 $DEPLOYPATH/.htaccess
+
+    # Create a deployment timestamp
+    - /bin/date > $DEPLOYPATH/last_deployment.txt
+
+    # Note: Remember to update config/database.php with your cPanel database credentials after deployment
