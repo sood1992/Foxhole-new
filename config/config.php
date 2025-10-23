@@ -1,5 +1,15 @@
 <?php
 // Application Configuration
+
+// Fix session path for shared hosting
+$sessionPath = __DIR__ . '/../sessions';
+if (!file_exists($sessionPath)) {
+    mkdir($sessionPath, 0755, true);
+}
+if (is_writable($sessionPath)) {
+    ini_set('session.save_path', $sessionPath);
+}
+
 session_start();
 
 // Timezone
