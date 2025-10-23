@@ -17,7 +17,7 @@ date_default_timezone_set('Asia/Kolkata');
 
 // Site Configuration
 define('SITE_NAME', 'Neofox Productivity Platform');
-define('SITE_URL', 'http://localhost/Foxhole-new');
+define('SITE_URL', 'https://neofoxmedia.com/foxhole/tests/v1');
 
 // Include database configuration
 require_once __DIR__ . '/database.php';

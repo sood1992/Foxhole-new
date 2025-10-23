@@ -1,9 +1,9 @@
 <?php
 // Database Configuration
 define('DB_HOST', 'localhost');
-define('DB_NAME', 'productivity_platform');
-define('DB_USER', 'root'); // Change this for production
-define('DB_PASS', ''); // Change this for production
+define('DB_NAME', 'sunburni_foxholev1');
+define('DB_USER', 'sunburni_foxholev1');
+define('DB_PASS', 'sunburni_foxholev1');
 
 // Create database connection
 function getDBConnection() {
