@@ -1,26 +1,33 @@
 <?php
-// Disable error output to prevent header issues
-error_reporting(0);
-ini_set('display_errors', 0);
+// LOGOUT - Completely destroy session and redirect
 
-// Start output buffering
-ob_start();
-
-// Start session
-session_start();
-
-// Destroy all session data
-session_unset();
-session_destroy();
-
-// Delete session cookie
-if (isset($_COOKIE[session_name()])) {
-    setcookie(session_name(), '', time() - 3600, '/');
+// Start session if not already started
+if (session_status() === PHP_SESSION_NONE) {
+    $sessionPath = __DIR__ . '/sessions';
+    if (is_writable($sessionPath)) {
+        ini_set('session.save_path', $sessionPath);
+    }
+    session_start();
 }
 
-// Clean output buffer
-ob_end_clean();
+// Unset all session variables
+$_SESSION = array();
 
-// Redirect to login
-header('Location: login.php');
-exit;
+// Delete the session cookie
+$params = session_get_cookie_params();
+setcookie(
+    session_name(),
+    '',
+    time() - 42000,
+    $params['path'],
+    $params['domain'],
+    $params['secure'],
+    $params['httponly']
+);
+
+// Destroy the session
+session_destroy();
+
+// Redirect to login page
+header('Location: login.php', true, 302);
+exit();
