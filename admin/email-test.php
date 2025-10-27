@@ -1,4 +1,8 @@
 <?php
+// Enable error reporting for debugging
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 ob_start(); // Start output buffering to prevent blank page issues
 
 require_once '../config/config.php';
