@@ -10,19 +10,32 @@ if (is_writable($sessionPath)) {
     ini_set('session.save_path', $sessionPath);
 }
 
-session_start();
+// Start session only if not already started
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 // Timezone
 date_default_timezone_set('Asia/Kolkata');
 
 // Site Configuration
-define('SITE_NAME', 'Foxhole');
-define('SITE_TAGLINE', 'Your productivity command center');
-define('SITE_URL', 'https://neofoxmedia.com/foxhole/tests/v1');
+if (!defined('SITE_NAME')) {
+    define('SITE_NAME', 'Foxhole');
+}
+if (!defined('SITE_TAGLINE')) {
+    define('SITE_TAGLINE', 'Your productivity command center');
+}
+if (!defined('SITE_URL')) {
+    define('SITE_URL', 'https://neofoxmedia.com/foxhole/tests/v1');
+}
 
 // Currency Configuration
-define('CURRENCY_SYMBOL', '₹');
-define('CURRENCY_CODE', 'INR');
+if (!defined('CURRENCY_SYMBOL')) {
+    define('CURRENCY_SYMBOL', '₹');
+}
+if (!defined('CURRENCY_CODE')) {
+    define('CURRENCY_CODE', 'INR');
+}
 
 // Include database configuration
 require_once __DIR__ . '/database.php';
