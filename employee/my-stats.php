@@ -121,7 +121,7 @@ $trend_data = $productivityTrend->fetchAll();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Statistics - <?php echo SITE_NAME; ?></title>
-    <link rel="stylesheet" href="../assets/css/theme.css">
+    <link rel="stylesheet" href="../assets/css/premium-theme.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <?php include '../includes/quick-actions-assets.php'; ?>
 </head>

@@ -61,7 +61,7 @@ $projectData = $projectSummary->fetchAll();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Time Logs - <?php echo SITE_NAME; ?></title>
-    <link rel="stylesheet" href="../assets/css/theme.css">
+    <link rel="stylesheet" href="../assets/css/premium-theme.css">
     <?php include '../includes/quick-actions-assets.php'; ?>
 </head>
 <body>

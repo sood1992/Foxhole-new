@@ -106,7 +106,7 @@ $users = $db->query("SELECT id, full_name, username FROM users WHERE is_active =
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bulk Import - <?php echo SITE_NAME; ?></title>
-    <link rel="stylesheet" href="../assets/css/theme.css">
+    <link rel="stylesheet" href="../assets/css/premium-theme.css">
 </head>
 <body>
     <div class="dashboard">
