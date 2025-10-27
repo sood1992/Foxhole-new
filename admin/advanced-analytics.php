@@ -21,7 +21,6 @@ $employeeMetrics = $db->prepare("
         u.id,
         u.full_name,
         u.job_title,
-        u.hourly_rate,
 
         -- Task metrics
         COUNT(DISTINCT t.id) as total_tasks,
