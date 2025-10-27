@@ -229,11 +229,13 @@ HTML;
 }
 
 /**
- * Notify employee of task assignment
+ * Send email notification for task assignment
+ * Note: Different from the in-app notification function in functions.php
  */
-function notifyTaskAssignment($taskId) {
-    try {
-        $db = getDBConnection();
+if (!function_exists('sendTaskAssignmentEmail')) {
+    function sendTaskAssignmentEmail($taskId) {
+        try {
+            $db = getDBConnection();
 
         // Get task details
         $stmt = $db->prepare("
@@ -281,18 +283,21 @@ HTML;
             "[" . SITE_NAME . "] New Task Assigned: {$task['task_name']}",
             $emailHtml
         );
-    } catch (Exception $e) {
-        error_log("Task assignment notification error: " . $e->getMessage());
-        return false;
+        } catch (Exception $e) {
+            error_log("Task assignment notification error: " . $e->getMessage());
+            return false;
+        }
     }
 }
 
 /**
- * Notify admin/manager of task status update
+ * Send email notification for task status update
+ * Note: Different from the in-app notification function in functions.php
  */
-function notifyTaskUpdate($taskId, $oldStatus, $newStatus, $updatedBy) {
-    try {
-        $db = getDBConnection();
+if (!function_exists('sendTaskUpdateEmail')) {
+    function sendTaskUpdateEmail($taskId, $oldStatus, $newStatus, $updatedBy) {
+        try {
+            $db = getDBConnection();
 
         // Get task and project details
         $stmt = $db->prepare("
@@ -368,9 +373,10 @@ HTML;
         }
 
         return $success;
-    } catch (Exception $e) {
-        error_log("Task update notification error: " . $e->getMessage());
-        return false;
+        } catch (Exception $e) {
+            error_log("Task update notification error: " . $e->getMessage());
+            return false;
+        }
     }
 }
 
