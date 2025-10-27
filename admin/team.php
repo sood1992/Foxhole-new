@@ -47,6 +47,15 @@ $teamMembers = $db->query("
             </div>
 
             <div class="content">
+                <?php if (isset($_SESSION['success_message'])): ?>
+                    <div class="alert alert-success" style="margin-bottom: 24px;">
+                        <?php
+                        echo e($_SESSION['success_message']);
+                        unset($_SESSION['success_message']);
+                        ?>
+                    </div>
+                <?php endif; ?>
+
                 <div class="card">
                     <div class="card-header">
                         <h3>Team Overview</h3>

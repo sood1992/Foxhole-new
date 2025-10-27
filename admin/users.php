@@ -49,9 +49,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ");
 
                 if ($insertStmt->execute([$username, $email, $hashedPassword, $full_name, $role, $job_title, $hourly_rate, $is_active])) {
-                    $success = 'User added successfully!';
-                    // Redirect back to team page after 2 seconds
-                    header("Refresh: 2; url=team.php");
+                    // Set success message in session and redirect
+                    $_SESSION['success_message'] = 'User added successfully!';
+                    header("Location: team.php");
+                    exit();
                 } else {
                     $error = 'Failed to add user. Please try again.';
                 }
@@ -95,9 +96,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         ");
 
                         if ($updateStmt->execute([$username, $email, $hashedPassword, $full_name, $role, $job_title, $hourly_rate, $is_active, $userId])) {
-                            $success = 'User updated successfully!';
-                            // Redirect back to team page after 2 seconds
-                            header("Refresh: 2; url=team.php");
+                            $_SESSION['success_message'] = 'User updated successfully!';
+                            header("Location: team.php");
+                            exit();
                         } else {
                             $error = 'Failed to update user. Please try again.';
                         }
@@ -112,9 +113,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     ");
 
                     if ($updateStmt->execute([$username, $email, $full_name, $role, $job_title, $hourly_rate, $is_active, $userId])) {
-                        $success = 'User updated successfully!';
-                        // Redirect back to team page after 2 seconds
-                        header("Refresh: 2; url=team.php");
+                        $_SESSION['success_message'] = 'User updated successfully!';
+                        header("Location: team.php");
+                        exit();
                     } else {
                         $error = 'Failed to update user. Please try again.';
                     }
@@ -128,8 +129,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             $deleteStmt = $db->prepare("UPDATE users SET is_active = 0 WHERE id = ?");
             if ($deleteStmt->execute([$userId])) {
-                $success = 'User deactivated successfully!';
-                header("Refresh: 2; url=team.php");
+                $_SESSION['success_message'] = 'User deactivated successfully!';
+                header("Location: team.php");
+                exit();
             } else {
                 $error = 'Failed to deactivate user.';
             }
