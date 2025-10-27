@@ -1,4 +1,8 @@
 <?php
+// Enable error reporting for debugging
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 require_once '../config/config.php';
 require_once '../includes/functions.php';
 
@@ -15,6 +19,7 @@ $endDate = $_GET['end_date'] ?? date('Y-m-d');
 
 // === EMPLOYEE PERFORMANCE ANALYSIS ===
 
+try {
 // Get all employees with detailed metrics
 $employeeMetrics = $db->prepare("
     SELECT
@@ -75,6 +80,9 @@ $employeeMetrics = $db->prepare("
 ");
 $employeeMetrics->execute([$startDate, $endDate, $startDate, $endDate]);
 $employees = $employeeMetrics->fetchAll();
+} catch (PDOException $e) {
+    die("Database Error in employee metrics: " . $e->getMessage());
+}
 
 // Calculate scores and rankings
 foreach ($employees as &$emp) {
@@ -134,6 +142,7 @@ $bottlenecks = array_filter($employees, function($emp) {
 });
 
 // === PROJECT BOTTLENECKS ===
+try {
 $projectBottlenecks = $db->prepare("
     SELECT
         p.id,
@@ -156,8 +165,12 @@ $projectBottlenecks = $db->prepare("
 ");
 $projectBottlenecks->execute();
 $projectIssues = $projectBottlenecks->fetchAll();
+} catch (PDOException $e) {
+    die("Database Error in project bottlenecks: " . $e->getMessage());
+}
 
 // === TEAM VELOCITY ===
+try {
 $teamVelocity = $db->prepare("
     SELECT
         DATE(t.completed_date) as date,
@@ -173,6 +186,9 @@ $teamVelocity = $db->prepare("
 ");
 $teamVelocity->execute([$startDate, $endDate]);
 $velocityData = $teamVelocity->fetchAll();
+} catch (PDOException $e) {
+    die("Database Error in team velocity: " . $e->getMessage());
+}
 
 // === CALCULATE SUMMARY STATS ===
 $totalEmployees = count($employees);
