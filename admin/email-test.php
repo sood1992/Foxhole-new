@@ -46,10 +46,11 @@ HTML;
                 $result = sendEmail($testEmail, '[' . SITE_NAME . '] Email Test', $emailHtml);
 
                 ob_end_clean();
-                if ($result) {
+                if (is_array($result) && $result['success']) {
                     $_SESSION['success_message'] = "✅ Test email sent successfully to {$testEmail}! Check your inbox.";
                 } else {
-                    $_SESSION['error_message'] = "❌ Failed to send test email. Check your email configuration and error logs.";
+                    $errorMsg = is_array($result) ? $result['error'] : "Unknown error occurred.";
+                    $_SESSION['error_message'] = "❌ Failed to send test email: " . $errorMsg;
                 }
                 header("Location: email-test.php");
                 exit();
@@ -79,10 +80,11 @@ HTML;
                 $result = sendEmail($testEmail, '[' . SITE_NAME . '] Test: New Task Assigned', $emailHtml);
 
                 ob_end_clean();
-                if ($result) {
+                if (is_array($result) && $result['success']) {
                     $_SESSION['success_message'] = "✅ Task assignment test email sent to {$testEmail}!";
                 } else {
-                    $_SESSION['error_message'] = "❌ Failed to send task assignment test email.";
+                    $errorMsg = is_array($result) ? $result['error'] : "Unknown error occurred.";
+                    $_SESSION['error_message'] = "❌ Failed to send task assignment test email: " . $errorMsg;
                 }
                 header("Location: email-test.php");
                 exit();
@@ -110,10 +112,11 @@ HTML;
                 $result = sendEmail($testEmail, '[' . SITE_NAME . '] Test: Task Updated', $emailHtml);
 
                 ob_end_clean();
-                if ($result) {
+                if (is_array($result) && $result['success']) {
                     $_SESSION['success_message'] = "✅ Task update test email sent to {$testEmail}!";
                 } else {
-                    $_SESSION['error_message'] = "❌ Failed to send task update test email.";
+                    $errorMsg = is_array($result) ? $result['error'] : "Unknown error occurred.";
+                    $_SESSION['error_message'] = "❌ Failed to send task update test email: " . $errorMsg;
                 }
                 header("Location: email-test.php");
                 exit();

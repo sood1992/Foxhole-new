@@ -23,6 +23,12 @@ if (!defined('EMAIL_FROM_NAME')) {
  */
 function sendEmail($to, $subject, $htmlBody, $textBody = '') {
     try {
+        // Validate email address
+        if (empty($to) || !filter_var($to, FILTER_VALIDATE_EMAIL)) {
+            error_log("Invalid email address: {$to}");
+            return ['success' => false, 'error' => "Invalid email address: {$to}"];
+        }
+
         // Load email configuration
         $emailConfigFile = __DIR__ . '/../config/email-config.json';
         $emailConfig = [];
@@ -39,6 +45,12 @@ function sendEmail($to, $subject, $htmlBody, $textBody = '') {
             return sendEmailSMTP($to, $subject, $htmlBody, $emailConfig, $fromEmail, $fromName);
         } else {
             // Use PHP mail()
+            if (!function_exists('mail')) {
+                $error = "PHP mail() function is not available. Please configure SMTP in Email Configuration.";
+                error_log($error);
+                return ['success' => false, 'error' => $error];
+            }
+
             $headers = [];
             $headers[] = 'MIME-Version: 1.0';
             $headers[] = 'Content-type: text/html; charset=utf-8';
@@ -46,17 +58,20 @@ function sendEmail($to, $subject, $htmlBody, $textBody = '') {
             $headers[] = 'Reply-To: ' . $fromEmail;
             $headers[] = 'X-Mailer: PHP/' . phpversion();
 
-            $success = mail($to, $subject, $htmlBody, implode("\r\n", $headers));
+            $success = @mail($to, $subject, $htmlBody, implode("\r\n", $headers));
 
             if (!$success) {
+                $error = "PHP mail() failed. This usually means your server's mail function is not configured. Please configure SMTP for reliable email delivery.";
                 error_log("Failed to send email to {$to}: {$subject}");
+                return ['success' => false, 'error' => $error];
             }
 
-            return $success;
+            return ['success' => true, 'error' => null];
         }
     } catch (Exception $e) {
-        error_log("Email error: " . $e->getMessage());
-        return false;
+        $error = "Email error: " . $e->getMessage();
+        error_log($error);
+        return ['success' => false, 'error' => $error];
     }
 }
 
@@ -91,16 +106,18 @@ function sendEmailSMTP($to, $subject, $htmlBody, $config, $fromEmail, $fromName)
         }
 
         if (!$socket) {
-            error_log("SMTP connection failed: {$errstr} ({$errno})");
-            return false;
+            $error = "SMTP connection failed: {$errstr} ({$errno})";
+            error_log($error);
+            return ['success' => false, 'error' => $error];
         }
 
         // Read server response
         $response = fgets($socket, 515);
         if (substr($response, 0, 3) != '220') {
-            error_log("SMTP error: {$response}");
+            $error = "SMTP server error: {$response}";
+            error_log($error);
             fclose($socket);
-            return false;
+            return ['success' => false, 'error' => $error];
         }
 
         // Say EHLO
@@ -112,9 +129,10 @@ function sendEmailSMTP($to, $subject, $htmlBody, $config, $fromEmail, $fromName)
             fputs($socket, "STARTTLS\r\n");
             $response = fgets($socket, 515);
             if (substr($response, 0, 3) != '220') {
-                error_log("STARTTLS failed: {$response}");
+                $error = "STARTTLS failed: {$response}";
+                error_log($error);
                 fclose($socket);
-                return false;
+                return ['success' => false, 'error' => $error];
             }
 
             // Enable crypto
@@ -135,9 +153,10 @@ function sendEmailSMTP($to, $subject, $htmlBody, $config, $fromEmail, $fromName)
         fputs($socket, base64_encode($password) . "\r\n");
         $response = fgets($socket, 515);
         if (substr($response, 0, 3) != '235') {
-            error_log("SMTP authentication failed: {$response}");
+            $error = "SMTP authentication failed. Please check your username and password.";
+            error_log($error . " - Server response: {$response}");
             fclose($socket);
-            return false;
+            return ['success' => false, 'error' => $error];
         }
 
         // Send MAIL FROM
@@ -170,10 +189,11 @@ function sendEmailSMTP($to, $subject, $htmlBody, $config, $fromEmail, $fromName)
         fputs($socket, "QUIT\r\n");
         fclose($socket);
 
-        return true;
+        return ['success' => true, 'error' => null];
     } catch (Exception $e) {
-        error_log("SMTP error: " . $e->getMessage());
-        return false;
+        $error = "SMTP error: " . $e->getMessage();
+        error_log($error);
+        return ['success' => false, 'error' => $error];
     }
 }
 
@@ -284,8 +304,9 @@ HTML;
             $emailHtml
         );
         } catch (Exception $e) {
-            error_log("Task assignment notification error: " . $e->getMessage());
-            return false;
+            $error = "Task assignment notification error: " . $e->getMessage();
+            error_log($error);
+            return ['success' => false, 'error' => $error];
         }
     }
 }
@@ -362,20 +383,25 @@ HTML;
 
         $emailHtml = getEmailTemplate($content, 'Task Status Updated');
 
-        $success = true;
+        $allSuccess = true;
+        $lastError = null;
         foreach ($recipients as $email) {
             $result = sendEmail(
                 $email,
                 "[" . SITE_NAME . "] Task Updated: {$task['task_name']}",
                 $emailHtml
             );
-            $success = $success && $result;
+            if (is_array($result) && !$result['success']) {
+                $allSuccess = false;
+                $lastError = $result['error'];
+            }
         }
 
-        return $success;
+        return $allSuccess ? ['success' => true, 'error' => null] : ['success' => false, 'error' => $lastError];
         } catch (Exception $e) {
-            error_log("Task update notification error: " . $e->getMessage());
-            return false;
+            $error = "Task update notification error: " . $e->getMessage();
+            error_log($error);
+            return ['success' => false, 'error' => $error];
         }
     }
 }
