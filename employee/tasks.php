@@ -88,13 +88,23 @@ $activeTimeLog = getActiveTimeLog($currentUser['id']);
             <div class="topbar">
                 <h1>My Tasks</h1>
                 <div class="topbar-actions">
-                    <span style="color: var(--text-secondary); font-size: 14px;">
+                    <a href="create-task.php" class="btn btn-primary btn-sm">+ Create Task</a>
+                    <span style="color: var(--text-secondary); font-size: 14px; margin-left: 16px;">
                         <?php echo date('l, F j, Y'); ?>
                     </span>
                 </div>
             </div>
 
             <div class="content">
+                <?php if (isset($_SESSION['success_message'])): ?>
+                    <div class="alert alert-success" style="margin-bottom: 24px;">
+                        <?php
+                        echo e($_SESSION['success_message']);
+                        unset($_SESSION['success_message']);
+                        ?>
+                    </div>
+                <?php endif; ?>
+
                 <!-- Quick Stats -->
                 <div class="stats-grid">
                     <div class="stat-card blue">
