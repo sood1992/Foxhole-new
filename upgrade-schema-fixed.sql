@@ -47,7 +47,7 @@ SET @preparedStatement = (SELECT IF(
    AND (column_name = @columnname)
   ) > 0,
   "SELECT 1",
-  CONCAT("ALTER TABLE ", @tablename, " ADD ", @columnname, " VARCHAR(10) DEFAULT 'USD'")
+  CONCAT("ALTER TABLE ", @tablename, " ADD ", @columnname, " VARCHAR(10) DEFAULT 'INR'")
 ));
 PREPARE alterIfNotExists FROM @preparedStatement;
 EXECUTE alterIfNotExists;

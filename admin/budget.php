@@ -63,7 +63,7 @@ foreach ($projects as $project) {
         WHERE tl.project_id = ? AND tl.end_time IS NOT NULL
     ");
     $stmt->execute([$project['id']]);
-    $avgRate = $stmt->fetch()['avg_rate'] ?? 50; // Default $50/hr if no rate set
+    $avgRate = $stmt->fetch()['avg_rate'] ?? 50; // Default ₹50/hr if no rate set
     $laborCost = $hours * $avgRate;
 
     $expenses = $project['total_expenses'] ?? 0;
@@ -109,7 +109,7 @@ foreach ($projects as $project) {
                         <div class="stat-card-header">
                             <div>
                                 <div class="stat-label">Total Budget</div>
-                                <div class="stat-value">$<?php echo number_format($totalBudget, 0); ?></div>
+                                <div class="stat-value">₹<?php echo number_format($totalBudget, 0); ?></div>
                                 <div class="stat-change">Allocated</div>
                             </div>
                             <div class="stat-icon">💵</div>
@@ -120,7 +120,7 @@ foreach ($projects as $project) {
                         <div class="stat-card-header">
                             <div>
                                 <div class="stat-label">Actual Cost</div>
-                                <div class="stat-value">$<?php echo number_format($totalActual, 0); ?></div>
+                                <div class="stat-value">₹<?php echo number_format($totalActual, 0); ?></div>
                                 <div class="stat-change">Labor<?php echo $expensesTableExists ? ' + Expenses' : ' Only'; ?></div>
                             </div>
                             <div class="stat-icon">💰</div>
@@ -132,7 +132,7 @@ foreach ($projects as $project) {
                         <div class="stat-card-header">
                             <div>
                                 <div class="stat-label">Expenses</div>
-                                <div class="stat-value">$<?php echo number_format($totalExpenses, 0); ?></div>
+                                <div class="stat-value">₹<?php echo number_format($totalExpenses, 0); ?></div>
                                 <div class="stat-change">Direct Costs</div>
                             </div>
                             <div class="stat-icon">💳</div>
@@ -144,7 +144,7 @@ foreach ($projects as $project) {
                         <div class="stat-card-header">
                             <div>
                                 <div class="stat-label">Variance</div>
-                                <div class="stat-value"><?php echo ($totalBudget - $totalActual) >= 0 ? '' : '-'; ?>$<?php echo number_format(abs($totalBudget - $totalActual), 0); ?></div>
+                                <div class="stat-value"><?php echo ($totalBudget - $totalActual) >= 0 ? '' : '-'; ?>₹<?php echo number_format(abs($totalBudget - $totalActual), 0); ?></div>
                                 <div class="stat-change"><?php echo ($totalBudget - $totalActual) >= 0 ? 'Under Budget' : 'Over Budget'; ?></div>
                             </div>
                             <div class="stat-icon"><?php echo ($totalBudget - $totalActual) >= 0 ? '✅' : '⚠️'; ?></div>
@@ -210,20 +210,20 @@ foreach ($projects as $project) {
                                                 </span>
                                             </td>
                                             <td><?php echo e($project['manager_name'] ?? 'Unassigned'); ?></td>
-                                            <td><strong>$<?php echo number_format($project['budget'], 0); ?></strong></td>
-                                            <td>$<?php echo number_format($laborCost, 0); ?></td>
+                                            <td><strong>₹<?php echo number_format($project['budget'], 0); ?></strong></td>
+                                            <td>₹<?php echo number_format($laborCost, 0); ?></td>
                                             <?php if ($expensesTableExists): ?>
                                             <td>
-                                                $<?php echo number_format($expenses, 0); ?>
+                                                ₹<?php echo number_format($expenses, 0); ?>
                                                 <?php if ($project['expense_count'] > 0): ?>
                                                     <span style="font-size: 11px; color: var(--text-secondary);">(<?php echo $project['expense_count']; ?>)</span>
                                                 <?php endif; ?>
                                             </td>
                                             <?php endif; ?>
-                                            <td><strong>$<?php echo number_format($totalCost, 0); ?></strong></td>
+                                            <td><strong>₹<?php echo number_format($totalCost, 0); ?></strong></td>
                                             <td>
                                                 <span class="badge <?php echo $statusClass; ?>">
-                                                    <?php echo $variance >= 0 ? '+' : ''; ?>$<?php echo number_format($variance, 0); ?>
+                                                    <?php echo $variance >= 0 ? '+' : ''; ?>₹<?php echo number_format($variance, 0); ?>
                                                 </span>
                                             </td>
                                             <td>
@@ -278,7 +278,7 @@ foreach ($projects as $project) {
                                         </span>
                                     </div>
                                     <div style="font-weight: 600;">
-                                        $<?php echo number_format($data['budget'], 0); ?>
+                                        ₹<?php echo number_format($data['budget'], 0); ?>
                                     </div>
                                 </div>
                                 <?php endforeach; ?>
@@ -299,7 +299,7 @@ foreach ($projects as $project) {
                             <div style="margin-bottom: 20px;">
                                 <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
                                     <span style="font-weight: 600;">💼 Labor Costs</span>
-                                    <span style="font-weight: 600;">$<?php echo number_format($laborTotal, 0); ?></span>
+                                    <span style="font-weight: 600;">₹<?php echo number_format($laborTotal, 0); ?></span>
                                 </div>
                                 <div class="progress-bar-container" style="height: 12px;">
                                     <div class="progress-bar medium" style="width: <?php echo $laborPercent; ?>%"></div>
@@ -313,7 +313,7 @@ foreach ($projects as $project) {
                             <div>
                                 <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
                                     <span style="font-weight: 600;">💳 Direct Expenses</span>
-                                    <span style="font-weight: 600;">$<?php echo number_format($totalExpenses, 0); ?></span>
+                                    <span style="font-weight: 600;">₹<?php echo number_format($totalExpenses, 0); ?></span>
                                 </div>
                                 <div class="progress-bar-container" style="height: 12px;">
                                     <div class="progress-bar high" style="width: <?php echo $expensePercent; ?>%"></div>

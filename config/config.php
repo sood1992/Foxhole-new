@@ -20,6 +20,10 @@ define('SITE_NAME', 'Foxhole');
 define('SITE_TAGLINE', 'Your productivity command center');
 define('SITE_URL', 'https://neofoxmedia.com/foxhole/tests/v1');
 
+// Currency Configuration
+define('CURRENCY_SYMBOL', '₹');
+define('CURRENCY_CODE', 'INR');
+
 // Include database configuration
 require_once __DIR__ . '/database.php';
 
