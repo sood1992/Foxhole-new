@@ -28,10 +28,11 @@ try {
                 throw new Exception('Task ID and Project ID are required');
             }
 
-            // Check if user already has an active timer
-            $activeLog = getActiveTimeLog($userId);
-            if ($activeLog) {
-                throw new Exception('You already have an active timer running. Please stop it first.');
+            // Check if user already has an active timer for THIS specific task
+            $stmt = $db->prepare("SELECT id FROM time_logs WHERE user_id = ? AND task_id = ? AND is_active = 1");
+            $stmt->execute([$userId, $taskId]);
+            if ($stmt->fetch()) {
+                throw new Exception('You already have an active timer for this task.');
             }
 
             // Verify task is assigned to user
@@ -124,25 +125,22 @@ try {
             break;
 
         case 'get_active':
-            // Get active time log for current user
-            $activeLog = getActiveTimeLog($userId);
-
-            if ($activeLog) {
-                // Get task and project details
-                $stmt = $db->prepare("
-                    SELECT tl.*, t.task_name, p.project_name
-                    FROM time_logs tl
-                    JOIN tasks t ON tl.task_id = t.id
-                    JOIN projects p ON tl.project_id = p.id
-                    WHERE tl.id = ?
-                ");
-                $stmt->execute([$activeLog['id']]);
-                $activeLog = $stmt->fetch();
-            }
+            // Get all active time logs for current user
+            $stmt = $db->prepare("
+                SELECT tl.*, t.task_name, p.project_name
+                FROM time_logs tl
+                JOIN tasks t ON tl.task_id = t.id
+                JOIN projects p ON tl.project_id = p.id
+                WHERE tl.user_id = ? AND tl.is_active = 1
+                ORDER BY tl.start_time DESC
+            ");
+            $stmt->execute([$userId]);
+            $activeLogs = $stmt->fetchAll();
 
             echo json_encode([
                 'success' => true,
-                'active_log' => $activeLog
+                'active_logs' => $activeLogs,
+                'active_log' => !empty($activeLogs) ? $activeLogs[0] : null // For backwards compatibility
             ]);
             break;
 

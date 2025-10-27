@@ -73,10 +73,17 @@ function e($string) {
     return htmlspecialchars($string, ENT_QUOTES, 'UTF-8');
 }
 
-// Get user's active time log
+// Get user's active time log with task and project details
 function getActiveTimeLog($userId) {
     $db = getDBConnection();
-    $stmt = $db->prepare("SELECT * FROM time_logs WHERE user_id = ? AND is_active = 1 LIMIT 1");
+    $stmt = $db->prepare("
+        SELECT tl.*, t.task_name, p.project_name
+        FROM time_logs tl
+        LEFT JOIN tasks t ON tl.task_id = t.id
+        LEFT JOIN projects p ON tl.project_id = p.id
+        WHERE tl.user_id = ? AND tl.is_active = 1
+        LIMIT 1
+    ");
     $stmt->execute([$userId]);
     return $stmt->fetch();
 }

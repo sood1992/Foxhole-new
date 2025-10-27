@@ -434,7 +434,7 @@ $activeTimeLog = getActiveTimeLog($currentUser['id']);
         <!-- Sidebar -->
         <aside class="sidebar">
             <div class="sidebar-header">
-                <h2>Neofox</h2>
+                <h2>Foxhole</h2>
                 <div class="user-role">Employee Panel</div>
             </div>
 
