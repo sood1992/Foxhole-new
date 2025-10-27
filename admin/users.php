@@ -1,4 +1,7 @@
 <?php
+// Start output buffering to prevent header issues
+ob_start();
+
 require_once '../config/config.php';
 require_once '../includes/functions.php';
 
@@ -16,86 +19,112 @@ $success = '';
 
 // Handle form submissions
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if ($action === 'add') {
-        $username = trim($_POST['username'] ?? '');
-        $email = trim($_POST['email'] ?? '');
-        $password = $_POST['password'] ?? '';
-        $full_name = trim($_POST['full_name'] ?? '');
-        $role = $_POST['role'] ?? 'employee';
-        $job_title = trim($_POST['job_title'] ?? '');
-        $hourly_rate = floatval($_POST['hourly_rate'] ?? 0);
-        $is_active = isset($_POST['is_active']) ? 1 : 0;
+    try {
+        if ($action === 'add') {
+            $username = trim($_POST['username'] ?? '');
+            $email = trim($_POST['email'] ?? '');
+            $password = $_POST['password'] ?? '';
+            $full_name = trim($_POST['full_name'] ?? '');
+            $role = $_POST['role'] ?? 'employee';
+            $job_title = trim($_POST['job_title'] ?? '');
+            $hourly_rate = floatval($_POST['hourly_rate'] ?? 0);
+            $is_active = isset($_POST['is_active']) ? 1 : 0;
 
-        // Validation
-        if (empty($username) || empty($email) || empty($password) || empty($full_name)) {
-            $error = 'Please fill in all required fields.';
-        } elseif (strlen($password) < 6) {
-            $error = 'Password must be at least 6 characters long.';
-        } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $error = 'Please enter a valid email address.';
-        } else {
-            // Check if username or email already exists
-            $checkStmt = $db->prepare("SELECT id FROM users WHERE username = ? OR email = ?");
-            $checkStmt->execute([$username, $email]);
-
-            if ($checkStmt->fetch()) {
-                $error = 'Username or email already exists.';
+            // Validation
+            if (empty($username) || empty($email) || empty($password) || empty($full_name)) {
+                $error = 'Please fill in all required fields.';
+            } elseif (strlen($password) < 6) {
+                $error = 'Password must be at least 6 characters long.';
+            } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                $error = 'Please enter a valid email address.';
             } else {
-                // Insert new user
-                $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-                $insertStmt = $db->prepare("
-                    INSERT INTO users (username, email, password, full_name, role, job_title, hourly_rate, is_active, created_at)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())
-                ");
+                // Check if username or email already exists
+                $checkStmt = $db->prepare("SELECT id FROM users WHERE username = ? OR email = ?");
+                $checkStmt->execute([$username, $email]);
 
-                if ($insertStmt->execute([$username, $email, $hashedPassword, $full_name, $role, $job_title, $hourly_rate, $is_active])) {
-                    // Set success message in session and redirect
-                    $_SESSION['success_message'] = 'User added successfully!';
-                    header("Location: team.php");
-                    exit();
+                if ($checkStmt->fetch()) {
+                    $error = 'Username or email already exists.';
                 } else {
-                    $error = 'Failed to add user. Please try again.';
+                    // Insert new user
+                    $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+                    $insertStmt = $db->prepare("
+                        INSERT INTO users (username, email, password, full_name, role, job_title, hourly_rate, is_active, created_at)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())
+                    ");
+
+                    $result = $insertStmt->execute([$username, $email, $hashedPassword, $full_name, $role, $job_title, $hourly_rate, $is_active]);
+
+                    if ($result) {
+                        // Clear output buffer
+                        ob_end_clean();
+                        // Set success message in session and redirect
+                        $_SESSION['success_message'] = 'User added successfully!';
+                        header("Location: team.php");
+                        exit();
+                    } else {
+                        $errorInfo = $insertStmt->errorInfo();
+                        $error = 'Failed to add user: ' . ($errorInfo[2] ?? 'Unknown database error');
+                        error_log("User insert failed: " . print_r($errorInfo, true));
+                    }
                 }
             }
-        }
-    } elseif ($action === 'edit' && $userId) {
-        $username = trim($_POST['username'] ?? '');
-        $email = trim($_POST['email'] ?? '');
-        $password = $_POST['password'] ?? '';
-        $full_name = trim($_POST['full_name'] ?? '');
-        $role = $_POST['role'] ?? 'employee';
-        $job_title = trim($_POST['job_title'] ?? '');
-        $hourly_rate = floatval($_POST['hourly_rate'] ?? 0);
-        $is_active = isset($_POST['is_active']) ? 1 : 0;
+        } elseif ($action === 'edit' && $userId) {
+            $username = trim($_POST['username'] ?? '');
+            $email = trim($_POST['email'] ?? '');
+            $password = $_POST['password'] ?? '';
+            $full_name = trim($_POST['full_name'] ?? '');
+            $role = $_POST['role'] ?? 'employee';
+            $job_title = trim($_POST['job_title'] ?? '');
+            $hourly_rate = floatval($_POST['hourly_rate'] ?? 0);
+            $is_active = isset($_POST['is_active']) ? 1 : 0;
 
-        // Validation
-        if (empty($username) || empty($email) || empty($full_name)) {
-            $error = 'Please fill in all required fields.';
-        } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $error = 'Please enter a valid email address.';
-        } else {
-            // Check if username or email already exists for other users
-            $checkStmt = $db->prepare("SELECT id FROM users WHERE (username = ? OR email = ?) AND id != ?");
-            $checkStmt->execute([$username, $email, $userId]);
-
-            if ($checkStmt->fetch()) {
-                $error = 'Username or email already exists.';
+            // Validation
+            if (empty($username) || empty($email) || empty($full_name)) {
+                $error = 'Please fill in all required fields.';
+            } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                $error = 'Please enter a valid email address.';
             } else {
-                // Update user
-                if (!empty($password)) {
-                    // Update with new password
-                    if (strlen($password) < 6) {
-                        $error = 'Password must be at least 6 characters long.';
+                // Check if username or email already exists for other users
+                $checkStmt = $db->prepare("SELECT id FROM users WHERE (username = ? OR email = ?) AND id != ?");
+                $checkStmt->execute([$username, $email, $userId]);
+
+                if ($checkStmt->fetch()) {
+                    $error = 'Username or email already exists.';
+                } else {
+                    // Update user
+                    if (!empty($password)) {
+                        // Update with new password
+                        if (strlen($password) < 6) {
+                            $error = 'Password must be at least 6 characters long.';
+                        } else {
+                            $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+                            $updateStmt = $db->prepare("
+                                UPDATE users
+                                SET username = ?, email = ?, password = ?, full_name = ?, role = ?,
+                                    job_title = ?, hourly_rate = ?, is_active = ?
+                                WHERE id = ?
+                            ");
+
+                            if ($updateStmt->execute([$username, $email, $hashedPassword, $full_name, $role, $job_title, $hourly_rate, $is_active, $userId])) {
+                                ob_end_clean();
+                                $_SESSION['success_message'] = 'User updated successfully!';
+                                header("Location: team.php");
+                                exit();
+                            } else {
+                                $error = 'Failed to update user. Please try again.';
+                            }
+                        }
                     } else {
-                        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+                        // Update without changing password
                         $updateStmt = $db->prepare("
                             UPDATE users
-                            SET username = ?, email = ?, password = ?, full_name = ?, role = ?,
+                            SET username = ?, email = ?, full_name = ?, role = ?,
                                 job_title = ?, hourly_rate = ?, is_active = ?
                             WHERE id = ?
                         ");
 
-                        if ($updateStmt->execute([$username, $email, $hashedPassword, $full_name, $role, $job_title, $hourly_rate, $is_active, $userId])) {
+                        if ($updateStmt->execute([$username, $email, $full_name, $role, $job_title, $hourly_rate, $is_active, $userId])) {
+                            ob_end_clean();
                             $_SESSION['success_message'] = 'User updated successfully!';
                             header("Location: team.php");
                             exit();
@@ -103,39 +132,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             $error = 'Failed to update user. Please try again.';
                         }
                     }
+                }
+            }
+        } elseif ($action === 'delete' && $userId) {
+            // Prevent deleting yourself
+            if ($userId == $currentUser['id']) {
+                $error = 'You cannot delete your own account.';
+            } else {
+                $deleteStmt = $db->prepare("UPDATE users SET is_active = 0 WHERE id = ?");
+                if ($deleteStmt->execute([$userId])) {
+                    ob_end_clean();
+                    $_SESSION['success_message'] = 'User deactivated successfully!';
+                    header("Location: team.php");
+                    exit();
                 } else {
-                    // Update without changing password
-                    $updateStmt = $db->prepare("
-                        UPDATE users
-                        SET username = ?, email = ?, full_name = ?, role = ?,
-                            job_title = ?, hourly_rate = ?, is_active = ?
-                        WHERE id = ?
-                    ");
-
-                    if ($updateStmt->execute([$username, $email, $full_name, $role, $job_title, $hourly_rate, $is_active, $userId])) {
-                        $_SESSION['success_message'] = 'User updated successfully!';
-                        header("Location: team.php");
-                        exit();
-                    } else {
-                        $error = 'Failed to update user. Please try again.';
-                    }
+                    $error = 'Failed to deactivate user.';
                 }
             }
         }
-    } elseif ($action === 'delete' && $userId) {
-        // Prevent deleting yourself
-        if ($userId == $currentUser['id']) {
-            $error = 'You cannot delete your own account.';
-        } else {
-            $deleteStmt = $db->prepare("UPDATE users SET is_active = 0 WHERE id = ?");
-            if ($deleteStmt->execute([$userId])) {
-                $_SESSION['success_message'] = 'User deactivated successfully!';
-                header("Location: team.php");
-                exit();
-            } else {
-                $error = 'Failed to deactivate user.';
-            }
-        }
+    } catch (PDOException $e) {
+        $error = 'Database error: ' . $e->getMessage();
+        error_log("User management error: " . $e->getMessage());
+    } catch (Exception $e) {
+        $error = 'Error: ' . $e->getMessage();
+        error_log("User management error: " . $e->getMessage());
     }
 }
 
