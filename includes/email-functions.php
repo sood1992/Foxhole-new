@@ -151,37 +151,59 @@ function sendEmailSMTP($to, $subject, $htmlBody, $config, $fromEmail, $fromName)
 
             // Say EHLO again after STARTTLS
             fputs($socket, "EHLO {$_SERVER['HTTP_HOST']}\r\n");
+            $ehloResponse = '';
             while ($line = fgets($socket, 515)) {
+                $ehloResponse .= $line;
                 if (substr($line, 3, 1) == ' ') break;
             }
         }
 
-        // Authenticate
-        fputs($socket, "AUTH LOGIN\r\n");
-        $response = fgets($socket, 515);
-        if (substr($response, 0, 3) != '334') {
-            $error = "AUTH LOGIN not supported: " . trim($response);
-            error_log($error);
-            fclose($socket);
-            return ['success' => false, 'error' => $error];
-        }
+        // Check which AUTH methods are supported
+        $supportsAuthPlain = stripos($ehloResponse, 'AUTH PLAIN') !== false || stripos($ehloResponse, 'AUTH=PLAIN') !== false;
+        $supportsAuthLogin = stripos($ehloResponse, 'AUTH LOGIN') !== false || stripos($ehloResponse, 'AUTH=LOGIN') !== false;
 
-        fputs($socket, base64_encode($username) . "\r\n");
-        $response = fgets($socket, 515);
-        if (substr($response, 0, 3) != '334') {
-            $error = "Username rejected: " . trim($response);
-            error_log($error);
-            fclose($socket);
-            return ['success' => false, 'error' => $error];
-        }
+        // Try AUTH PLAIN first (more commonly supported)
+        if ($supportsAuthPlain) {
+            $authString = base64_encode("\0" . $username . "\0" . $password);
+            fputs($socket, "AUTH PLAIN {$authString}\r\n");
+            $response = fgets($socket, 515);
+            if (substr($response, 0, 3) != '235') {
+                $error = "SMTP authentication failed. Check username and password. Response: " . trim($response);
+                error_log($error);
+                fclose($socket);
+                return ['success' => false, 'error' => $error];
+            }
+        } elseif ($supportsAuthLogin) {
+            // Try AUTH LOGIN
+            fputs($socket, "AUTH LOGIN\r\n");
+            $response = fgets($socket, 515);
+            if (substr($response, 0, 3) != '334') {
+                $error = "AUTH LOGIN failed: " . trim($response);
+                error_log($error);
+                fclose($socket);
+                return ['success' => false, 'error' => $error];
+            }
 
-        fputs($socket, base64_encode($password) . "\r\n");
-        $response = fgets($socket, 515);
-        if (substr($response, 0, 3) != '235') {
-            $error = "SMTP authentication failed. Check username and password. Server response: " . trim($response);
-            error_log($error);
-            fclose($socket);
-            return ['success' => false, 'error' => $error];
+            fputs($socket, base64_encode($username) . "\r\n");
+            $response = fgets($socket, 515);
+            if (substr($response, 0, 3) != '334') {
+                $error = "Username rejected: " . trim($response);
+                error_log($error);
+                fclose($socket);
+                return ['success' => false, 'error' => $error];
+            }
+
+            fputs($socket, base64_encode($password) . "\r\n");
+            $response = fgets($socket, 515);
+            if (substr($response, 0, 3) != '235') {
+                $error = "Password rejected: " . trim($response);
+                error_log($error);
+                fclose($socket);
+                return ['success' => false, 'error' => $error];
+            }
+        } else {
+            // No authentication supported or required - try to send without auth
+            error_log("SMTP: No AUTH methods advertised in EHLO response, attempting without authentication");
         }
 
         // Send MAIL FROM
