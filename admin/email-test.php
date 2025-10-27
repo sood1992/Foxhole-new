@@ -1,4 +1,6 @@
 <?php
+ob_start(); // Start output buffering to prevent blank page issues
+
 require_once '../config/config.php';
 require_once '../includes/functions.php';
 require_once '../includes/email-functions.php';
@@ -9,9 +11,14 @@ if (!isLoggedIn() || !hasRole('admin')) {
 
 $db = getDBConnection();
 $currentUser = getCurrentUser();
-$error = '';
-$success = '';
-$testResult = '';
+
+// Check for session messages
+$error = $_SESSION['error_message'] ?? '';
+$success = $_SESSION['success_message'] ?? '';
+$testResult = $_SESSION['test_result'] ?? '';
+
+// Clear session messages
+unset($_SESSION['error_message'], $_SESSION['success_message'], $_SESSION['test_result']);
 
 // Handle test email submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -38,11 +45,14 @@ HTML;
                 $emailHtml = getEmailTemplate($content, 'Email Test');
                 $result = sendEmail($testEmail, '[' . SITE_NAME . '] Email Test', $emailHtml);
 
+                ob_end_clean();
                 if ($result) {
-                    $success = "✅ Test email sent successfully to {$testEmail}! Check your inbox.";
+                    $_SESSION['success_message'] = "✅ Test email sent successfully to {$testEmail}! Check your inbox.";
                 } else {
-                    $error = "❌ Failed to send test email. Check your email configuration and error logs.";
+                    $_SESSION['error_message'] = "❌ Failed to send test email. Check your email configuration and error logs.";
                 }
+                header("Location: email-test.php");
+                exit();
                 break;
 
             case 'task_assignment':
@@ -68,11 +78,14 @@ HTML;
                 $emailHtml = getEmailTemplate($content, 'New Task Assigned (Test)');
                 $result = sendEmail($testEmail, '[' . SITE_NAME . '] Test: New Task Assigned', $emailHtml);
 
+                ob_end_clean();
                 if ($result) {
-                    $success = "✅ Task assignment test email sent to {$testEmail}!";
+                    $_SESSION['success_message'] = "✅ Task assignment test email sent to {$testEmail}!";
                 } else {
-                    $error = "❌ Failed to send task assignment test email.";
+                    $_SESSION['error_message'] = "❌ Failed to send task assignment test email.";
                 }
+                header("Location: email-test.php");
+                exit();
                 break;
 
             case 'task_update':
@@ -96,55 +109,73 @@ HTML;
                 $emailHtml = getEmailTemplate($content, 'Task Status Updated (Test)');
                 $result = sendEmail($testEmail, '[' . SITE_NAME . '] Test: Task Updated', $emailHtml);
 
+                ob_end_clean();
                 if ($result) {
-                    $success = "✅ Task update test email sent to {$testEmail}!";
+                    $_SESSION['success_message'] = "✅ Task update test email sent to {$testEmail}!";
                 } else {
-                    $error = "❌ Failed to send task update test email.";
+                    $_SESSION['error_message'] = "❌ Failed to send task update test email.";
                 }
+                header("Location: email-test.php");
+                exit();
                 break;
 
             case 'daily_report':
                 // Test daily report
                 $result = sendDailyProgressReport();
 
+                ob_end_clean();
                 if ($result) {
-                    $success = "✅ Daily progress report sent to all admins and managers!";
-                    $testResult = "Report includes today's statistics and was sent to all users with admin/manager roles who have email addresses configured.";
+                    $_SESSION['success_message'] = "✅ Daily progress report sent to all admins and managers!";
+                    $_SESSION['test_result'] = "Report includes today's statistics and was sent to all users with admin/manager roles who have email addresses configured.";
                 } else {
-                    $error = "❌ Failed to send daily report. Check error logs for details.";
+                    $_SESSION['error_message'] = "❌ Failed to send daily report. Check error logs for details.";
                 }
+                header("Location: email-test.php");
+                exit();
                 break;
 
             case 'weekly_report':
                 // Test weekly report
                 $result = sendWeeklyProgressReport();
 
+                ob_end_clean();
                 if ($result) {
-                    $success = "✅ Weekly progress report sent to all admins and managers!";
-                    $testResult = "Report includes this week's statistics and was sent to all users with admin/manager roles.";
+                    $_SESSION['success_message'] = "✅ Weekly progress report sent to all admins and managers!";
+                    $_SESSION['test_result'] = "Report includes this week's statistics and was sent to all users with admin/manager roles.";
                 } else {
-                    $error = "❌ Failed to send weekly report. Check error logs for details.";
+                    $_SESSION['error_message'] = "❌ Failed to send weekly report. Check error logs for details.";
                 }
+                header("Location: email-test.php");
+                exit();
                 break;
 
             case 'monthly_report':
                 // Test monthly report
                 $result = sendMonthlyProgressReport();
 
+                ob_end_clean();
                 if ($result) {
-                    $success = "✅ Monthly progress report sent to all admins and managers!";
-                    $testResult = "Report includes this month's statistics and was sent to all users with admin/manager roles.";
+                    $_SESSION['success_message'] = "✅ Monthly progress report sent to all admins and managers!";
+                    $_SESSION['test_result'] = "Report includes this month's statistics and was sent to all users with admin/manager roles.";
                 } else {
-                    $error = "❌ Failed to send monthly report. Check error logs for details.";
+                    $_SESSION['error_message'] = "❌ Failed to send monthly report. Check error logs for details.";
                 }
+                header("Location: email-test.php");
+                exit();
                 break;
 
             default:
-                $error = 'Invalid test type selected.';
+                ob_end_clean();
+                $_SESSION['error_message'] = 'Invalid test type selected.';
+                header("Location: email-test.php");
+                exit();
         }
     } catch (Exception $e) {
-        $error = 'Error: ' . $e->getMessage();
+        ob_end_clean();
+        $_SESSION['error_message'] = 'Error: ' . $e->getMessage();
         error_log("Email test error: " . $e->getMessage());
+        header("Location: email-test.php");
+        exit();
     }
 }
 
