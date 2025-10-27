@@ -122,58 +122,15 @@ $updatesData = $recentUpdates->fetchAll();
 </head>
 <body>
     <div class="dashboard">
-        <!-- Sidebar -->
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                <h2>Foxhole</h2>
-                <div class="user-role">Project Manager</div>
-            </div>
-
-            <nav class="sidebar-nav">
-                <a href="index.php" class="active">
-                    <span class="icon">📊</span>
-                    Dashboard
-                </a>
-                <a href="projects.php">
-                    <span class="icon">📁</span>
-                    My Projects
-                </a>
-                <a href="tasks.php">
-                    <span class="icon">✓</span>
-                    Task Management
-                </a>
-                <a href="team.php">
-                    <span class="icon">👥</span>
-                    Team Activity
-                </a>
-                <a href="reports.php">
-                    <span class="icon">📈</span>
-                    Reports
-                </a>
-            </nav>
-
-            <div class="sidebar-footer">
-                <div class="user-info">
-                    <div class="user-avatar">
-                        <?php echo strtoupper(substr($currentUser['full_name'], 0, 1)); ?>
-                    </div>
-                    <div class="user-details">
-                        <h4><?php echo e($currentUser['full_name']); ?></h4>
-                        <p><?php echo e($currentUser['job_title'] ?? 'Project Manager'); ?></p>
-                    </div>
-                </div>
-                <a href="../logout.php" class="btn btn-secondary btn-block btn-sm">Logout</a>
-            </div>
-        </aside>
+        <?php include '../includes/manager-sidebar.php'; ?>
 
         <!-- Main Content -->
         <main class="main-content">
             <div class="topbar">
                 <h1>Project Manager Dashboard</h1>
                 <div class="topbar-actions">
-                    <span style="color: var(--text-secondary); font-size: 14px;">
-                        <?php echo date('l, F j, Y'); ?>
-                    </span>
+                    <?php include '../includes/global-search-assets.php'; ?>
+                    <?php include '../includes/notifications-dropdown.php'; ?>
                 </div>
             </div>
 
