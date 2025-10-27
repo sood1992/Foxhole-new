@@ -64,7 +64,7 @@ $teamProductivity = $db->query("
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - <?php echo SITE_NAME; ?></title>
-    <link rel="stylesheet" href="../assets/css/premium-theme.css">
+    <link rel="stylesheet" href="../assets/css/ultra-premium.css">
     <?php include '../includes/quick-actions-assets.php'; ?>
 </head>
 <body>
