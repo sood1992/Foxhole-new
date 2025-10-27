@@ -14,13 +14,25 @@
             <span class="icon">📁</span>
             My Projects
         </a>
-        <a href="tasks.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'tasks.php' ? 'active' : ''; ?>">
+        <a href="create-project.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'create-project.php' ? 'active' : ''; ?>">
+            <span class="icon">➕</span>
+            Create Project
+        </a>
+        <a href="tasks.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'tasks.php' || basename($_SERVER['PHP_SELF']) == 'create-task.php' ? 'active' : ''; ?>">
             <span class="icon">✓</span>
             Tasks
         </a>
-        <a href="team.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'team.php' ? 'active' : ''; ?>">
+        <a href="create-task.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'create-task.php' ? 'active' : ''; ?>">
+            <span class="icon">📝</span>
+            Create Task
+        </a>
+        <a href="team.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'team.php' || basename($_SERVER['PHP_SELF']) == 'manage-users.php' ? 'active' : ''; ?>">
             <span class="icon">👥</span>
             My Team
+        </a>
+        <a href="manage-users.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'manage-users.php' ? 'active' : ''; ?>">
+            <span class="icon">👤</span>
+            Manage Users
         </a>
         <a href="reports.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'reports.php' ? 'active' : ''; ?>">
             <span class="icon">📋</span>
