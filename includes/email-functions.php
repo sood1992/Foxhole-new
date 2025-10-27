@@ -106,15 +106,15 @@ function sendEmailSMTP($to, $subject, $htmlBody, $config, $fromEmail, $fromName)
         }
 
         if (!$socket) {
-            $error = "SMTP connection failed: {$errstr} ({$errno})";
+            $error = "SMTP connection failed: {$errstr} ({$errno}). Check host and port.";
             error_log($error);
             return ['success' => false, 'error' => $error];
         }
 
-        // Read server response
+        // Read server greeting
         $response = fgets($socket, 515);
-        if (substr($response, 0, 3) != '220') {
-            $error = "SMTP server error: {$response}";
+        if (empty($response) || substr($response, 0, 3) != '220') {
+            $error = "SMTP server greeting failed. Response: " . trim($response);
             error_log($error);
             fclose($socket);
             return ['success' => false, 'error' => $error];
@@ -122,39 +122,64 @@ function sendEmailSMTP($to, $subject, $htmlBody, $config, $fromEmail, $fromName)
 
         // Say EHLO
         fputs($socket, "EHLO {$_SERVER['HTTP_HOST']}\r\n");
-        $response = fgets($socket, 515);
+        // Read multiple lines of EHLO response
+        $ehloResponse = '';
+        while ($line = fgets($socket, 515)) {
+            $ehloResponse .= $line;
+            if (substr($line, 3, 1) == ' ') break; // Last line has space after code
+        }
 
-        // Start TLS if needed
+        // Start TLS if needed (only for 'tls', not 'ssl' or 'none')
         if ($encryption === 'tls') {
             fputs($socket, "STARTTLS\r\n");
             $response = fgets($socket, 515);
             if (substr($response, 0, 3) != '220') {
-                $error = "STARTTLS failed: {$response}";
+                $error = "STARTTLS failed: " . trim($response) . ". Try using SSL (port 465) or None (port 587).";
                 error_log($error);
                 fclose($socket);
                 return ['success' => false, 'error' => $error];
             }
 
             // Enable crypto
-            stream_socket_enable_crypto($socket, true, STREAM_CRYPTO_METHOD_TLS_CLIENT);
+            $cryptoResult = @stream_socket_enable_crypto($socket, true, STREAM_CRYPTO_METHOD_TLS_CLIENT);
+            if (!$cryptoResult) {
+                $error = "TLS encryption failed. Try using SSL (port 465) or None encryption (port 587).";
+                error_log($error);
+                fclose($socket);
+                return ['success' => false, 'error' => $error];
+            }
 
             // Say EHLO again after STARTTLS
             fputs($socket, "EHLO {$_SERVER['HTTP_HOST']}\r\n");
-            $response = fgets($socket, 515);
+            while ($line = fgets($socket, 515)) {
+                if (substr($line, 3, 1) == ' ') break;
+            }
         }
 
         // Authenticate
         fputs($socket, "AUTH LOGIN\r\n");
         $response = fgets($socket, 515);
+        if (substr($response, 0, 3) != '334') {
+            $error = "AUTH LOGIN not supported: " . trim($response);
+            error_log($error);
+            fclose($socket);
+            return ['success' => false, 'error' => $error];
+        }
 
         fputs($socket, base64_encode($username) . "\r\n");
         $response = fgets($socket, 515);
+        if (substr($response, 0, 3) != '334') {
+            $error = "Username rejected: " . trim($response);
+            error_log($error);
+            fclose($socket);
+            return ['success' => false, 'error' => $error];
+        }
 
         fputs($socket, base64_encode($password) . "\r\n");
         $response = fgets($socket, 515);
         if (substr($response, 0, 3) != '235') {
-            $error = "SMTP authentication failed. Please check your username and password.";
-            error_log($error . " - Server response: {$response}");
+            $error = "SMTP authentication failed. Check username and password. Server response: " . trim($response);
+            error_log($error);
             fclose($socket);
             return ['success' => false, 'error' => $error];
         }
