@@ -87,7 +87,7 @@ $weekSummaryData = $weekSummary->fetchAll();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Dashboard - <?php echo SITE_NAME; ?></title>
-    <link rel="stylesheet" href="../assets/css/clean-style.css">
+    <link rel="stylesheet" href="../assets/css/theme.css">
 </head>
 <body>
     <div class="dashboard">
@@ -512,5 +512,6 @@ $weekSummaryData = $weekSummary->fetchAll();
             });
         }
     </script>
+    <script src="../assets/js/theme.js"></script>
 </body>
 </html>

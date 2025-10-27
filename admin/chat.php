@@ -23,7 +23,7 @@ $projects = $db->query("
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Team Chat - <?php echo SITE_NAME; ?></title>
-    <link rel="stylesheet" href="../assets/css/clean-style.css">
+    <link rel="stylesheet" href="../assets/css/theme.css">
     <style>
     .chat-container {
         display: grid;
@@ -464,5 +464,6 @@ $projects = $db->query("
         if (pollInterval) clearInterval(pollInterval);
     });
     </script>
+    <script src="../assets/js/theme.js"></script>
 </body>
 </html>

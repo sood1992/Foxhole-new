@@ -106,7 +106,7 @@ $users = $db->query("SELECT id, full_name, username FROM users WHERE is_active =
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bulk Import - <?php echo SITE_NAME; ?></title>
-    <link rel="stylesheet" href="../assets/css/clean-style.css">
+    <link rel="stylesheet" href="../assets/css/theme.css">
 </head>
 <body>
     <div class="dashboard">
@@ -277,5 +277,6 @@ jane_smith,jane@example.com,Jane Smith,manager,Project Manager,75</pre>
             </div>
         </main>
     </div>
+    <script src="../assets/js/theme.js"></script>
 </body>
 </html>

@@ -64,7 +64,8 @@ $teamProductivity = $db->query("
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - <?php echo SITE_NAME; ?></title>
-    <link rel="stylesheet" href="../assets/css/clean-style.css">
+    <link rel="stylesheet" href="../assets/css/theme.css">
+    <?php include '../includes/quick-actions-assets.php'; ?>
 </head>
 <body>
     <div class="dashboard">
@@ -317,5 +318,7 @@ $teamProductivity = $db->query("
             </div>
         </main>
     </div>
+
+    <script src="../assets/js/theme.js"></script>
 </body>
 </html>

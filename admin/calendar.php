@@ -15,7 +15,7 @@ $currentUser = getCurrentUser();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calendar - <?php echo SITE_NAME; ?></title>
-    <link rel="stylesheet" href="../assets/css/clean-style.css">
+    <link rel="stylesheet" href="../assets/css/theme.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.css">
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js"></script>
     <style>
@@ -408,5 +408,6 @@ $currentUser = getCurrentUser();
         });
     });
     </script>
+    <script src="../assets/js/theme.js"></script>
 </body>
 </html>
