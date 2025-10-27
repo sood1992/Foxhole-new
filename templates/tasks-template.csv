@@ -1,0 +1,4 @@
+project_id,task_name,description,assigned_to,priority,estimated_hours,due_date,budget
+1,Create Brand Guidelines,Develop comprehensive brand guidelines document,3,high,20,2024-12-31,1000
+1,Design Logo Variations,Create 5 logo variations for client review,3,high,15,2024-12-20,750
+2,Setup Project Repository,Initialize Git repository and setup CI/CD,2,medium,8,2024-12-15,0

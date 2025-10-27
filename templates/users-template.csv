@@ -1,0 +1,4 @@
+username,email,full_name,role,job_title,hourly_rate
+john_designer,john@neofox.com,John Designer,employee,Senior Designer,55
+sarah_dev,sarah@neofox.com,Sarah Developer,employee,Frontend Developer,60
+mike_pm,mike@neofox.com,Mike Smith,manager,Senior Project Manager,80
