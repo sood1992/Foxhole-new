@@ -159,8 +159,9 @@ $projectBottlenecks = $db->prepare("
     LEFT JOIN users u ON t.assigned_to = u.id
     WHERE p.status IN ('in_progress', 'planning', 'review')
     GROUP BY p.id
-    HAVING blocked_tasks > 0 OR overdue_tasks > 2
-    ORDER BY (blocked_tasks + overdue_tasks) DESC
+    HAVING SUM(CASE WHEN t.status = 'blocked' THEN 1 ELSE 0 END) > 0
+        OR SUM(CASE WHEN t.status != 'completed' AND t.due_date < CURDATE() THEN 1 ELSE 0 END) > 2
+    ORDER BY (SUM(CASE WHEN t.status = 'blocked' THEN 1 ELSE 0 END) + SUM(CASE WHEN t.status != 'completed' AND t.due_date < CURDATE() THEN 1 ELSE 0 END)) DESC
     LIMIT 10
 ");
 $projectBottlenecks->execute();
