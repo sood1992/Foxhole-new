@@ -9,19 +9,42 @@ if (!isLoggedIn() || (!hasRole('admin') && !hasRole('manager'))) {
 $db = getDBConnection();
 $currentUser = getCurrentUser();
 
+// Check if expenses table exists
+try {
+    $db->query("SELECT 1 FROM expenses LIMIT 1");
+    $expensesTableExists = true;
+} catch (PDOException $e) {
+    $expensesTableExists = false;
+}
+
 // Get all projects with budget info
-$projects = $db->query("
-    SELECT
-        p.*,
-        (SELECT SUM(amount) FROM expenses WHERE project_id = p.id) as total_expenses,
-        (SELECT SUM(duration_minutes) FROM time_logs WHERE project_id = p.id AND end_time IS NOT NULL) as total_minutes,
-        (SELECT COUNT(*) FROM expenses WHERE project_id = p.id) as expense_count,
-        u.full_name as manager_name
-    FROM projects p
-    LEFT JOIN users u ON p.assigned_manager = u.id
-    WHERE p.status IN ('planning', 'in_progress', 'review', 'completed')
-    ORDER BY p.created_at DESC
-")->fetchAll();
+if ($expensesTableExists) {
+    $projects = $db->query("
+        SELECT
+            p.*,
+            (SELECT SUM(amount) FROM expenses WHERE project_id = p.id) as total_expenses,
+            (SELECT SUM(duration_minutes) FROM time_logs WHERE project_id = p.id AND end_time IS NOT NULL) as total_minutes,
+            (SELECT COUNT(*) FROM expenses WHERE project_id = p.id) as expense_count,
+            u.full_name as manager_name
+        FROM projects p
+        LEFT JOIN users u ON p.assigned_manager = u.id
+        WHERE p.status IN ('planning', 'in_progress', 'review', 'completed')
+        ORDER BY p.created_at DESC
+    ")->fetchAll();
+} else {
+    $projects = $db->query("
+        SELECT
+            p.*,
+            0 as total_expenses,
+            (SELECT SUM(duration_minutes) FROM time_logs WHERE project_id = p.id AND end_time IS NOT NULL) as total_minutes,
+            0 as expense_count,
+            u.full_name as manager_name
+        FROM projects p
+        LEFT JOIN users u ON p.assigned_manager = u.id
+        WHERE p.status IN ('planning', 'in_progress', 'review', 'completed')
+        ORDER BY p.created_at DESC
+    ")->fetchAll();
+}
 
 // Calculate totals
 $totalBudget = 0;
@@ -40,7 +63,7 @@ foreach ($projects as $project) {
         WHERE tl.project_id = ? AND tl.end_time IS NOT NULL
     ");
     $stmt->execute([$project['id']]);
-    $avgRate = $stmt->fetch()['avg_rate'] ?? 0;
+    $avgRate = $stmt->fetch()['avg_rate'] ?? 50; // Default $50/hr if no rate set
     $laborCost = $hours * $avgRate;
 
     $expenses = $project['total_expenses'] ?? 0;
@@ -57,6 +80,7 @@ foreach ($projects as $project) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Budget Tracking - <?php echo SITE_NAME; ?></title>
     <link rel="stylesheet" href="../assets/css/ultra-premium.css">
+    <?php include '../includes/quick-actions-assets.php'; ?>
 </head>
 <body>
     <div class="dashboard">
@@ -73,6 +97,12 @@ foreach ($projects as $project) {
             </div>
 
             <div class="content">
+                <?php if (!$expensesTableExists): ?>
+                <div class="alert alert-warning" style="background: #fef3c7; border: 1px solid #fbbf24; color: #92400e; padding: var(--space-4); border-radius: var(--radius-md); margin-bottom: var(--space-6);">
+                    <strong>⚠️ Notice:</strong> Expenses tracking is not yet set up. Budget calculations are based on labor costs only. Run <code>upgrade-schema.sql</code> to enable full expense tracking.
+                </div>
+                <?php endif; ?>
+
                 <!-- Summary Cards -->
                 <div class="stats-grid">
                     <div class="stat-card blue">
@@ -91,12 +121,13 @@ foreach ($projects as $project) {
                             <div>
                                 <div class="stat-label">Actual Cost</div>
                                 <div class="stat-value">$<?php echo number_format($totalActual, 0); ?></div>
-                                <div class="stat-change">Labor + Expenses</div>
+                                <div class="stat-change">Labor<?php echo $expensesTableExists ? ' + Expenses' : ' Only'; ?></div>
                             </div>
                             <div class="stat-icon">💰</div>
                         </div>
                     </div>
 
+                    <?php if ($expensesTableExists): ?>
                     <div class="stat-card orange">
                         <div class="stat-card-header">
                             <div>
@@ -107,6 +138,7 @@ foreach ($projects as $project) {
                             <div class="stat-icon">💳</div>
                         </div>
                     </div>
+                    <?php endif; ?>
 
                     <div class="stat-card <?php echo ($totalBudget - $totalActual) < 0 ? 'red' : 'blue'; ?>">
                         <div class="stat-card-header">
@@ -126,85 +158,89 @@ foreach ($projects as $project) {
                         <h3>Project Budgets & Costs</h3>
                     </div>
                     <div class="card-body">
-                        <div class="table-container">
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>Project</th>
-                                        <th>Status</th>
-                                        <th>Manager</th>
-                                        <th>Budget</th>
-                                        <th>Labor Cost</th>
-                                        <th>Expenses</th>
-                                        <th>Total Cost</th>
-                                        <th>Variance</th>
-                                        <th>% Used</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php foreach ($projects as $project): ?>
-                                    <?php
-                                        // Calculate costs
-                                        $hours = ($project['total_minutes'] ?? 0) / 60;
-                                        $stmt = $db->prepare("
-                                            SELECT AVG(u.hourly_rate) as avg_rate
-                                            FROM time_logs tl
-                                            JOIN users u ON tl.user_id = u.id
-                                            WHERE tl.project_id = ? AND tl.end_time IS NOT NULL
-                                        ");
-                                        $stmt->execute([$project['id']]);
-                                        $avgRate = $stmt->fetch()['avg_rate'] ?? 0;
-                                        $laborCost = $hours * $avgRate;
-
-                                        $expenses = $project['total_expenses'] ?? 0;
-                                        $totalCost = $laborCost + $expenses;
-                                        $variance = $project['budget'] - $totalCost;
-                                        $percentUsed = $project['budget'] > 0 ? ($totalCost / $project['budget']) * 100 : 0;
-
-                                        $statusClass = $variance >= 0 ? 'status-completed' : 'status-blocked';
-                                    ?>
-                                    <tr>
-                                        <td><strong><?php echo e($project['project_name']); ?></strong></td>
-                                        <td>
-                                            <span class="badge <?php echo getStatusClass($project['status']); ?>">
-                                                <?php echo ucfirst(str_replace('_', ' ', $project['status'])); ?>
-                                            </span>
-                                        </td>
-                                        <td><?php echo e($project['manager_name'] ?? 'Unassigned'); ?></td>
-                                        <td><strong>$<?php echo number_format($project['budget'], 0); ?></strong></td>
-                                        <td>$<?php echo number_format($laborCost, 0); ?></td>
-                                        <td>
-                                            $<?php echo number_format($expenses, 0); ?>
-                                            <?php if ($project['expense_count'] > 0): ?>
-                                                <span style="font-size: 11px; color: var(--text-secondary);">(<?php echo $project['expense_count']; ?>)</span>
+                        <?php if (empty($projects)): ?>
+                            <p style="text-align: center; color: var(--text-secondary); padding: var(--space-10);">
+                                No projects found.
+                            </p>
+                        <?php else: ?>
+                            <div class="table-container">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Project</th>
+                                            <th>Status</th>
+                                            <th>Manager</th>
+                                            <th>Budget</th>
+                                            <th>Labor Cost</th>
+                                            <?php if ($expensesTableExists): ?>
+                                            <th>Expenses</th>
                                             <?php endif; ?>
-                                        </td>
-                                        <td><strong>$<?php echo number_format($totalCost, 0); ?></strong></td>
-                                        <td>
-                                            <span class="badge <?php echo $statusClass; ?>">
-                                                <?php echo $variance >= 0 ? '+' : ''; ?>$<?php echo number_format($variance, 0); ?>
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <div class="progress-bar-container">
-                                                <div class="progress-bar <?php echo $percentUsed > 100 ? 'complete' : ($percentUsed > 75 ? 'high' : 'medium'); ?>"
-                                                     style="width: <?php echo min($percentUsed, 100); ?>%"></div>
-                                            </div>
-                                            <small style="font-size: 11px; margin-top: 4px; display: block;">
-                                                <?php echo number_format($percentUsed, 1); ?>%
-                                            </small>
-                                        </td>
-                                        <td>
-                                            <a href="project-expenses.php?id=<?php echo $project['id']; ?>" class="btn btn-secondary btn-sm">
-                                                💳 Expenses
-                                            </a>
-                                        </td>
-                                    </tr>
-                                    <?php endforeach; ?>
-                                </tbody>
-                            </table>
-                        </div>
+                                            <th>Total Cost</th>
+                                            <th>Variance</th>
+                                            <th>% Used</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php foreach ($projects as $project): ?>
+                                        <?php
+                                            // Calculate costs
+                                            $hours = ($project['total_minutes'] ?? 0) / 60;
+                                            $stmt = $db->prepare("
+                                                SELECT AVG(u.hourly_rate) as avg_rate
+                                                FROM time_logs tl
+                                                JOIN users u ON tl.user_id = u.id
+                                                WHERE tl.project_id = ? AND tl.end_time IS NOT NULL
+                                            ");
+                                            $stmt->execute([$project['id']]);
+                                            $avgRate = $stmt->fetch()['avg_rate'] ?? 50;
+                                            $laborCost = $hours * $avgRate;
+
+                                            $expenses = $project['total_expenses'] ?? 0;
+                                            $totalCost = $laborCost + $expenses;
+                                            $variance = $project['budget'] - $totalCost;
+                                            $percentUsed = $project['budget'] > 0 ? ($totalCost / $project['budget']) * 100 : 0;
+
+                                            $statusClass = $variance >= 0 ? 'status-completed' : 'status-blocked';
+                                        ?>
+                                        <tr>
+                                            <td><strong><?php echo e($project['project_name']); ?></strong></td>
+                                            <td>
+                                                <span class="badge <?php echo getStatusClass($project['status']); ?>">
+                                                    <?php echo ucfirst(str_replace('_', ' ', $project['status'])); ?>
+                                                </span>
+                                            </td>
+                                            <td><?php echo e($project['manager_name'] ?? 'Unassigned'); ?></td>
+                                            <td><strong>$<?php echo number_format($project['budget'], 0); ?></strong></td>
+                                            <td>$<?php echo number_format($laborCost, 0); ?></td>
+                                            <?php if ($expensesTableExists): ?>
+                                            <td>
+                                                $<?php echo number_format($expenses, 0); ?>
+                                                <?php if ($project['expense_count'] > 0): ?>
+                                                    <span style="font-size: 11px; color: var(--text-secondary);">(<?php echo $project['expense_count']; ?>)</span>
+                                                <?php endif; ?>
+                                            </td>
+                                            <?php endif; ?>
+                                            <td><strong>$<?php echo number_format($totalCost, 0); ?></strong></td>
+                                            <td>
+                                                <span class="badge <?php echo $statusClass; ?>">
+                                                    <?php echo $variance >= 0 ? '+' : ''; ?>$<?php echo number_format($variance, 0); ?>
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <div class="progress-bar-container">
+                                                    <div class="progress-bar <?php echo $percentUsed > 100 ? 'complete' : ($percentUsed > 75 ? 'high' : 'medium'); ?>"
+                                                         style="width: <?php echo min($percentUsed, 100); ?>%"></div>
+                                                </div>
+                                                <small style="font-size: 11px; margin-top: 4px; display: block;">
+                                                    <?php echo number_format($percentUsed, 1); ?>%
+                                                </small>
+                                            </td>
+                                        </tr>
+                                        <?php endforeach; ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <?php endif; ?>
                     </div>
                 </div>
 
@@ -226,21 +262,27 @@ foreach ($projects as $project) {
                                 $statusBudgets[$status]['count']++;
                             }
                             ?>
-                            <?php foreach ($statusBudgets as $status => $data): ?>
-                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border-light);">
-                                <div>
-                                    <span class="badge <?php echo getStatusClass($status); ?>">
-                                        <?php echo ucfirst(str_replace('_', ' ', $status)); ?>
-                                    </span>
-                                    <span style="font-size: 13px; color: var(--text-secondary); margin-left: 8px;">
-                                        (<?php echo $data['count']; ?> projects)
-                                    </span>
+                            <?php if (empty($statusBudgets)): ?>
+                                <p style="text-align: center; color: var(--text-secondary); padding: var(--space-6);">
+                                    No budget data available
+                                </p>
+                            <?php else: ?>
+                                <?php foreach ($statusBudgets as $status => $data): ?>
+                                <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border-light);">
+                                    <div>
+                                        <span class="badge <?php echo getStatusClass($status); ?>">
+                                            <?php echo ucfirst(str_replace('_', ' ', $status)); ?>
+                                        </span>
+                                        <span style="font-size: 13px; color: var(--text-secondary); margin-left: 8px;">
+                                            (<?php echo $data['count']; ?> projects)
+                                        </span>
+                                    </div>
+                                    <div style="font-weight: 600;">
+                                        $<?php echo number_format($data['budget'], 0); ?>
+                                    </div>
                                 </div>
-                                <div style="font-weight: 600;">
-                                    $<?php echo number_format($data['budget'], 0); ?>
-                                </div>
-                            </div>
-                            <?php endforeach; ?>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
                         </div>
                     </div>
 
@@ -267,6 +309,7 @@ foreach ($projects as $project) {
                                 </small>
                             </div>
 
+                            <?php if ($expensesTableExists): ?>
                             <div>
                                 <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
                                     <span style="font-weight: 600;">💳 Direct Expenses</span>
@@ -279,6 +322,7 @@ foreach ($projects as $project) {
                                     <?php echo number_format($expensePercent, 1); ?>% of total cost
                                 </small>
                             </div>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>
