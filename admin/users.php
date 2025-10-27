@@ -27,7 +27,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $full_name = trim($_POST['full_name'] ?? '');
             $role = $_POST['role'] ?? 'employee';
             $job_title = trim($_POST['job_title'] ?? '');
-            $hourly_rate = floatval($_POST['hourly_rate'] ?? 0);
             $is_active = isset($_POST['is_active']) ? 1 : 0;
 
             // Validation
@@ -48,11 +47,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     // Insert new user
                     $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
                     $insertStmt = $db->prepare("
-                        INSERT INTO users (username, email, password, full_name, role, job_title, hourly_rate, is_active, created_at)
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())
+                        INSERT INTO users (username, email, password, full_name, role, job_title, is_active, created_at)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, NOW())
                     ");
 
-                    $result = $insertStmt->execute([$username, $email, $hashedPassword, $full_name, $role, $job_title, $hourly_rate, $is_active]);
+                    $result = $insertStmt->execute([$username, $email, $hashedPassword, $full_name, $role, $job_title, $is_active]);
 
                     if ($result) {
                         // Clear output buffer
@@ -75,7 +74,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $full_name = trim($_POST['full_name'] ?? '');
             $role = $_POST['role'] ?? 'employee';
             $job_title = trim($_POST['job_title'] ?? '');
-            $hourly_rate = floatval($_POST['hourly_rate'] ?? 0);
             $is_active = isset($_POST['is_active']) ? 1 : 0;
 
             // Validation
@@ -101,11 +99,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             $updateStmt = $db->prepare("
                                 UPDATE users
                                 SET username = ?, email = ?, password = ?, full_name = ?, role = ?,
-                                    job_title = ?, hourly_rate = ?, is_active = ?
+                                    job_title = ?, is_active = ?
                                 WHERE id = ?
                             ");
 
-                            if ($updateStmt->execute([$username, $email, $hashedPassword, $full_name, $role, $job_title, $hourly_rate, $is_active, $userId])) {
+                            if ($updateStmt->execute([$username, $email, $hashedPassword, $full_name, $role, $job_title, $is_active, $userId])) {
                                 ob_end_clean();
                                 $_SESSION['success_message'] = 'User updated successfully!';
                                 header("Location: team.php");
@@ -119,11 +117,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $updateStmt = $db->prepare("
                             UPDATE users
                             SET username = ?, email = ?, full_name = ?, role = ?,
-                                job_title = ?, hourly_rate = ?, is_active = ?
+                                job_title = ?, is_active = ?
                             WHERE id = ?
                         ");
 
-                        if ($updateStmt->execute([$username, $email, $full_name, $role, $job_title, $hourly_rate, $is_active, $userId])) {
+                        if ($updateStmt->execute([$username, $email, $full_name, $role, $job_title, $is_active, $userId])) {
                             ob_end_clean();
                             $_SESSION['success_message'] = 'User updated successfully!';
                             header("Location: team.php");
@@ -278,17 +276,9 @@ $pageTitle = $action === 'add' ? 'Add Team Member' : 'Edit Team Member';
                                 </div>
                             </div>
 
-                            <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                            <div class="form-row" style="display: grid; grid-template-columns: 1fr; gap: 20px;">
                                 <div class="form-group">
-                                    <label for="hourly_rate">Hourly Rate (₹)</label>
-                                    <input type="number" id="hourly_rate" name="hourly_rate" step="0.01" min="0"
-                                           value="<?php echo e($user['hourly_rate'] ?? ''); ?>"
-                                           placeholder="50.00">
-                                    <small style="color: var(--text-secondary); font-size: 12px;">Used for budget calculations</small>
-                                </div>
-
-                                <div class="form-group">
-                                    <label style="display: flex; align-items: center; gap: 12px; cursor: pointer; margin-top: 32px;">
+                                    <label style="display: flex; align-items: center; gap: 12px; cursor: pointer;">
                                         <input type="checkbox" id="is_active" name="is_active"
                                                <?php echo ($user['is_active'] ?? 1) ? 'checked' : ''; ?>
                                                style="width: 20px; height: 20px;">
