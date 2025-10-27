@@ -143,4 +143,50 @@ function isOverdue($dueDate, $status) {
     if (!$dueDate) return false;
     return strtotime($dueDate) < strtotime('today');
 }
+
+// Create notification
+function createNotification($userId, $title, $message, $type = 'system', $relatedType = null, $relatedId = null) {
+    $db = getDBConnection();
+    $stmt = $db->prepare("
+        INSERT INTO notifications (user_id, title, message, type, related_type, related_id)
+        VALUES (?, ?, ?, ?, ?, ?)
+    ");
+    return $stmt->execute([$userId, $title, $message, $type, $relatedType, $relatedId]);
+}
+
+// Notify user about task assignment
+function notifyTaskAssignment($taskId, $assignedToId, $assignedByName, $taskName) {
+    return createNotification(
+        $assignedToId,
+        'New Task Assigned',
+        "$assignedByName assigned you to: $taskName",
+        'task',
+        'task',
+        $taskId
+    );
+}
+
+// Notify about approaching deadline
+function notifyUpcomingDeadline($userId, $taskName, $dueDate) {
+    return createNotification(
+        $userId,
+        'Upcoming Deadline',
+        "$taskName is due on $dueDate",
+        'deadline',
+        'task',
+        null
+    );
+}
+
+// Notify about comment/mention
+function notifyMention($userId, $mentionedByName, $entityType, $entityId) {
+    return createNotification(
+        $userId,
+        'You were mentioned',
+        "$mentionedByName mentioned you in a comment",
+        'mention',
+        $entityType,
+        $entityId
+    );
+}
 ?>

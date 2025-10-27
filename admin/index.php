@@ -80,21 +80,37 @@ $teamProductivity = $db->query("
                     <span class="icon">📊</span>
                     Dashboard
                 </a>
-                <a href="reports.php">
+                <a href="calendar.php">
+                    <span class="icon">📅</span>
+                    Calendar
+                </a>
+                <a href="analytics.php">
                     <span class="icon">📈</span>
+                    Analytics
+                </a>
+                <a href="chat.php">
+                    <span class="icon">💬</span>
+                    Team Chat
+                </a>
+                <a href="reports.php">
+                    <span class="icon">📋</span>
                     Reports
                 </a>
                 <a href="projects.php">
                     <span class="icon">📁</span>
                     Projects
                 </a>
+                <a href="budget.php">
+                    <span class="icon">💰</span>
+                    Budget & Costs
+                </a>
                 <a href="team.php">
                     <span class="icon">👥</span>
                     Team Management
                 </a>
-                <a href="users.php">
-                    <span class="icon">⚙️</span>
-                    User Settings
+                <a href="bulk-import.php">
+                    <span class="icon">📥</span>
+                    Bulk Import
                 </a>
             </nav>
 
@@ -117,7 +133,8 @@ $teamProductivity = $db->query("
             <div class="topbar">
                 <h1>Dashboard Overview</h1>
                 <div class="topbar-actions">
-                    <span style="color: var(--text-secondary); font-size: 14px;">
+                    <?php include '../includes/notifications-dropdown.php'; ?>
+                    <span style="color: var(--text-secondary); font-size: 14px; margin-left: 12px;">
                         <?php echo date('l, F j, Y'); ?>
                     </span>
                 </div>

@@ -107,6 +107,14 @@ $weekSummaryData = $weekSummary->fetchAll();
                     <span class="icon">✓</span>
                     My Tasks
                 </a>
+                <a href="calendar.php">
+                    <span class="icon">📅</span>
+                    Calendar
+                </a>
+                <a href="chat.php">
+                    <span class="icon">💬</span>
+                    Team Chat
+                </a>
                 <a href="time-logs.php">
                     <span class="icon">⏱️</span>
                     Time Logs
@@ -136,7 +144,8 @@ $weekSummaryData = $weekSummary->fetchAll();
             <div class="topbar">
                 <h1>My Dashboard</h1>
                 <div class="topbar-actions">
-                    <span style="color: var(--text-secondary); font-size: 14px;">
+                    <?php include '../includes/notifications-dropdown.php'; ?>
+                    <span style="color: var(--text-secondary); font-size: 14px; margin-left: 12px;">
                         <?php echo date('l, F j, Y'); ?>
                     </span>
                 </div>
