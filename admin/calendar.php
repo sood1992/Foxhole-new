@@ -137,56 +137,7 @@ $currentUser = getCurrentUser();
 <body>
     <div class="dashboard">
         <!-- Sidebar -->
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                <h2>Foxhole</h2>
-                <div class="user-role"><?php echo hasRole('admin') ? 'Admin' : (hasRole('manager') ? 'Manager' : 'Employee'); ?> Panel</div>
-            </div>
-
-            <nav class="sidebar-nav">
-                <a href="index.php">
-                    <span class="icon">📊</span>
-                    Dashboard
-                </a>
-                <a href="calendar.php" class="active">
-                    <span class="icon">📅</span>
-                    Calendar
-                </a>
-                <?php if (hasRole('admin') || hasRole('manager')): ?>
-                <a href="analytics.php">
-                    <span class="icon">📈</span>
-                    Analytics
-                </a>
-                <a href="chat.php">
-                    <span class="icon">💬</span>
-                    Team Chat
-                </a>
-                <a href="projects.php">
-                    <span class="icon">📁</span>
-                    Projects
-                </a>
-                <?php endif; ?>
-                <?php if (hasRole('employee')): ?>
-                <a href="../employee/tasks.php">
-                    <span class="icon">✓</span>
-                    My Tasks
-                </a>
-                <?php endif; ?>
-            </nav>
-
-            <div class="sidebar-footer">
-                <div class="user-info">
-                    <div class="user-avatar">
-                        <?php echo strtoupper(substr($currentUser['full_name'], 0, 1)); ?>
-                    </div>
-                    <div class="user-details">
-                        <h4><?php echo e($currentUser['full_name']); ?></h4>
-                        <p><?php echo e($currentUser['job_title'] ?? 'User'); ?></p>
-                    </div>
-                </div>
-                <a href="../logout.php" class="btn btn-secondary btn-block btn-sm">Logout</a>
-            </div>
-        </aside>
+        <?php include '../includes/admin-sidebar.php'; ?>
 
         <!-- Main Content -->
         <main class="main-content">

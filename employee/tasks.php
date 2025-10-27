@@ -81,44 +81,7 @@ $activeTimeLog = getActiveTimeLog($currentUser['id']);
 <body>
     <div class="dashboard">
         <!-- Sidebar -->
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                <h2>Foxhole</h2>
-                <div class="user-role">Employee Panel</div>
-            </div>
-
-            <nav class="sidebar-nav">
-                <a href="index.php">
-                    <span class="icon">📊</span>
-                    Dashboard
-                </a>
-                <a href="tasks.php" class="active">
-                    <span class="icon">✓</span>
-                    My Tasks
-                </a>
-                <a href="time-logs.php">
-                    <span class="icon">⏱️</span>
-                    Time Logs
-                </a>
-                <a href="my-stats.php">
-                    <span class="icon">📈</span>
-                    My Statistics
-                </a>
-            </nav>
-
-            <div class="sidebar-footer">
-                <div class="user-info">
-                    <div class="user-avatar">
-                        <?php echo strtoupper(substr($currentUser['full_name'], 0, 1)); ?>
-                    </div>
-                    <div class="user-details">
-                        <h4><?php echo e($currentUser['full_name']); ?></h4>
-                        <p><?php echo e($currentUser['job_title'] ?? 'Employee'); ?></p>
-                    </div>
-                </div>
-                <a href="../logout.php" class="btn btn-secondary btn-block btn-sm">Logout</a>
-            </div>
-        </aside>
+        <?php include '../includes/employee-sidebar.php'; ?>
 
         <!-- Main Content -->
         <main class="main-content">
