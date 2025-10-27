@@ -13,7 +13,7 @@ if (!defined('EMAIL_FROM_NAME')) {
 }
 
 /**
- * Send an email using PHP mail() function
+ * Send an email using SMTP or PHP mail()
  *
  * @param string $to Recipient email address
  * @param string $subject Email subject
@@ -23,24 +23,156 @@ if (!defined('EMAIL_FROM_NAME')) {
  */
 function sendEmail($to, $subject, $htmlBody, $textBody = '') {
     try {
-        // Prepare headers
-        $headers = [];
-        $headers[] = 'MIME-Version: 1.0';
-        $headers[] = 'Content-type: text/html; charset=utf-8';
-        $headers[] = 'From: ' . EMAIL_FROM_NAME . ' <' . EMAIL_FROM . '>';
-        $headers[] = 'Reply-To: ' . EMAIL_FROM;
-        $headers[] = 'X-Mailer: PHP/' . phpversion();
-
-        // Send email
-        $success = mail($to, $subject, $htmlBody, implode("\r\n", $headers));
-
-        if (!$success) {
-            error_log("Failed to send email to {$to}: {$subject}");
+        // Load email configuration
+        $emailConfigFile = __DIR__ . '/../config/email-config.json';
+        $emailConfig = [];
+        if (file_exists($emailConfigFile)) {
+            $emailConfig = json_decode(file_get_contents($emailConfigFile), true) ?: [];
         }
 
-        return $success;
+        $useSmtp = $emailConfig['use_smtp'] ?? false;
+        $fromEmail = $emailConfig['from_email'] ?? (defined('EMAIL_FROM') ? EMAIL_FROM : 'noreply@' . ($_SERVER['HTTP_HOST'] ?? 'foxhole.com'));
+        $fromName = $emailConfig['from_name'] ?? (defined('EMAIL_FROM_NAME') ? EMAIL_FROM_NAME : SITE_NAME);
+
+        if ($useSmtp && !empty($emailConfig['smtp_host'])) {
+            // Use SMTP
+            return sendEmailSMTP($to, $subject, $htmlBody, $emailConfig, $fromEmail, $fromName);
+        } else {
+            // Use PHP mail()
+            $headers = [];
+            $headers[] = 'MIME-Version: 1.0';
+            $headers[] = 'Content-type: text/html; charset=utf-8';
+            $headers[] = 'From: ' . $fromName . ' <' . $fromEmail . '>';
+            $headers[] = 'Reply-To: ' . $fromEmail;
+            $headers[] = 'X-Mailer: PHP/' . phpversion();
+
+            $success = mail($to, $subject, $htmlBody, implode("\r\n", $headers));
+
+            if (!$success) {
+                error_log("Failed to send email to {$to}: {$subject}");
+            }
+
+            return $success;
+        }
     } catch (Exception $e) {
         error_log("Email error: " . $e->getMessage());
+        return false;
+    }
+}
+
+/**
+ * Send email using SMTP with fsockopen
+ *
+ * @param string $to Recipient email
+ * @param string $subject Subject
+ * @param string $htmlBody HTML body
+ * @param array $config SMTP configuration
+ * @param string $fromEmail From email
+ * @param string $fromName From name
+ * @return bool Success status
+ */
+function sendEmailSMTP($to, $subject, $htmlBody, $config, $fromEmail, $fromName) {
+    try {
+        $host = $config['smtp_host'];
+        $port = $config['smtp_port'] ?? 587;
+        $username = $config['smtp_username'];
+        $password = $config['smtp_password'];
+        $encryption = $config['smtp_encryption'] ?? 'tls';
+
+        // Create socket connection
+        $timeout = 30;
+        $errno = 0;
+        $errstr = '';
+
+        if ($encryption === 'ssl') {
+            $socket = @fsockopen('ssl://' . $host, $port, $errno, $errstr, $timeout);
+        } else {
+            $socket = @fsockopen($host, $port, $errno, $errstr, $timeout);
+        }
+
+        if (!$socket) {
+            error_log("SMTP connection failed: {$errstr} ({$errno})");
+            return false;
+        }
+
+        // Read server response
+        $response = fgets($socket, 515);
+        if (substr($response, 0, 3) != '220') {
+            error_log("SMTP error: {$response}");
+            fclose($socket);
+            return false;
+        }
+
+        // Say EHLO
+        fputs($socket, "EHLO {$_SERVER['HTTP_HOST']}\r\n");
+        $response = fgets($socket, 515);
+
+        // Start TLS if needed
+        if ($encryption === 'tls') {
+            fputs($socket, "STARTTLS\r\n");
+            $response = fgets($socket, 515);
+            if (substr($response, 0, 3) != '220') {
+                error_log("STARTTLS failed: {$response}");
+                fclose($socket);
+                return false;
+            }
+
+            // Enable crypto
+            stream_socket_enable_crypto($socket, true, STREAM_CRYPTO_METHOD_TLS_CLIENT);
+
+            // Say EHLO again after STARTTLS
+            fputs($socket, "EHLO {$_SERVER['HTTP_HOST']}\r\n");
+            $response = fgets($socket, 515);
+        }
+
+        // Authenticate
+        fputs($socket, "AUTH LOGIN\r\n");
+        $response = fgets($socket, 515);
+
+        fputs($socket, base64_encode($username) . "\r\n");
+        $response = fgets($socket, 515);
+
+        fputs($socket, base64_encode($password) . "\r\n");
+        $response = fgets($socket, 515);
+        if (substr($response, 0, 3) != '235') {
+            error_log("SMTP authentication failed: {$response}");
+            fclose($socket);
+            return false;
+        }
+
+        // Send MAIL FROM
+        fputs($socket, "MAIL FROM: <{$fromEmail}>\r\n");
+        $response = fgets($socket, 515);
+
+        // Send RCPT TO
+        fputs($socket, "RCPT TO: <{$to}>\r\n");
+        $response = fgets($socket, 515);
+
+        // Send DATA
+        fputs($socket, "DATA\r\n");
+        $response = fgets($socket, 515);
+
+        // Build message
+        $message = "From: {$fromName} <{$fromEmail}>\r\n";
+        $message .= "To: {$to}\r\n";
+        $message .= "Subject: {$subject}\r\n";
+        $message .= "MIME-Version: 1.0\r\n";
+        $message .= "Content-Type: text/html; charset=utf-8\r\n";
+        $message .= "\r\n";
+        $message .= $htmlBody;
+        $message .= "\r\n.\r\n";
+
+        // Send message
+        fputs($socket, $message);
+        $response = fgets($socket, 515);
+
+        // Quit
+        fputs($socket, "QUIT\r\n");
+        fclose($socket);
+
+        return true;
+    } catch (Exception $e) {
+        error_log("SMTP error: " . $e->getMessage());
         return false;
     }
 }
