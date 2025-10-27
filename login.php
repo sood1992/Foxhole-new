@@ -161,27 +161,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         .logo {
-            width: 180px;
+            width: 200px;
             height: auto;
-            margin: 0 auto 24px;
+            margin: 0 auto;
             display: block;
             filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.1));
-        }
-
-        .login-header h1 {
-            font-size: 32px;
-            font-weight: 900;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 8px;
-        }
-
-        .login-header p {
-            color: #64748b;
-            font-size: 15px;
-            font-weight: 500;
         }
 
         .alert {
@@ -328,12 +312,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 padding: 32px 24px;
             }
 
-            .login-header h1 {
-                font-size: 28px;
-            }
-
             .logo {
-                width: 140px;
+                width: 160px;
             }
         }
     </style>
@@ -343,7 +323,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="login-box">
             <div class="login-header">
                 <img src="assets/images/neofox.png" alt="<?php echo SITE_NAME; ?>" class="logo">
-                <h1><?php echo SITE_NAME; ?></h1>
             </div>
 
             <?php if ($error): ?>
