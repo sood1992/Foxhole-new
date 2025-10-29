@@ -243,7 +243,7 @@ a:hover {
 }
 
 .main-menu-item.active {
-  background: var(--primary);
+  background: linear-gradient(135deg, #145388 0%, #1990ff 100%);
   color: #ffffff;
   box-shadow: inset 3px 0 0 #1990ff;
 }
@@ -967,7 +967,7 @@ select.form-control {
 }
 
 .data-table th {
-  padding: 12px 20px;
+  padding: 16px 20px;
   text-align: left;
   font-size: 11px;
   font-weight: 600;

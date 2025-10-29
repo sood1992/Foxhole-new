@@ -36,6 +36,14 @@ $current_page = basename($_SERVER['PHP_SELF']);
                data-menu="reports" title="Reports">
                 <i class="fas fa-chart-bar"></i>
             </a>
+            <a href="../manager/calendar.php" class="main-menu-item <?php echo ($current_page == 'calendar.php') ? 'active' : ''; ?>"
+               data-menu="calendar" title="Calendar">
+                <i class="fas fa-calendar"></i>
+            </a>
+            <a href="../manager/chat.php" class="main-menu-item <?php echo ($current_page == 'chat.php') ? 'active' : ''; ?>"
+               data-menu="chat" title="Chat">
+                <i class="fas fa-comments"></i>
+            </a>
         </div>
     </div>
 
@@ -117,6 +125,37 @@ $current_page = basename($_SERVER['PHP_SELF']);
             </a>
             <a href="../manager/reports.php?type=team" class="menu-item">
                 <i class="fas fa-users"></i> Team Reports
+            </a>
+        </div>
+
+        <!-- Calendar Section -->
+        <div class="menu-section" data-menu="calendar">
+            <div class="menu-title">Calendar</div>
+            <a href="../manager/calendar.php" class="menu-item <?php echo ($current_page == 'calendar.php') ? 'active' : ''; ?>">
+                <i class="fas fa-calendar-alt"></i> View Calendar
+            </a>
+            <a href="../manager/calendar.php?view=day" class="menu-item">
+                <i class="fas fa-calendar-day"></i> Day View
+            </a>
+            <a href="../manager/calendar.php?view=week" class="menu-item">
+                <i class="fas fa-calendar-week"></i> Week View
+            </a>
+            <a href="../manager/calendar.php?view=month" class="menu-item">
+                <i class="fas fa-calendar"></i> Month View
+            </a>
+        </div>
+
+        <!-- Chat Section -->
+        <div class="menu-section" data-menu="chat">
+            <div class="menu-title">Chat & Messages</div>
+            <a href="../manager/chat.php" class="menu-item <?php echo ($current_page == 'chat.php') ? 'active' : ''; ?>">
+                <i class="fas fa-comments"></i> All Messages
+            </a>
+            <a href="../manager/chat.php?type=direct" class="menu-item">
+                <i class="fas fa-comment"></i> Direct Messages
+            </a>
+            <a href="../manager/chat.php?type=group" class="menu-item">
+                <i class="fas fa-users"></i> Group Chats
             </a>
             <a href="../logout.php" class="menu-item" style="margin-top: 20px; color: var(--danger);">
                 <i class="fas fa-sign-out-alt"></i> Logout

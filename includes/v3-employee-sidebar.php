@@ -32,6 +32,14 @@ $current_page = basename($_SERVER['PHP_SELF']);
                data-menu="stats" title="My Stats">
                 <i class="fas fa-chart-bar"></i>
             </a>
+            <a href="../employee/calendar.php" class="main-menu-item <?php echo ($current_page == 'calendar.php') ? 'active' : ''; ?>"
+               data-menu="calendar" title="Calendar">
+                <i class="fas fa-calendar"></i>
+            </a>
+            <a href="../employee/chat.php" class="main-menu-item <?php echo ($current_page == 'chat.php') ? 'active' : ''; ?>"
+               data-menu="chat" title="Team Chat">
+                <i class="fas fa-comments"></i>
+            </a>
         </div>
     </div>
 
@@ -105,6 +113,31 @@ $current_page = basename($_SERVER['PHP_SELF']);
             </a>
             <a href="../employee/my-stats.php#leaderboard" class="menu-item">
                 <i class="fas fa-crown"></i> Leaderboard
+            </a>
+        </div>
+
+        <!-- Calendar Section -->
+        <div class="menu-section" data-menu="calendar">
+            <div class="menu-title">Calendar</div>
+            <a href="../employee/calendar.php" class="menu-item <?php echo ($current_page == 'calendar.php') ? 'active' : ''; ?>">
+                <i class="fas fa-calendar-alt"></i> My Calendar
+            </a>
+            <a href="../employee/calendar.php#today" class="menu-item">
+                <i class="fas fa-calendar-day"></i> Today
+            </a>
+            <a href="../employee/calendar.php#week" class="menu-item">
+                <i class="fas fa-calendar-week"></i> This Week
+            </a>
+        </div>
+
+        <!-- Chat Section -->
+        <div class="menu-section" data-menu="chat">
+            <div class="menu-title">Team Chat</div>
+            <a href="../employee/chat.php" class="menu-item <?php echo ($current_page == 'chat.php') ? 'active' : ''; ?>">
+                <i class="fas fa-comments"></i> Team Chat
+            </a>
+            <a href="../employee/chat.php#general" class="menu-item">
+                <i class="fas fa-users"></i> General
             </a>
             <a href="../logout.php" class="menu-item" style="margin-top: 20px; color: var(--danger);">
                 <i class="fas fa-sign-out-alt"></i> Logout
