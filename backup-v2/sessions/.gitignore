@@ -1,0 +1,5 @@
+# This directory is used for PHP sessions
+# Created automatically by the application
+# Keep this directory writable (permissions 755)
+
+*.sess
