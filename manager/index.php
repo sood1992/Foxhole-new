@@ -56,6 +56,7 @@ $myProjects = $db->prepare("
         FIELD(p.status, 'in_progress', 'review', 'planning', 'on_hold', 'completed'),
         p.priority DESC,
         p.due_date ASC
+    LIMIT 5
 ");
 $myProjects->execute([$currentUser['id']]);
 $projectsData = $myProjects->fetchAll();
@@ -66,8 +67,7 @@ $teamActivity = $db->prepare("
         u.id, u.full_name, u.job_title,
         COUNT(DISTINCT t.id) as active_tasks,
         COUNT(DISTINCT CASE WHEN t.status = 'completed' AND DATE(t.completed_date) = CURDATE() THEN t.id END) as completed_today,
-        (SELECT SUM(duration_minutes) FROM time_logs WHERE user_id = u.id AND DATE(start_time) = CURDATE()) as today_minutes,
-        (SELECT task_name FROM tasks WHERE id = (SELECT task_id FROM time_logs WHERE user_id = u.id AND is_active = 1 LIMIT 1)) as current_task
+        (SELECT SUM(duration_minutes) FROM time_logs WHERE user_id = u.id AND DATE(start_time) = CURDATE()) as today_minutes
     FROM users u
     LEFT JOIN tasks t ON u.id = t.assigned_to
     LEFT JOIN projects p ON t.project_id = p.id
@@ -79,118 +79,88 @@ $teamActivity = $db->prepare("
 ");
 $teamActivity->execute([$currentUser['id']]);
 $teamData = $teamActivity->fetchAll();
-
-// Get recent updates/comments
-$recentUpdates = $db->prepare("
-    SELECT
-        'project' as type,
-        pc.id,
-        pc.comment,
-        pc.created_at,
-        u.full_name,
-        p.project_name as reference
-    FROM project_comments pc
-    JOIN users u ON pc.user_id = u.id
-    JOIN projects p ON pc.project_id = p.id
-    WHERE p.assigned_manager = ?
-    UNION ALL
-    SELECT
-        'task' as type,
-        tc.id,
-        tc.comment,
-        tc.created_at,
-        u.full_name,
-        t.task_name as reference
-    FROM task_comments tc
-    JOIN users u ON tc.user_id = u.id
-    JOIN tasks t ON tc.task_id = t.id
-    JOIN projects p ON t.project_id = p.id
-    WHERE p.assigned_manager = ?
-    ORDER BY created_at DESC
-    LIMIT 10
-");
-$recentUpdates->execute([$currentUser['id'], $currentUser['id']]);
-$updatesData = $recentUpdates->fetchAll();
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manager Dashboard - <?php echo SITE_NAME; ?></title>
-    <link rel="stylesheet" href="../assets/css/ultra-premium.css">
+    <title>Manager Dashboard - <?php echo SITE_NAME; ?> V3</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../assets/css/vien-v3.css">
 </head>
 <body>
-    <div class="dashboard">
-        <?php include '../includes/manager-sidebar.php'; ?>
+    <div class="app-container">
+        <?php include '../includes/v3-manager-sidebar.php'; ?>
 
-        <!-- Main Content -->
-        <main class="main-content">
-            <div class="topbar">
-                <h1>Project Manager Dashboard</h1>
-                <div class="topbar-actions">
-                    <?php include '../includes/global-search-assets.php'; ?>
-                    <?php include '../includes/notifications-dropdown.php'; ?>
+        <div class="main-content">
+            <?php include '../includes/v3-header.php'; ?>
+
+            <div class="content-wrapper">
+                <!-- Page Title -->
+                <div style="margin-bottom: 30px;">
+                    <h1 style="margin-bottom: 8px;">Project Manager Dashboard</h1>
+                    <p style="color: var(--text-secondary); font-size: 14px; margin: 0;">
+                        Overview of your projects and team activity
+                    </p>
                 </div>
-            </div>
 
-            <div class="content">
                 <!-- Stats Grid -->
-                <div class="stats-grid">
-                    <div class="stat-card blue">
-                        <div class="stat-card-header">
-                            <div>
-                                <div class="stat-label">My Projects</div>
-                                <div class="stat-value"><?php echo $stats['my_projects']; ?></div>
-                                <div class="stat-change">Active</div>
+                <div class="row" style="margin-bottom: 30px;">
+                    <div class="col-lg-3 col-md-6">
+                        <div class="dashboard-card">
+                            <div class="card-icon primary">
+                                <i class="fas fa-folder"></i>
                             </div>
-                            <div class="stat-icon">📁</div>
+                            <div class="card-value"><?php echo $stats['my_projects']; ?></div>
+                            <div class="card-label">My Projects</div>
                         </div>
                     </div>
-
-                    <div class="stat-card orange">
-                        <div class="stat-card-header">
-                            <div>
-                                <div class="stat-label">Active Tasks</div>
-                                <div class="stat-value"><?php echo $stats['active_tasks']; ?></div>
-                                <div class="stat-change">In Progress</div>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="dashboard-card">
+                            <div class="card-icon warning">
+                                <i class="fas fa-tasks"></i>
                             </div>
-                            <div class="stat-icon">📋</div>
+                            <div class="card-value"><?php echo $stats['active_tasks']; ?></div>
+                            <div class="card-label">Active Tasks</div>
                         </div>
                     </div>
-
-                    <div class="stat-card green">
-                        <div class="stat-card-header">
-                            <div>
-                                <div class="stat-label">Completed</div>
-                                <div class="stat-value"><?php echo $stats['completed_week']; ?></div>
-                                <div class="stat-change">This Week</div>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="dashboard-card">
+                            <div class="card-icon success">
+                                <i class="fas fa-check-circle"></i>
                             </div>
-                            <div class="stat-icon">✅</div>
+                            <div class="card-value"><?php echo $stats['completed_week']; ?></div>
+                            <div class="card-label">Completed This Week</div>
                         </div>
                     </div>
-
-                    <div class="stat-card blue">
-                        <div class="stat-card-header">
-                            <div>
-                                <div class="stat-label">Team Members</div>
-                                <div class="stat-value"><?php echo $stats['team_members']; ?></div>
-                                <div class="stat-change">Working</div>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="dashboard-card">
+                            <div class="card-icon info">
+                                <i class="fas fa-users"></i>
                             </div>
-                            <div class="stat-icon">👥</div>
+                            <div class="card-value"><?php echo $stats['team_members']; ?></div>
+                            <div class="card-label">Team Members</div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Team Activity Today -->
-                <div class="card">
+                <div class="card" style="margin-bottom: 30px;">
                     <div class="card-header">
-                        <h3>Team Activity Today</h3>
-                        <a href="team.php" class="btn btn-secondary btn-sm">View All</a>
+                        <div>
+                            <h3 style="margin: 0;">Team Activity Today</h3>
+                            <p style="font-size: 13px; color: var(--text-secondary); margin: 4px 0 0 0;">
+                                Real-time overview of your team's productivity
+                            </p>
+                        </div>
+                        <a href="team.php" class="btn btn-outline btn-sm">
+                            <i class="fas fa-eye"></i> View All
+                        </a>
                     </div>
-                    <div class="card-body">
-                        <div class="table-container">
-                            <table>
+                    <div class="card-body" style="padding: 0;">
+                        <div class="data-table-container" style="border: none; box-shadow: none;">
+                            <table class="data-table">
                                 <thead>
                                     <tr>
                                         <th>Team Member</th>
@@ -198,39 +168,31 @@ $updatesData = $recentUpdates->fetchAll();
                                         <th>Active Tasks</th>
                                         <th>Completed Today</th>
                                         <th>Hours Today</th>
-                                        <th>Current Activity</th>
                                         <th>Status</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <?php foreach ($teamData as $member): ?>
                                     <tr>
-                                        <td><strong><?php echo e($member['full_name']); ?></strong></td>
+                                        <td><strong style="color: var(--heading-color);"><?php echo e($member['full_name']); ?></strong></td>
                                         <td><?php echo e($member['job_title'] ?? 'N/A'); ?></td>
-                                        <td><?php echo $member['active_tasks']; ?></td>
+                                        <td><strong><?php echo $member['active_tasks']; ?></strong></td>
                                         <td>
                                             <?php if ($member['completed_today'] > 0): ?>
-                                                <span class="badge status-completed"><?php echo $member['completed_today']; ?></span>
+                                                <span class="badge badge-success"><?php echo $member['completed_today']; ?></span>
                                             <?php else: ?>
-                                                0
+                                                <span style="color: var(--text-tertiary);">0</span>
                                             <?php endif; ?>
                                         </td>
-                                        <td><?php echo formatHours($member['today_minutes'] ?? 0); ?>h</td>
-                                        <td>
-                                            <?php if ($member['current_task']): ?>
-                                                <span class="badge status-progress">⏱️ <?php echo e($member['current_task']); ?></span>
-                                            <?php else: ?>
-                                                <span style="color: var(--text-secondary);">Idle</span>
-                                            <?php endif; ?>
-                                        </td>
+                                        <td><strong style="color: var(--primary);"><?php echo formatHours($member['today_minutes'] ?? 0); ?>h</strong></td>
                                         <td>
                                             <?php
-                                            if ($member['current_task']) {
-                                                echo '<span class="badge status-progress">Working</span>';
+                                            if (($member['today_minutes'] ?? 0) > 240) {
+                                                echo '<span class="badge badge-success">Very Active</span>';
                                             } elseif (($member['today_minutes'] ?? 0) > 0) {
-                                                echo '<span class="badge status-completed">Active</span>';
+                                                echo '<span class="badge badge-primary">Active</span>';
                                             } else {
-                                                echo '<span class="badge status-todo">No Activity</span>';
+                                                echo '<span class="badge badge-info">No Activity</span>';
                                             }
                                             ?>
                                         </td>
@@ -245,112 +207,111 @@ $updatesData = $recentUpdates->fetchAll();
                 <!-- My Projects -->
                 <div class="card">
                     <div class="card-header">
-                        <h3>My Projects</h3>
-                        <a href="projects.php?action=new" class="btn btn-primary btn-sm">+ New Project</a>
+                        <div>
+                            <h3 style="margin: 0;">My Projects</h3>
+                            <p style="font-size: 13px; color: var(--text-secondary); margin: 4px 0 0 0;">
+                                Projects you're currently managing
+                            </p>
+                        </div>
+                        <a href="projects.php" class="btn btn-primary btn-sm">
+                            <i class="fas fa-plus"></i> New Project
+                        </a>
                     </div>
                     <div class="card-body">
-                        <div class="task-list">
-                            <?php foreach ($projectsData as $project): ?>
-                            <?php
-                                $completion = getProjectCompletionRate($project['id']);
-                                $totalHours = formatHours($project['total_minutes'] ?? 0);
-                            ?>
-                            <div class="task-item <?php echo isOverdue($project['due_date'], $project['status']) ? 'overdue' : ''; ?>">
-                                <div class="task-item-header">
-                                    <div>
-                                        <div class="task-item-title"><?php echo e($project['project_name']); ?></div>
-                                        <div class="task-item-meta">
-                                            <span>📁 <?php echo e($project['client_name'] ?? 'Internal'); ?></span>
-                                            <span class="badge <?php echo getStatusClass($project['status']); ?>">
-                                                <?php echo ucfirst(str_replace('_', ' ', $project['status'])); ?>
-                                            </span>
-                                            <span class="badge <?php echo getPriorityClass($project['priority']); ?>">
-                                                <?php echo ucfirst($project['priority']); ?>
-                                            </span>
+                        <?php if (empty($projectsData)): ?>
+                            <div style="text-align: center; padding: 60px 20px;">
+                                <i class="fas fa-folder-open" style="font-size: 48px; color: var(--text-tertiary); margin-bottom: 16px;"></i>
+                                <h3 style="color: var(--heading-color); margin-bottom: 8px;">No Projects Assigned</h3>
+                                <p style="color: var(--text-secondary); margin: 0;">Contact admin to get projects assigned to you.</p>
+                            </div>
+                        <?php else: ?>
+                            <div style="display: grid; gap: 20px;">
+                                <?php foreach ($projectsData as $project): ?>
+                                <?php
+                                    $completion = $project['task_count'] > 0 ? round(($project['completed_tasks'] / $project['task_count']) * 100) : 0;
+                                    $isOverdue = isOverdue($project['due_date'], $project['status']);
+                                ?>
+                                <div style="padding: 20px; border: 2px solid var(--border-light); border-radius: var(--radius-md); transition: border-color 200ms ease;">
+                                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 16px;">
+                                        <div>
+                                            <h4 style="margin: 0 0 8px 0; color: var(--heading-color);"><?php echo e($project['project_name']); ?></h4>
+                                            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                                                <span style="color: var(--text-secondary); font-size: 13px;">
+                                                    <i class="fas fa-building"></i> <?php echo e($project['client_name'] ?? 'Internal'); ?>
+                                                </span>
+                                                <?php
+                                                $statusClass = 'badge-info';
+                                                if ($project['status'] === 'completed') $statusClass = 'badge-success';
+                                                elseif ($project['status'] === 'in_progress') $statusClass = 'badge-primary';
+                                                elseif ($project['status'] === 'on_hold') $statusClass = 'badge-warning';
+                                                ?>
+                                                <span class="badge <?php echo $statusClass; ?>">
+                                                    <?php echo ucfirst(str_replace('_', ' ', $project['status'])); ?>
+                                                </span>
+                                                <?php
+                                                $priorityClass = 'badge-info';
+                                                if ($project['priority'] === 'urgent') $priorityClass = 'badge-danger';
+                                                elseif ($project['priority'] === 'high') $priorityClass = 'badge-warning';
+                                                ?>
+                                                <span class="badge <?php echo $priorityClass; ?>">
+                                                    <?php echo ucfirst($project['priority']); ?>
+                                                </span>
+                                            </div>
                                         </div>
+                                        <a href="projects.php?id=<?php echo $project['id']; ?>" class="btn btn-outline btn-sm">
+                                            <i class="fas fa-eye"></i> View
+                                        </a>
                                     </div>
-                                    <div class="task-item-actions">
-                                        <a href="projects.php?id=<?php echo $project['id']; ?>" class="btn btn-secondary btn-sm">View</a>
-                                    </div>
-                                </div>
-                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px; margin-top: 16px;">
-                                    <div>
-                                        <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">Progress</div>
-                                        <div class="progress-bar-container">
-                                            <div class="progress-bar <?php echo $completion == 100 ? 'complete' : ($completion > 50 ? 'high' : 'medium'); ?>"
-                                                 style="width: <?php echo $completion; ?>%"></div>
+                                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px;">
+                                        <div>
+                                            <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">Progress</div>
+                                            <div style="display: flex; align-items: center; gap: 8px;">
+                                                <div style="flex: 1; height: 6px; background: var(--border-light); border-radius: 3px; overflow: hidden;">
+                                                    <div style="width: <?php echo $completion; ?>%; height: 100%;
+                                                                background: linear-gradient(90deg, #17b06b 0%, #14d48f 100%); transition: width 300ms ease;"></div>
+                                                </div>
+                                                <span style="font-size: 13px; font-weight: 600;"><?php echo $completion; ?>%</span>
+                                            </div>
+                                            <div style="font-size: 11px; color: var(--text-secondary); margin-top: 4px;">
+                                                <?php echo $project['completed_tasks']; ?>/<?php echo $project['task_count']; ?> tasks
+                                            </div>
                                         </div>
-                                        <div style="font-size: 13px; margin-top: 4px;"><?php echo $completion; ?>% (<?php echo $project['completed_tasks']; ?>/<?php echo $project['task_count']; ?>)</div>
-                                    </div>
-                                    <div>
-                                        <div style="font-size: 12px; color: var(--text-secondary);">Total Hours</div>
-                                        <div style="font-size: 20px; font-weight: 600;"><?php echo $totalHours; ?>h</div>
-                                    </div>
-                                    <div>
-                                        <div style="font-size: 12px; color: var(--text-secondary);">Due Date</div>
-                                        <div style="font-size: 14px; font-weight: 500;">
-                                            <?php
-                                            if ($project['due_date']) {
-                                                echo date('M d, Y', strtotime($project['due_date']));
-                                                if (isOverdue($project['due_date'], $project['status'])) {
-                                                    echo ' <span style="color: var(--status-blocked);">⚠️</span>';
+                                        <div>
+                                            <div style="font-size: 12px; color: var(--text-secondary);">Total Hours</div>
+                                            <div style="font-size: 20px; font-weight: 600; color: var(--primary);">
+                                                <?php echo formatHours($project['total_minutes'] ?? 0); ?>h
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <div style="font-size: 12px; color: var(--text-secondary);">Due Date</div>
+                                            <div style="font-size: 14px; font-weight: 500; <?php echo $isOverdue ? 'color: var(--danger);' : ''; ?>">
+                                                <?php
+                                                if ($project['due_date']) {
+                                                    echo date('M d, Y', strtotime($project['due_date']));
+                                                    if ($isOverdue) {
+                                                        echo ' <i class="fas fa-exclamation-triangle"></i>';
+                                                    }
+                                                } else {
+                                                    echo '<span style="color: var(--text-tertiary);">No deadline</span>';
                                                 }
-                                            } else {
-                                                echo 'No deadline';
-                                            }
-                                            ?>
+                                                ?>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
+                                <?php endforeach; ?>
                             </div>
-                            <?php endforeach; ?>
-
-                            <?php if (empty($projectsData)): ?>
-                                <div style="text-align: center; padding: 40px; color: var(--text-secondary);">
-                                    <div style="font-size: 48px; margin-bottom: 16px;">📁</div>
-                                    <h3>No Projects Assigned</h3>
-                                    <p>Contact admin to get projects assigned to you.</p>
-                                </div>
-                            <?php endif; ?>
-                        </div>
+                            <div style="margin-top: 20px; text-align: center;">
+                                <a href="projects.php" class="btn btn-outline">
+                                    View All Projects
+                                </a>
+                            </div>
+                        <?php endif; ?>
                     </div>
                 </div>
 
-                <!-- Recent Updates -->
-                <div class="card">
-                    <div class="card-header">
-                        <h3>Recent Updates & Comments</h3>
-                    </div>
-                    <div class="card-body">
-                        <div class="comments-section">
-                            <?php foreach ($updatesData as $update): ?>
-                            <div class="comment">
-                                <div class="comment-header">
-                                    <div>
-                                        <span class="comment-author"><?php echo e($update['full_name']); ?></span>
-                                        <span style="color: var(--text-secondary); font-size: 13px; margin-left: 8px;">
-                                            on <?php echo e($update['reference']); ?>
-                                        </span>
-                                    </div>
-                                    <span class="comment-time"><?php echo timeAgo($update['created_at']); ?></span>
-                                </div>
-                                <div class="comment-body">
-                                    <?php echo nl2br(e($update['comment'])); ?>
-                                </div>
-                            </div>
-                            <?php endforeach; ?>
-
-                            <?php if (empty($updatesData)): ?>
-                                <div style="text-align: center; padding: 20px; color: var(--text-secondary);">
-                                    No recent updates
-                                </div>
-                            <?php endif; ?>
-                        </div>
-                    </div>
-                </div>
             </div>
-        </main>
+        </div>
     </div>
-    <script src="../assets/js/theme.js"></script>
 </body>
 </html>
