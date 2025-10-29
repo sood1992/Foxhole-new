@@ -14,8 +14,9 @@ $currentUser = getCurrentUser();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calendar - <?php echo SITE_NAME; ?></title>
-    <link rel="stylesheet" href="../assets/css/ultra-premium.css">
+    <title>Calendar V3 - <?php echo SITE_NAME; ?></title>
+    <link rel="stylesheet" href="../assets/css/vien-v3.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.css">
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js"></script>
     <style>
@@ -135,20 +136,17 @@ $currentUser = getCurrentUser();
     </style>
 </head>
 <body>
-    <div class="dashboard">
-        <!-- Sidebar -->
-        <?php include '../includes/admin-sidebar.php'; ?>
+    <div class="app-container">
+        <?php include '../includes/v3-admin-sidebar.php'; ?>
 
-        <!-- Main Content -->
-        <main class="main-content">
-            <div class="topbar">
-                <h1>📅 Calendar</h1>
-                <div class="topbar-actions">
-                    <?php include '../includes/notifications-dropdown.php'; ?>
+        <div class="main-content">
+            <?php include '../includes/v3-header.php'; ?>
+
+            <div class="content-wrapper">
+                <div class="page-header">
+                    <h1><i class="fas fa-calendar-alt"></i> Calendar</h1>
                 </div>
-            </div>
 
-            <div class="content">
                 <div class="calendar-legend">
                     <div class="legend-item">
                         <div class="legend-color" style="background: #3b82f6;"></div>
@@ -176,7 +174,7 @@ $currentUser = getCurrentUser();
                     <div id="calendar"></div>
                 </div>
             </div>
-        </main>
+        </div>
     </div>
 
     <!-- Event Detail Modal -->
@@ -289,7 +287,7 @@ $currentUser = getCurrentUser();
                     <div class="detail-row">
                         <div class="detail-label">Status</div>
                         <div class="detail-value">
-                            ${props.completed ? '✅ Completed' : '⏳ Pending'}
+                            ${props.completed ? '<i class="fas fa-check-circle"></i> Completed' : '<i class="fas fa-clock"></i> Pending'}
                         </div>
                     </div>
                 `;

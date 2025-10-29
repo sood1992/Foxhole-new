@@ -86,27 +86,20 @@ $weekSummaryData = $weekSummary->fetchAll();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Dashboard - <?php echo SITE_NAME; ?></title>
-    <link rel="stylesheet" href="../assets/css/ultra-premium.css">
+    <title>My Dashboard V3 - <?php echo SITE_NAME; ?></title>
+    <link rel="stylesheet" href="../assets/css/vien-v3.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <div class="dashboard">
+    <div class="app-container">
         <!-- Sidebar -->
-        <?php include '../includes/employee-sidebar.php'; ?>
+        <?php include '../includes/v3-employee-sidebar.php'; ?>
 
         <!-- Main Content -->
-        <main class="main-content">
-            <div class="topbar">
-                <h1>My Dashboard</h1>
-                <div class="topbar-actions">
-                    <?php include '../includes/notifications-dropdown.php'; ?>
-                    <span style="color: var(--text-secondary); font-size: 14px; margin-left: 12px;">
-                        <?php echo date('l, F j, Y'); ?>
-                    </span>
-                </div>
-            </div>
+        <div class="main-content">
+            <?php include '../includes/v3-header.php'; ?>
 
-            <div class="content">
+            <div class="content-wrapper">
                 <!-- Active Time Tracker -->
                 <?php if ($activeTimeLog): ?>
                 <?php
@@ -141,53 +134,53 @@ $weekSummaryData = $weekSummary->fetchAll();
 
                 <!-- Stats Grid -->
                 <div class="stats-grid">
-                    <div class="stat-card blue">
-                        <div class="stat-card-header">
-                            <div>
-                                <div class="stat-label">My Tasks</div>
-                                <div class="stat-value"><?php echo $stats['my_tasks']; ?></div>
-                                <div class="stat-change">Active</div>
-                            </div>
-                            <div class="stat-icon">📋</div>
+                    <div class="dashboard-card">
+                        <div class="card-icon gradient-blue">
+                            <i class="fas fa-tasks"></i>
+                        </div>
+                        <div class="card-content">
+                            <div class="card-label">My Tasks</div>
+                            <div class="card-value"><?php echo $stats['my_tasks']; ?></div>
+                            <div class="card-change">Active</div>
                         </div>
                     </div>
 
-                    <div class="stat-card green">
-                        <div class="stat-card-header">
-                            <div>
-                                <div class="stat-label">Completed</div>
-                                <div class="stat-value"><?php echo $stats['completed_week']; ?></div>
-                                <div class="stat-change">This Week</div>
-                            </div>
-                            <div class="stat-icon">✅</div>
+                    <div class="dashboard-card">
+                        <div class="card-icon gradient-green">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="card-content">
+                            <div class="card-label">Completed</div>
+                            <div class="card-value"><?php echo $stats['completed_week']; ?></div>
+                            <div class="card-change">This Week</div>
                         </div>
                     </div>
 
-                    <div class="stat-card orange">
-                        <div class="stat-card-header">
-                            <div>
-                                <div class="stat-label">Hours Logged</div>
-                                <div class="stat-value"><?php echo $stats['hours_week']; ?></div>
-                                <div class="stat-change">This Week</div>
-                            </div>
-                            <div class="stat-icon">⏱️</div>
+                    <div class="dashboard-card">
+                        <div class="card-icon gradient-orange">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="card-content">
+                            <div class="card-label">Hours Logged</div>
+                            <div class="card-value"><?php echo $stats['hours_week']; ?></div>
+                            <div class="card-change">This Week</div>
                         </div>
                     </div>
 
-                    <div class="stat-card blue">
-                        <div class="stat-card-header">
-                            <div>
-                                <div class="stat-label">Projects</div>
-                                <div class="stat-value"><?php echo $stats['projects']; ?></div>
-                                <div class="stat-change">Involved</div>
-                            </div>
-                            <div class="stat-icon">📁</div>
+                    <div class="dashboard-card">
+                        <div class="card-icon gradient-purple">
+                            <i class="fas fa-folder"></i>
+                        </div>
+                        <div class="card-content">
+                            <div class="card-label">Projects</div>
+                            <div class="card-value"><?php echo $stats['projects']; ?></div>
+                            <div class="card-change">Involved</div>
                         </div>
                     </div>
                 </div>
 
                 <!-- My Tasks -->
-                <div class="card">
+                <div class="dashboard-card">
                     <div class="card-header">
                         <h3>My Tasks</h3>
                     </div>
@@ -273,7 +266,7 @@ $weekSummaryData = $weekSummary->fetchAll();
                 </div>
 
                 <!-- Today's Time Logs -->
-                <div class="card">
+                <div class="dashboard-card">
                     <div class="card-header">
                         <h3>Today's Time Logs</h3>
                         <span style="color: var(--text-secondary); font-size: 14px;">
@@ -290,7 +283,7 @@ $weekSummaryData = $weekSummary->fetchAll();
                     </div>
                     <div class="card-body">
                         <div class="table-container">
-                            <table>
+                            <table class="data-table">
                                 <thead>
                                     <tr>
                                         <th>Project</th>
@@ -344,13 +337,13 @@ $weekSummaryData = $weekSummary->fetchAll();
                 </div>
 
                 <!-- This Week's Summary -->
-                <div class="card">
+                <div class="dashboard-card">
                     <div class="card-header">
                         <h3>This Week's Summary by Project</h3>
                     </div>
                     <div class="card-body">
                         <div class="table-container">
-                            <table>
+                            <table class="data-table">
                                 <thead>
                                     <tr>
                                         <th>Project</th>
@@ -391,7 +384,7 @@ $weekSummaryData = $weekSummary->fetchAll();
                     </div>
                 </div>
             </div>
-        </main>
+        </div>
     </div>
 
     <script>

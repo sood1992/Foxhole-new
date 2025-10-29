@@ -60,27 +60,23 @@ $projectData = $projectSummary->fetchAll();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Time Logs - <?php echo SITE_NAME; ?></title>
-    <link rel="stylesheet" href="../assets/css/ultra-premium.css">
+    <title>My Time Logs V3 - <?php echo SITE_NAME; ?></title>
+    <link rel="stylesheet" href="../assets/css/vien-v3.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <?php include '../includes/quick-actions-assets.php'; ?>
 </head>
 <body>
-    <div class="dashboard">
+    <div class="app-container">
         <!-- Sidebar -->
-        <?php include '../includes/employee-sidebar.php'; ?>
+        <?php include '../includes/v3-employee-sidebar.php'; ?>
 
         <!-- Main Content -->
-        <main class="main-content">
-            <div class="topbar">
-                <h1>⏱️ My Time Logs</h1>
-                <div class="topbar-actions">
-                    <?php include '../includes/notifications-dropdown.php'; ?>
-                </div>
-            </div>
+        <div class="main-content">
+            <?php include '../includes/v3-header.php'; ?>
 
-            <div class="content">
+            <div class="content-wrapper">
                 <!-- Filter Form -->
-                <div class="card" style="margin-bottom: 24px;">
+                <div class="dashboard-card" style="margin-bottom: 24px;">
                     <div class="card-body">
                         <form method="GET" style="display: flex; gap: 16px; align-items: end;">
                             <div class="form-group" style="margin-bottom: 0; flex: 1;">
@@ -98,46 +94,46 @@ $projectData = $projectSummary->fetchAll();
 
                 <!-- Summary Stats -->
                 <div class="stats-grid">
-                    <div class="stat-card blue">
-                        <div class="stat-card-header">
-                            <div>
-                                <div class="stat-label">Total Hours</div>
-                                <div class="stat-value"><?php echo formatHours($totalMinutes); ?></div>
-                                <div class="stat-change">In selected period</div>
-                            </div>
-                            <div class="stat-icon">⏰</div>
+                    <div class="dashboard-card">
+                        <div class="card-icon gradient-blue">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="card-content">
+                            <div class="card-label">Total Hours</div>
+                            <div class="card-value"><?php echo formatHours($totalMinutes); ?></div>
+                            <div class="card-change">In selected period</div>
                         </div>
                     </div>
 
-                    <div class="stat-card green">
-                        <div class="stat-card-header">
-                            <div>
-                                <div class="stat-label">Sessions</div>
-                                <div class="stat-value"><?php echo $totalSessions; ?></div>
-                                <div class="stat-change">Total work sessions</div>
-                            </div>
-                            <div class="stat-icon">📝</div>
+                    <div class="dashboard-card">
+                        <div class="card-icon gradient-green">
+                            <i class="fas fa-list"></i>
+                        </div>
+                        <div class="card-content">
+                            <div class="card-label">Sessions</div>
+                            <div class="card-value"><?php echo $totalSessions; ?></div>
+                            <div class="card-change">Total work sessions</div>
                         </div>
                     </div>
 
-                    <div class="stat-card orange">
-                        <div class="stat-card-header">
-                            <div>
-                                <div class="stat-label">Avg Session</div>
-                                <div class="stat-value">
-                                    <?php echo $totalSessions > 0 ? formatHours($totalMinutes / $totalSessions) : '0.00'; ?>
-                                </div>
-                                <div class="stat-change">Hours per session</div>
+                    <div class="dashboard-card">
+                        <div class="card-icon gradient-orange">
+                            <i class="fas fa-chart-bar"></i>
+                        </div>
+                        <div class="card-content">
+                            <div class="card-label">Avg Session</div>
+                            <div class="card-value">
+                                <?php echo $totalSessions > 0 ? formatHours($totalMinutes / $totalSessions) : '0.00'; ?>
                             </div>
-                            <div class="stat-icon">📊</div>
+                            <div class="card-change">Hours per session</div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Project Summary -->
-                <div class="card" style="margin-bottom: 24px;">
+                <div class="dashboard-card" style="margin-bottom: 24px;">
                     <div class="card-header">
-                        <h3>📁 Time by Project</h3>
+                        <h3><i class="fas fa-folder"></i> Time by Project</h3>
                     </div>
                     <div class="card-body">
                         <?php if (empty($projectData)): ?>
@@ -145,7 +141,7 @@ $projectData = $projectSummary->fetchAll();
                                 No time logged in this period
                             </p>
                         <?php else: ?>
-                            <table class="table">
+                            <table class="data-table">
                                 <thead>
                                     <tr>
                                         <th>Project</th>
@@ -170,9 +166,9 @@ $projectData = $projectSummary->fetchAll();
                 </div>
 
                 <!-- Detailed Time Logs -->
-                <div class="card">
+                <div class="dashboard-card">
                     <div class="card-header">
-                        <h3>📋 Detailed Time Logs</h3>
+                        <h3><i class="fas fa-clipboard-list"></i> Detailed Time Logs</h3>
                     </div>
                     <div class="card-body">
                         <?php if (empty($logsData)): ?>
@@ -180,7 +176,7 @@ $projectData = $projectSummary->fetchAll();
                                 No time logs found for this period
                             </p>
                         <?php else: ?>
-                            <table class="table">
+                            <table class="data-table">
                                 <thead>
                                     <tr>
                                         <th>Date</th>
@@ -225,7 +221,7 @@ $projectData = $projectSummary->fetchAll();
                     </div>
                 </div>
             </div>
-        </main>
+        </div>
     </div>
 
     <script src="../assets/js/theme.js"></script>

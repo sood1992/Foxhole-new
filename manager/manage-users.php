@@ -151,28 +151,30 @@ $pageTitle = $action === 'add' ? 'Add User' : ($action === 'edit' ? 'Edit User' 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo $pageTitle; ?> - <?php echo SITE_NAME; ?></title>
-    <link rel="stylesheet" href="../assets/css/ultra-premium.css">
+    <title><?php echo $pageTitle; ?> V3 - <?php echo SITE_NAME; ?></title>
+    <link rel="stylesheet" href="../assets/css/vien-v3.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <div class="dashboard">
-        <?php include '../includes/manager-sidebar.php'; ?>
+    <?php include '../includes/v3-manager-sidebar.php'; ?>
 
-        <main class="main-content">
-            <div class="topbar">
-                <h1>👤 <?php echo $pageTitle; ?></h1>
-                <div class="topbar-actions">
-                    <?php if ($action === 'list'): ?>
-                        <a href="manage-users.php?action=add" class="btn btn-primary btn-sm">+ Add User</a>
-                    <?php else: ?>
-                        <a href="manage-users.php" class="btn btn-secondary btn-sm">← Back to Users</a>
-                    <?php endif; ?>
-                </div>
-            </div>
+    <div class="app-container">
+        <?php include '../includes/v3-header.php'; ?>
 
-            <div class="content">
+        <div class="main-content">
+            <div class="content-wrapper">
                 <?php if ($action === 'list'): ?>
                     <!-- User List View -->
+                    <div class="page-header">
+                        <div>
+                            <h1><i class="fas fa-users"></i> <?php echo $pageTitle; ?></h1>
+                            <p class="page-subtitle">Manage team members and their permissions</p>
+                        </div>
+                        <div class="page-actions">
+                            <a href="manage-users.php?action=add" class="btn btn-primary"><i class="fas fa-plus"></i> Add User</a>
+                        </div>
+                    </div>
+
                     <?php if (isset($_SESSION['success_message'])): ?>
                         <div class="alert alert-success" style="margin-bottom: 24px;">
                             <?php
@@ -182,13 +184,10 @@ $pageTitle = $action === 'add' ? 'Add User' : ($action === 'edit' ? 'Edit User' 
                         </div>
                     <?php endif; ?>
 
-                    <div class="card">
-                        <div class="card-header">
-                            <h3>Team Members</h3>
-                        </div>
+                    <div class="dashboard-card">
                         <div class="card-body">
                             <div class="table-container">
-                                <table>
+                                <table class="data-table">
                                     <thead>
                                         <tr>
                                             <th>Name</th>
@@ -208,7 +207,7 @@ $pageTitle = $action === 'add' ? 'Add User' : ($action === 'edit' ? 'Edit User' 
                                             </td>
                                             <td><?php echo e($member['email']); ?></td>
                                             <td>
-                                                <span class="badge <?php echo $member['role'] === 'manager' ? 'priority-high' : 'priority-medium'; ?>">
+                                                <span class="badge badge-<?php echo $member['role'] === 'manager' ? 'primary' : 'secondary'; ?>">
                                                     <?php echo ucfirst($member['role']); ?>
                                                 </span>
                                             </td>
@@ -216,14 +215,14 @@ $pageTitle = $action === 'add' ? 'Add User' : ($action === 'edit' ? 'Edit User' 
                                             <td><?php echo $member['task_count']; ?></td>
                                             <td>
                                                 <?php if ($member['is_active']): ?>
-                                                    <span class="badge status-completed">Active</span>
+                                                    <span class="badge badge-success">Active</span>
                                                 <?php else: ?>
-                                                    <span class="badge status-blocked">Inactive</span>
+                                                    <span class="badge badge-danger">Inactive</span>
                                                 <?php endif; ?>
                                             </td>
                                             <td>
                                                 <a href="manage-users.php?action=edit&id=<?php echo $member['id']; ?>"
-                                                   class="btn btn-secondary btn-sm">Edit</a>
+                                                   class="btn btn-secondary btn-sm"><i class="fas fa-edit"></i> Edit</a>
                                             </td>
                                         </tr>
                                         <?php endforeach; ?>
@@ -235,10 +234,17 @@ $pageTitle = $action === 'add' ? 'Add User' : ($action === 'edit' ? 'Edit User' 
 
                 <?php else: ?>
                     <!-- Add/Edit Form -->
-                    <div class="card" style="max-width: 800px; margin: 0 auto;">
-                        <div class="card-header">
-                            <h3><?php echo $action === 'add' ? 'New User Information' : 'Update User Information'; ?></h3>
+                    <div class="page-header">
+                        <div>
+                            <h1><i class="fas fa-user-<?php echo $action === 'add' ? 'plus' : 'edit'; ?>"></i> <?php echo $pageTitle; ?></h1>
+                            <p class="page-subtitle"><?php echo $action === 'add' ? 'Add a new team member' : 'Update team member information'; ?></p>
                         </div>
+                        <div class="page-actions">
+                            <a href="manage-users.php" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Back to Users</a>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-card" style="max-width: 800px; margin: 0 auto;">
                         <div class="card-body">
                             <?php if ($error): ?>
                                 <div class="alert alert-error" style="margin-bottom: 24px;">
@@ -250,14 +256,14 @@ $pageTitle = $action === 'add' ? 'Add User' : ($action === 'edit' ? 'Edit User' 
                                 <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
                                     <div class="form-group">
                                         <label for="full_name">Full Name <span style="color: var(--danger);">*</span></label>
-                                        <input type="text" id="full_name" name="full_name" required
+                                        <input type="text" id="full_name" name="full_name" class="form-control" required
                                                value="<?php echo e($user['full_name'] ?? ''); ?>"
                                                placeholder="John Doe">
                                     </div>
 
                                     <div class="form-group">
                                         <label for="username">Username <span style="color: var(--danger);">*</span></label>
-                                        <input type="text" id="username" name="username" required
+                                        <input type="text" id="username" name="username" class="form-control" required
                                                value="<?php echo e($user['username'] ?? ''); ?>"
                                                placeholder="johndoe">
                                     </div>
@@ -266,7 +272,7 @@ $pageTitle = $action === 'add' ? 'Add User' : ($action === 'edit' ? 'Edit User' 
                                 <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
                                     <div class="form-group">
                                         <label for="email">Email <span style="color: var(--danger);">*</span></label>
-                                        <input type="email" id="email" name="email" required
+                                        <input type="email" id="email" name="email" class="form-control" required
                                                value="<?php echo e($user['email'] ?? ''); ?>"
                                                placeholder="john@example.com">
                                     </div>
@@ -280,7 +286,7 @@ $pageTitle = $action === 'add' ? 'Add User' : ($action === 'edit' ? 'Edit User' 
                                                 <span style="color: var(--text-secondary); font-weight: 400;">(leave blank to keep current)</span>
                                             <?php endif; ?>
                                         </label>
-                                        <input type="password" id="password" name="password"
+                                        <input type="password" id="password" name="password" class="form-control"
                                                <?php echo $action === 'add' ? 'required' : ''; ?>
                                                placeholder="<?php echo $action === 'add' ? 'Min. 6 characters' : 'Leave blank to keep current'; ?>">
                                     </div>
@@ -289,7 +295,7 @@ $pageTitle = $action === 'add' ? 'Add User' : ($action === 'edit' ? 'Edit User' 
                                 <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
                                     <div class="form-group">
                                         <label for="role">Role <span style="color: var(--danger);">*</span></label>
-                                        <select id="role" name="role" required>
+                                        <select id="role" name="role" class="form-control" required>
                                             <option value="employee" <?php echo ($user['role'] ?? '') === 'employee' ? 'selected' : ''; ?>>
                                                 Employee
                                             </option>
@@ -302,7 +308,7 @@ $pageTitle = $action === 'add' ? 'Add User' : ($action === 'edit' ? 'Edit User' 
 
                                     <div class="form-group">
                                         <label for="job_title">Job Title</label>
-                                        <input type="text" id="job_title" name="job_title"
+                                        <input type="text" id="job_title" name="job_title" class="form-control"
                                                value="<?php echo e($user['job_title'] ?? ''); ?>"
                                                placeholder="e.g., Senior Developer">
                                     </div>
@@ -321,7 +327,8 @@ $pageTitle = $action === 'add' ? 'Add User' : ($action === 'edit' ? 'Edit User' 
                                 <div style="border-top: 2px solid var(--border); padding-top: 24px; display: flex; gap: 12px; justify-content: flex-end;">
                                     <a href="manage-users.php" class="btn btn-secondary">Cancel</a>
                                     <button type="submit" class="btn btn-primary">
-                                        <?php echo $action === 'add' ? '+ Add User' : 'Save Changes'; ?>
+                                        <i class="fas fa-<?php echo $action === 'add' ? 'plus' : 'save'; ?>"></i>
+                                        <?php echo $action === 'add' ? 'Add User' : 'Save Changes'; ?>
                                     </button>
                                 </div>
                             </form>
@@ -329,7 +336,7 @@ $pageTitle = $action === 'add' ? 'Add User' : ($action === 'edit' ? 'Edit User' 
                     </div>
                 <?php endif; ?>
             </div>
-        </main>
+        </div>
     </div>
 
     <script src="../assets/js/theme.js"></script>

@@ -111,8 +111,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Project - <?php echo SITE_NAME; ?></title>
-    <link rel="stylesheet" href="../assets/css/ultra-premium.css">
+    <title>Create Project V3 - <?php echo SITE_NAME; ?></title>
+    <link rel="stylesheet" href="../assets/css/vien-v3.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         .user-select-grid {
             display: grid;
@@ -165,25 +166,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </style>
 </head>
 <body>
-    <div class="dashboard">
-        <?php include '../includes/manager-sidebar.php'; ?>
+    <?php include '../includes/v3-manager-sidebar.php'; ?>
 
-        <main class="main-content">
-            <div class="topbar">
-                <h1>➕ Create New Project</h1>
-                <div class="topbar-actions">
-                    <a href="projects.php" class="btn btn-secondary btn-sm">← Back to Projects</a>
-                </div>
-            </div>
+    <div class="app-container">
+        <?php include '../includes/v3-header.php'; ?>
 
-            <div class="content">
-                <div class="card" style="max-width: 1000px; margin: 0 auto;">
-                    <div class="card-header">
-                        <h3>Project Details</h3>
-                        <p style="color: var(--text-secondary); font-size: 14px; margin-top: 8px;">
-                            Create a new project and assign team members to work on it
-                        </p>
+        <div class="main-content">
+            <div class="content-wrapper">
+                <div class="page-header">
+                    <div>
+                        <h1><i class="fas fa-plus-circle"></i> Create New Project</h1>
+                        <p class="page-subtitle">Create a new project and assign team members to work on it</p>
                     </div>
+                    <div class="page-actions">
+                        <a href="projects.php" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Back to Projects</a>
+                    </div>
+                </div>
+
+                <div class="dashboard-card" style="max-width: 1000px; margin: 0 auto;">
                     <div class="card-body">
                         <?php if ($error): ?>
                             <div class="alert alert-error" style="margin-bottom: 24px;">
@@ -195,21 +195,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <!-- Project Name -->
                             <div class="form-group">
                                 <label for="project_name">Project Name <span style="color: var(--danger);">*</span></label>
-                                <input type="text" id="project_name" name="project_name" required
+                                <input type="text" id="project_name" name="project_name" class="form-control" required
                                        placeholder="e.g., Website Redesign 2024">
                             </div>
 
                             <!-- Description -->
                             <div class="form-group">
                                 <label for="description">Description</label>
-                                <textarea id="description" name="description" rows="4"
+                                <textarea id="description" name="description" class="form-control" rows="4"
                                           placeholder="Describe the project goals and deliverables..."></textarea>
                             </div>
 
                             <!-- Client Name -->
                             <div class="form-group">
                                 <label for="client_name">Client Name</label>
-                                <input type="text" id="client_name" name="client_name"
+                                <input type="text" id="client_name" name="client_name" class="form-control"
                                        placeholder="e.g., Acme Corporation">
                             </div>
 
@@ -217,7 +217,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
                                 <div class="form-group">
                                     <label for="status">Status</label>
-                                    <select id="status" name="status">
+                                    <select id="status" name="status" class="form-control">
                                         <option value="planning" selected>Planning</option>
                                         <option value="in_progress">In Progress</option>
                                         <option value="review">Review</option>
@@ -228,7 +228,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                                 <div class="form-group">
                                     <label for="priority">Priority</label>
-                                    <select id="priority" name="priority">
+                                    <select id="priority" name="priority" class="form-control">
                                         <option value="low">Low</option>
                                         <option value="medium" selected>Medium</option>
                                         <option value="high">High</option>
@@ -241,19 +241,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px;">
                                 <div class="form-group">
                                     <label for="start_date">Start Date</label>
-                                    <input type="date" id="start_date" name="start_date"
+                                    <input type="date" id="start_date" name="start_date" class="form-control"
                                            value="<?php echo date('Y-m-d'); ?>">
                                 </div>
 
                                 <div class="form-group">
                                     <label for="due_date">Due Date</label>
-                                    <input type="date" id="due_date" name="due_date"
+                                    <input type="date" id="due_date" name="due_date" class="form-control"
                                            min="<?php echo date('Y-m-d'); ?>">
                                 </div>
 
                                 <div class="form-group">
                                     <label for="estimated_hours">Estimated Hours</label>
-                                    <input type="number" id="estimated_hours" name="estimated_hours"
+                                    <input type="number" id="estimated_hours" name="estimated_hours" class="form-control"
                                            step="0.5" min="0" placeholder="e.g., 40">
                                 </div>
                             </div>
@@ -276,7 +276,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     <?php endforeach; ?>
                                 </div>
                                 <p style="font-size: 12px; color: var(--text-secondary); margin-top: 12px;">
-                                    💡 Tip: You can assign multiple people to a project. Tasks can later have dependencies (e.g., creative team → edit team).
+                                    <i class="fas fa-lightbulb"></i> Tip: You can assign multiple people to a project. Tasks can later have dependencies (e.g., creative team → edit team).
                                 </p>
                             </div>
 
@@ -284,14 +284,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <div style="border-top: 2px solid var(--border); padding-top: 24px; display: flex; gap: 12px; justify-content: flex-end;">
                                 <a href="projects.php" class="btn btn-secondary">Cancel</a>
                                 <button type="submit" class="btn btn-primary">
-                                    ✓ Create Project
+                                    <i class="fas fa-check"></i> Create Project
                                 </button>
                             </div>
                         </form>
                     </div>
                 </div>
             </div>
-        </main>
+        </div>
     </div>
 
     <script src="../assets/js/theme.js"></script>

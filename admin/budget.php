@@ -78,28 +78,26 @@ foreach ($projects as $project) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Budget Tracking - <?php echo SITE_NAME; ?></title>
-    <link rel="stylesheet" href="../assets/css/ultra-premium.css">
+    <title>Budget Tracking V3 - <?php echo SITE_NAME; ?></title>
+    <link rel="stylesheet" href="../assets/css/vien-v3.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <?php include '../includes/quick-actions-assets.php'; ?>
 </head>
 <body>
-    <div class="dashboard">
-        <?php include '../includes/admin-sidebar.php'; ?>
+    <div class="app-container">
+        <?php include '../includes/v3-admin-sidebar.php'; ?>
 
-        <!-- Main Content -->
-        <main class="main-content">
-            <div class="topbar">
-                <h1>💰 Budget & Cost Tracking</h1>
-                <div class="topbar-actions">
-                    <?php include '../includes/global-search-assets.php'; ?>
-                    <?php include '../includes/notifications-dropdown.php'; ?>
+        <div class="main-content">
+            <?php include '../includes/v3-header.php'; ?>
+
+            <div class="content-wrapper">
+                <div class="page-header">
+                    <h1><i class="fas fa-wallet"></i> Budget & Cost Tracking</h1>
                 </div>
-            </div>
 
-            <div class="content">
                 <?php if (!$expensesTableExists): ?>
-                <div class="alert alert-warning" style="background: #fef3c7; border: 1px solid #fbbf24; color: #92400e; padding: var(--space-4); border-radius: var(--radius-md); margin-bottom: var(--space-6);">
-                    <strong>⚠️ Notice:</strong> Expenses tracking is not yet set up. Budget calculations are based on labor costs only. Run <code>upgrade-schema.sql</code> to enable full expense tracking.
+                <div class="alert alert-warning" style="margin-bottom: 24px;">
+                    <strong><i class="fas fa-exclamation-triangle"></i> Notice:</strong> Expenses tracking is not yet set up. Budget calculations are based on labor costs only. Run <code>upgrade-schema.sql</code> to enable full expense tracking.
                 </div>
                 <?php endif; ?>
 
@@ -112,7 +110,7 @@ foreach ($projects as $project) {
                                 <div class="stat-value">₹<?php echo number_format($totalBudget, 0); ?></div>
                                 <div class="stat-change">Allocated</div>
                             </div>
-                            <div class="stat-icon">💵</div>
+                            <div class="stat-icon"><i class="fas fa-money-bill-wave"></i></div>
                         </div>
                     </div>
 
@@ -123,7 +121,7 @@ foreach ($projects as $project) {
                                 <div class="stat-value">₹<?php echo number_format($totalActual, 0); ?></div>
                                 <div class="stat-change">Labor<?php echo $expensesTableExists ? ' + Expenses' : ' Only'; ?></div>
                             </div>
-                            <div class="stat-icon">💰</div>
+                            <div class="stat-icon"><i class="fas fa-wallet"></i></div>
                         </div>
                     </div>
 
@@ -135,7 +133,7 @@ foreach ($projects as $project) {
                                 <div class="stat-value">₹<?php echo number_format($totalExpenses, 0); ?></div>
                                 <div class="stat-change">Direct Costs</div>
                             </div>
-                            <div class="stat-icon">💳</div>
+                            <div class="stat-icon"><i class="fas fa-credit-card"></i></div>
                         </div>
                     </div>
                     <?php endif; ?>
@@ -147,7 +145,7 @@ foreach ($projects as $project) {
                                 <div class="stat-value"><?php echo ($totalBudget - $totalActual) >= 0 ? '' : '-'; ?>₹<?php echo number_format(abs($totalBudget - $totalActual), 0); ?></div>
                                 <div class="stat-change"><?php echo ($totalBudget - $totalActual) >= 0 ? 'Under Budget' : 'Over Budget'; ?></div>
                             </div>
-                            <div class="stat-icon"><?php echo ($totalBudget - $totalActual) >= 0 ? '✅' : '⚠️'; ?></div>
+                            <div class="stat-icon"><i class="fas <?php echo ($totalBudget - $totalActual) >= 0 ? 'fa-check-circle' : 'fa-exclamation-triangle'; ?>"></i></div>
                         </div>
                     </div>
                 </div>
@@ -164,7 +162,7 @@ foreach ($projects as $project) {
                             </p>
                         <?php else: ?>
                             <div class="table-container">
-                                <table>
+                                <table class="data-table">
                                     <thead>
                                         <tr>
                                             <th>Project</th>
@@ -245,7 +243,7 @@ foreach ($projects as $project) {
                 </div>
 
                 <!-- Budget Summary by Status -->
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 24px;">
                     <div class="card">
                         <div class="card-header">
                             <h3>Budget by Status</h3>
@@ -298,7 +296,7 @@ foreach ($projects as $project) {
                             ?>
                             <div style="margin-bottom: 20px;">
                                 <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                                    <span style="font-weight: 600;">💼 Labor Costs</span>
+                                    <span style="font-weight: 600;"><i class="fas fa-briefcase"></i> Labor Costs</span>
                                     <span style="font-weight: 600;">₹<?php echo number_format($laborTotal, 0); ?></span>
                                 </div>
                                 <div class="progress-bar-container" style="height: 12px;">
@@ -312,7 +310,7 @@ foreach ($projects as $project) {
                             <?php if ($expensesTableExists): ?>
                             <div>
                                 <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                                    <span style="font-weight: 600;">💳 Direct Expenses</span>
+                                    <span style="font-weight: 600;"><i class="fas fa-credit-card"></i> Direct Expenses</span>
                                     <span style="font-weight: 600;">₹<?php echo number_format($totalExpenses, 0); ?></span>
                                 </div>
                                 <div class="progress-bar-container" style="height: 12px;">
@@ -327,7 +325,7 @@ foreach ($projects as $project) {
                     </div>
                 </div>
             </div>
-        </main>
+        </div>
     </div>
     <script src="../assets/js/theme.js"></script>
 </body>

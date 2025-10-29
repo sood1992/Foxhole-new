@@ -149,8 +149,9 @@ $allUsers = $db->query("
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bulk Operations - <?php echo SITE_NAME; ?></title>
-    <link rel="stylesheet" href="../assets/css/ultra-premium.css">
+    <title>Bulk Operations V3 - <?php echo SITE_NAME; ?></title>
+    <link rel="stylesheet" href="../assets/css/vien-v3.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
     .operations-grid {
         display: grid;
@@ -261,18 +262,14 @@ $allUsers = $db->query("
     <?php include '../includes/quick-actions-assets.php'; ?>
 </head>
 <body>
-    <div class="dashboard">
-        <?php include '../includes/admin-sidebar.php'; ?>
+    <div class="app-container">
+        <?php include '../includes/v3-admin-sidebar.php'; ?>
 
         <main class="main-content">
-            <div class="topbar">
-                <h1>⚡ Bulk Operations</h1>
-                <div class="topbar-actions">
-                    <?php include '../includes/notifications-dropdown.php'; ?>
-                </div>
-            </div>
+            <?php include '../includes/v3-header.php'; ?>
 
-            <div class="content">
+            <div class="content-wrapper">
+                <h1 style="margin-bottom: var(--space-6);">⚡ Bulk Operations</h1>
                 <?php if ($successMessage): ?>
                 <div class="alert-success">✓ <?php echo $successMessage; ?></div>
                 <?php endif; ?>

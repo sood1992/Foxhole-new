@@ -205,8 +205,9 @@ $usersWithEmail = $db->query("
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Email Testing - <?php echo SITE_NAME; ?></title>
-    <link rel="stylesheet" href="../assets/css/ultra-premium.css">
+    <title>Email Testing V3 - <?php echo SITE_NAME; ?></title>
+    <link rel="stylesheet" href="../assets/css/vien-v3.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         .test-card {
             background: var(--bg-secondary);
@@ -301,19 +302,20 @@ $usersWithEmail = $db->query("
     </style>
 </head>
 <body>
-    <div class="dashboard">
-        <?php include '../includes/admin-sidebar.php'; ?>
+    <div class="app-container">
+        <?php include '../includes/v3-admin-sidebar.php'; ?>
 
         <main class="main-content">
-            <div class="topbar">
-                <h1>🧪 Email Testing</h1>
-                <div class="topbar-actions">
-                    <a href="email-config.php" class="btn btn-secondary btn-sm">⚙️ Email Config</a>
-                    <a href="index.php" class="btn btn-secondary btn-sm">← Dashboard</a>
-                </div>
-            </div>
+            <?php include '../includes/v3-header.php'; ?>
 
-            <div class="content">
+            <div class="content-wrapper">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-6);">
+                    <h1>🧪 Email Testing</h1>
+                    <div style="display: flex; gap: var(--space-2);">
+                        <a href="email-config.php" class="btn btn-secondary btn-sm">⚙️ Email Config</a>
+                        <a href="index.php" class="btn btn-secondary btn-sm">← Dashboard</a>
+                    </div>
+                </div>
                 <?php if ($error): ?>
                     <div class="alert alert-error" style="margin-bottom: 24px;">
                         <?php echo $error; ?>

@@ -138,31 +138,32 @@ foreach ($employeeSummaryData as $emp) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reports - <?php echo SITE_NAME; ?></title>
-    <link rel="stylesheet" href="../assets/css/ultra-premium.css">
+    <title>Reports V3 - <?php echo SITE_NAME; ?></title>
+    <link rel="stylesheet" href="../assets/css/vien-v3.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <div class="dashboard">
-        <!-- Sidebar -->
-        <?php include '../includes/admin-sidebar.php'; ?>
+    <div class="app-container">
+        <?php include '../includes/v3-admin-sidebar.php'; ?>
 
-        <!-- Main Content -->
-        <main class="main-content">
-            <div class="topbar">
-                <h1>Reports & Analytics</h1>
-                <div class="topbar-actions">
-                    <button onclick="window.print()" class="btn btn-secondary btn-sm">🖨️ Print Report</button>
+        <div class="main-content">
+            <?php include '../includes/v3-header.php'; ?>
+
+            <div class="content-wrapper">
+                <div class="page-header">
+                    <h1><i class="fas fa-chart-bar"></i> Reports & Analytics</h1>
+                    <button onclick="window.print()" class="btn btn-secondary btn-sm">
+                        <i class="fas fa-print"></i> Print Report
+                    </button>
                 </div>
-            </div>
 
-            <div class="content">
                 <!-- Filters -->
                 <div class="card">
                     <div class="card-body">
                         <form method="GET" action="" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
                             <div class="form-group" style="margin-bottom: 0;">
                                 <label>Report Period</label>
-                                <select name="type" onchange="toggleCustomDates(this.value)">
+                                <select name="type" class="form-control" onchange="toggleCustomDates(this.value)">
                                     <option value="daily" <?php echo $reportType === 'daily' ? 'selected' : ''; ?>>Today</option>
                                     <option value="weekly" <?php echo $reportType === 'weekly' ? 'selected' : ''; ?>>This Week</option>
                                     <option value="monthly" <?php echo $reportType === 'monthly' ? 'selected' : ''; ?>>This Month</option>
@@ -172,17 +173,17 @@ foreach ($employeeSummaryData as $emp) {
 
                             <div class="form-group" style="margin-bottom: 0;" id="customStartDate" <?php echo $reportType !== 'custom' ? 'style="display:none;"' : ''; ?>>
                                 <label>Start Date</label>
-                                <input type="date" name="start_date" value="<?php echo $startDate; ?>">
+                                <input type="date" name="start_date" class="form-control" value="<?php echo $startDate; ?>">
                             </div>
 
                             <div class="form-group" style="margin-bottom: 0;" id="customEndDate" <?php echo $reportType !== 'custom' ? 'style="display:none;"' : ''; ?>>
                                 <label>End Date</label>
-                                <input type="date" name="end_date" value="<?php echo $endDate; ?>">
+                                <input type="date" name="end_date" class="form-control" value="<?php echo $endDate; ?>">
                             </div>
 
                             <div class="form-group" style="margin-bottom: 0;">
                                 <label>Employee</label>
-                                <select name="employee">
+                                <select name="employee" class="form-control">
                                     <option value="all">All Employees</option>
                                     <?php foreach ($employees as $emp): ?>
                                         <option value="<?php echo $emp['id']; ?>" <?php echo $employeeId == $emp['id'] ? 'selected' : ''; ?>>
@@ -216,7 +217,7 @@ foreach ($employeeSummaryData as $emp) {
                                 <div class="stat-value"><?php echo formatHours($totalHours); ?></div>
                                 <div class="stat-change">Logged</div>
                             </div>
-                            <div class="stat-icon">⏱️</div>
+                            <div class="stat-icon"><i class="fas fa-clock"></i></div>
                         </div>
                     </div>
 
@@ -227,7 +228,7 @@ foreach ($employeeSummaryData as $emp) {
                                 <div class="stat-value"><?php echo $totalTasks; ?></div>
                                 <div class="stat-change">Done</div>
                             </div>
-                            <div class="stat-icon">✅</div>
+                            <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
                         </div>
                     </div>
 
@@ -238,7 +239,7 @@ foreach ($employeeSummaryData as $emp) {
                                 <div class="stat-value"><?php echo count($projectSummaryData); ?></div>
                                 <div class="stat-change">In Period</div>
                             </div>
-                            <div class="stat-icon">📁</div>
+                            <div class="stat-icon"><i class="fas fa-folder"></i></div>
                         </div>
                     </div>
 
@@ -249,7 +250,7 @@ foreach ($employeeSummaryData as $emp) {
                                 <div class="stat-value"><?php echo count($employeeSummaryData) > 0 ? formatHours($totalHours / count($employeeSummaryData)) : '0.00'; ?></div>
                                 <div class="stat-change">Hours</div>
                             </div>
-                            <div class="stat-icon">📊</div>
+                            <div class="stat-icon"><i class="fas fa-chart-line"></i></div>
                         </div>
                     </div>
                 </div>
@@ -261,7 +262,7 @@ foreach ($employeeSummaryData as $emp) {
                     </div>
                     <div class="card-body">
                         <div class="table-container">
-                            <table>
+                            <table class="data-table">
                                 <thead>
                                     <tr>
                                         <th>Employee</th>
@@ -318,7 +319,7 @@ foreach ($employeeSummaryData as $emp) {
                     </div>
                     <div class="card-body">
                         <div class="table-container">
-                            <table>
+                            <table class="data-table">
                                 <thead>
                                     <tr>
                                         <th>Project</th>
@@ -388,7 +389,7 @@ foreach ($employeeSummaryData as $emp) {
                     </div>
                     <div class="card-body">
                         <div class="table-container">
-                            <table>
+                            <table class="data-table">
                                 <thead>
                                     <tr>
                                         <th>Date</th>
@@ -420,7 +421,7 @@ foreach ($employeeSummaryData as $emp) {
                     </div>
                 </div>
             </div>
-        </main>
+        </div>
     </div>
 
     <script>

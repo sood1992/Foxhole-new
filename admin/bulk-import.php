@@ -105,21 +105,19 @@ $users = $db->query("SELECT id, full_name, username FROM users WHERE is_active =
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bulk Import - <?php echo SITE_NAME; ?></title>
-    <link rel="stylesheet" href="../assets/css/ultra-premium.css">
+    <title>Bulk Import V3 - <?php echo SITE_NAME; ?></title>
+    <link rel="stylesheet" href="../assets/css/vien-v3.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <div class="dashboard">
-        <!-- Sidebar -->
-        <?php include '../includes/admin-sidebar.php'; ?>
+    <div class="app-container">
+        <?php include '../includes/v3-admin-sidebar.php'; ?>
 
-        <!-- Main Content -->
         <main class="main-content">
-            <div class="topbar">
-                <h1>Bulk Import</h1>
-            </div>
+            <?php include '../includes/v3-header.php'; ?>
 
-            <div class="content">
+            <div class="content-wrapper">
+                <h1 style="margin-bottom: var(--space-6);">Bulk Import</h1>
                 <?php if ($message): ?>
                     <div class="alert alert-success"><?php echo $message; ?></div>
                 <?php endif; ?>

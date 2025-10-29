@@ -59,26 +59,29 @@ $teamReports = $stmt->fetchAll();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reports - <?php echo SITE_NAME; ?></title>
-    <link rel="stylesheet" href="../assets/css/ultra-premium.css">
+    <title>Reports V3 - <?php echo SITE_NAME; ?></title>
+    <link rel="stylesheet" href="../assets/css/vien-v3.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <?php include '../includes/quick-actions-assets.php'; ?>
 </head>
 <body>
-    <div class="dashboard">
-        <?php include '../includes/manager-sidebar.php'; ?>
+    <?php include '../includes/v3-manager-sidebar.php'; ?>
 
-        <main class="main-content">
-            <div class="topbar">
-                <h1>📋 Reports</h1>
-                <div class="topbar-actions">
-                    <?php include '../includes/global-search-assets.php'; ?>
-                    <?php include '../includes/notifications-dropdown.php'; ?>
+    <div class="app-container">
+        <?php include '../includes/v3-header.php'; ?>
+
+        <div class="main-content">
+            <div class="content-wrapper">
+                <!-- Page Header -->
+                <div class="page-header">
+                    <div>
+                        <h1><i class="fas fa-chart-bar"></i> Reports</h1>
+                        <p class="page-subtitle">View project and team performance metrics</p>
+                    </div>
                 </div>
-            </div>
 
-            <div class="content">
                 <!-- Date Filter -->
-                <div class="card" style="margin-bottom: var(--space-6);">
+                <div class="dashboard-card" style="margin-bottom: var(--space-6);">
                     <div class="card-body">
                         <form method="GET" style="display: flex; gap: var(--space-4); align-items: end;">
                             <div class="form-group" style="margin: 0;">
@@ -89,15 +92,15 @@ $teamReports = $stmt->fetchAll();
                                 <label for="end">End Date</label>
                                 <input type="date" id="end" name="end" value="<?php echo e($endDate); ?>" class="form-control">
                             </div>
-                            <button type="submit" class="btn btn-primary">Generate Report</button>
+                            <button type="submit" class="btn btn-primary"><i class="fas fa-sync-alt"></i> Generate Report</button>
                         </form>
                     </div>
                 </div>
 
                 <!-- Project Reports -->
-                <div class="card" style="margin-bottom: var(--space-6);">
+                <div class="dashboard-card" style="margin-bottom: var(--space-6);">
                     <div class="card-header">
-                        <h3>📁 Project Reports</h3>
+                        <h3><i class="fas fa-folder-open"></i> Project Reports</h3>
                     </div>
                     <div class="card-body">
                         <?php if (empty($projectReports)): ?>
@@ -105,7 +108,7 @@ $teamReports = $stmt->fetchAll();
                                 No project data for selected period.
                             </p>
                         <?php else: ?>
-                            <table class="table">
+                            <table class="data-table">
                                 <thead>
                                     <tr>
                                         <th>Project</th>
@@ -145,9 +148,9 @@ $teamReports = $stmt->fetchAll();
                 </div>
 
                 <!-- Team Member Reports -->
-                <div class="card">
+                <div class="dashboard-card">
                     <div class="card-header">
-                        <h3>👥 Team Performance</h3>
+                        <h3><i class="fas fa-users"></i> Team Performance</h3>
                     </div>
                     <div class="card-body">
                         <?php if (empty($teamReports)): ?>
@@ -155,7 +158,7 @@ $teamReports = $stmt->fetchAll();
                                 No team data for selected period.
                             </p>
                         <?php else: ?>
-                            <table class="table">
+                            <table class="data-table">
                                 <thead>
                                     <tr>
                                         <th>Team Member</th>
@@ -174,7 +177,7 @@ $teamReports = $stmt->fetchAll();
                                     <tr>
                                         <td><strong><?php echo e($member['full_name']); ?></strong></td>
                                         <td>
-                                            <span class="badge status-completed">
+                                            <span class="badge badge-success">
                                                 <?php echo $member['completed_tasks']; ?>
                                             </span>
                                         </td>
@@ -189,7 +192,7 @@ $teamReports = $stmt->fetchAll();
                     </div>
                 </div>
             </div>
-        </main>
+        </div>
     </div>
 
     <script src="../assets/js/theme.js"></script>

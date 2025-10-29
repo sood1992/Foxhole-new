@@ -22,8 +22,9 @@ $projects = $db->query("
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Team Chat - <?php echo SITE_NAME; ?></title>
-    <link rel="stylesheet" href="../assets/css/ultra-premium.css">
+    <title>Team Chat V3 - <?php echo SITE_NAME; ?></title>
+    <link rel="stylesheet" href="../assets/css/vien-v3.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
     .chat-container {
         display: grid;
@@ -194,33 +195,30 @@ $projects = $db->query("
     </style>
 </head>
 <body>
-    <div class="dashboard">
-        <!-- Sidebar -->
-        <?php include '../includes/admin-sidebar.php'; ?>
+    <div class="app-container">
+        <?php include '../includes/v3-admin-sidebar.php'; ?>
 
-        <!-- Main Content -->
-        <main class="main-content">
-            <div class="topbar">
-                <h1>💬 Team Chat</h1>
-                <div class="topbar-actions">
-                    <?php include '../includes/notifications-dropdown.php'; ?>
+        <div class="main-content">
+            <?php include '../includes/v3-header.php'; ?>
+
+            <div class="content-wrapper">
+                <div class="page-header">
+                    <h1><i class="fas fa-comments"></i> Team Chat</h1>
                 </div>
-            </div>
 
-            <div class="content">
                 <div class="chat-container">
                     <!-- Channels Sidebar -->
                     <div class="chat-channels">
                         <h3>Channels</h3>
                         <div class="channel-item active" data-channel-type="team" data-channel-id="">
-                            <span>👥</span>
+                            <span><i class="fas fa-users"></i></span>
                             <span>General Team</span>
                         </div>
 
                         <h3 style="margin-top: 20px;">Projects</h3>
                         <?php foreach ($projects as $project): ?>
                         <div class="channel-item" data-channel-type="project" data-channel-id="<?php echo $project['id']; ?>">
-                            <span>📁</span>
+                            <span><i class="fas fa-folder"></i></span>
                             <span><?php echo e($project['project_name']); ?></span>
                         </div>
                         <?php endforeach; ?>
@@ -229,12 +227,12 @@ $projects = $db->query("
                     <!-- Chat Main -->
                     <div class="chat-main">
                         <div class="chat-header">
-                            <h3 id="channelName">👥 General Team</h3>
+                            <h3 id="channelName"><i class="fas fa-users"></i> General Team</h3>
                         </div>
 
                         <div class="chat-messages" id="chatMessages">
                             <div class="empty-state">
-                                <div class="empty-state-icon">💬</div>
+                                <div class="empty-state-icon"><i class="fas fa-comments"></i></div>
                                 <p>No messages yet. Start the conversation!</p>
                             </div>
                         </div>
@@ -248,7 +246,7 @@ $projects = $db->query("
                     </div>
                 </div>
             </div>
-        </main>
+        </div>
     </div>
 
     <script>
@@ -315,7 +313,7 @@ $projects = $db->query("
         if (messages.length === 0) {
             container.innerHTML = `
                 <div class="empty-state">
-                    <div class="empty-state-icon">💬</div>
+                    <div class="empty-state-icon"><i class="fas fa-comments"></i></div>
                     <p>No messages yet. Start the conversation!</p>
                 </div>
             `;

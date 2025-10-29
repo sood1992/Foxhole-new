@@ -102,27 +102,26 @@ $budgetPercentage = $project['budget'] > 0 ? round(($budgetUsed / $project['budg
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo e($project['project_name']); ?> - <?php echo SITE_NAME; ?></title>
-    <link rel="stylesheet" href="../assets/css/ultra-premium.css">
+    <title><?php echo e($project['project_name']); ?> V3 - <?php echo SITE_NAME; ?></title>
+    <link rel="stylesheet" href="../assets/css/vien-v3.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <?php include '../includes/quick-actions-assets.php'; ?>
 </head>
 <body>
-    <div class="dashboard">
-        <?php include '../includes/admin-sidebar.php'; ?>
+    <div class="app-container">
+        <?php include '../includes/v3-admin-sidebar.php'; ?>
 
-        <main class="main-content">
-            <div class="topbar">
-                <div>
-                    <a href="index.php" style="color: var(--text-secondary); text-decoration: none; font-size: var(--font-sm);">← Back to Dashboard</a>
-                    <h1><?php echo e($project['project_name']); ?></h1>
-                </div>
-                <div class="topbar-actions">
-                    <?php include '../includes/global-search-assets.php'; ?>
-                    <?php include '../includes/notifications-dropdown.php'; ?>
-                </div>
-            </div>
+        <div class="main-content">
+            <?php include '../includes/v3-header.php'; ?>
 
-            <div class="content">
+            <div class="content-wrapper">
+                <div class="page-header">
+                    <div>
+                        <a href="index.php" style="color: var(--text-secondary); text-decoration: none; font-size: var(--font-sm);"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+                        <h1><?php echo e($project['project_name']); ?></h1>
+                    </div>
+                </div>
+
                 <!-- Project Overview Card -->
                 <div class="card" style="margin-bottom: var(--space-6);">
                     <div class="card-body">
@@ -162,7 +161,7 @@ $budgetPercentage = $project['budget'] > 0 ? round(($budgetUsed / $project['budg
                                         <div style="font-size: var(--font-base); color: var(--text-primary);">
                                             <?php echo date('M d, Y', strtotime($project['due_date'])); ?>
                                             <?php if (isOverdue($project['due_date'], $project['status'])): ?>
-                                                <span style="color: var(--status-blocked); margin-left: var(--space-2);">⚠️ Overdue</span>
+                                                <span style="color: var(--status-blocked); margin-left: var(--space-2);"><i class="fas fa-exclamation-triangle"></i> Overdue</span>
                                             <?php endif; ?>
                                         </div>
                                     </div>
@@ -247,7 +246,7 @@ $budgetPercentage = $project['budget'] > 0 ? round(($budgetUsed / $project['budg
                 <?php if (!empty($teamMembers)): ?>
                 <div class="card" style="margin-bottom: var(--space-6);">
                     <div class="card-header">
-                        <h3>👥 Team Members (<?php echo count($teamMembers); ?>)</h3>
+                        <h3><i class="fas fa-users"></i> Team Members (<?php echo count($teamMembers); ?>)</h3>
                     </div>
                     <div class="card-body">
                         <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: var(--space-4);">
@@ -274,7 +273,7 @@ $budgetPercentage = $project['budget'] > 0 ? round(($budgetUsed / $project['budg
                 <!-- All Tasks -->
                 <div class="card">
                     <div class="card-header">
-                        <h3>✓ All Tasks (<?php echo $taskStats['total_tasks']; ?>)</h3>
+                        <h3><i class="fas fa-check-square"></i> All Tasks (<?php echo $taskStats['total_tasks']; ?>)</h3>
                         <a href="tasks.php?project=<?php echo $projectId; ?>" class="btn btn-primary btn-sm">+ Add Task</a>
                     </div>
                     <div class="card-body">
@@ -283,7 +282,7 @@ $budgetPercentage = $project['budget'] > 0 ? round(($budgetUsed / $project['budg
                                 No tasks created yet
                             </p>
                         <?php else: ?>
-                            <table class="table">
+                            <table class="data-table">
                                 <thead>
                                     <tr>
                                         <th>Task</th>
@@ -320,7 +319,7 @@ $budgetPercentage = $project['budget'] > 0 ? round(($budgetUsed / $project['budg
                                             <?php if ($task['due_date']): ?>
                                                 <?php echo date('M d, Y', strtotime($task['due_date'])); ?>
                                                 <?php if (isOverdue($task['due_date'], $task['status'])): ?>
-                                                    <br><span style="color: var(--status-blocked); font-size: var(--font-xs);">⚠️ Overdue</span>
+                                                    <br><span style="color: var(--status-blocked); font-size: var(--font-xs);"><i class="fas fa-exclamation-triangle"></i> Overdue</span>
                                                 <?php endif; ?>
                                             <?php else: ?>
                                                 <span style="color: var(--text-tertiary);">No due date</span>
@@ -340,7 +339,7 @@ $budgetPercentage = $project['budget'] > 0 ? round(($budgetUsed / $project['budg
                     </div>
                 </div>
             </div>
-        </main>
+        </div>
     </div>
 
     <script src="../assets/js/theme.js"></script>

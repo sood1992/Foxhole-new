@@ -120,96 +120,92 @@ $trend_data = $productivityTrend->fetchAll();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Statistics - <?php echo SITE_NAME; ?></title>
-    <link rel="stylesheet" href="../assets/css/ultra-premium.css">
+    <title>My Statistics V3 - <?php echo SITE_NAME; ?></title>
+    <link rel="stylesheet" href="../assets/css/vien-v3.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <?php include '../includes/quick-actions-assets.php'; ?>
 </head>
 <body>
-    <div class="dashboard">
+    <div class="app-container">
         <!-- Sidebar -->
-        <?php include '../includes/employee-sidebar.php'; ?>
+        <?php include '../includes/v3-employee-sidebar.php'; ?>
 
         <!-- Main Content -->
-        <main class="main-content">
-            <div class="topbar">
-                <h1>📈 My Statistics</h1>
-                <div class="topbar-actions">
-                    <?php include '../includes/notifications-dropdown.php'; ?>
-                </div>
-            </div>
+        <div class="main-content">
+            <?php include '../includes/v3-header.php'; ?>
 
-            <div class="content">
+            <div class="content-wrapper">
                 <!-- Time Period Stats -->
-                <h3 style="margin-bottom: 16px; color: var(--text-primary);">⏰ Time Tracking</h3>
+                <h3 style="margin-bottom: 16px; color: var(--text-primary);"><i class="fas fa-clock"></i> Time Tracking</h3>
                 <div class="stats-grid">
-                    <div class="stat-card blue">
-                        <div class="stat-card-header">
-                            <div>
-                                <div class="stat-label">Today</div>
-                                <div class="stat-value"><?php echo formatHours($today_data['minutes'] ?? 0); ?></div>
-                                <div class="stat-change"><?php echo $today_data['tasks'] ?? 0; ?> tasks</div>
-                            </div>
-                            <div class="stat-icon">📅</div>
+                    <div class="dashboard-card">
+                        <div class="card-icon gradient-blue">
+                            <i class="fas fa-calendar-day"></i>
+                        </div>
+                        <div class="card-content">
+                            <div class="card-label">Today</div>
+                            <div class="card-value"><?php echo formatHours($today_data['minutes'] ?? 0); ?></div>
+                            <div class="card-change"><?php echo $today_data['tasks'] ?? 0; ?> tasks</div>
                         </div>
                     </div>
 
-                    <div class="stat-card green">
-                        <div class="stat-card-header">
-                            <div>
-                                <div class="stat-label">This Week</div>
-                                <div class="stat-value"><?php echo formatHours($week_data['minutes'] ?? 0); ?></div>
-                                <div class="stat-change"><?php echo $week_data['projects'] ?? 0; ?> projects</div>
-                            </div>
-                            <div class="stat-icon">📊</div>
+                    <div class="dashboard-card">
+                        <div class="card-icon gradient-green">
+                            <i class="fas fa-calendar-week"></i>
+                        </div>
+                        <div class="card-content">
+                            <div class="card-label">This Week</div>
+                            <div class="card-value"><?php echo formatHours($week_data['minutes'] ?? 0); ?></div>
+                            <div class="card-change"><?php echo $week_data['projects'] ?? 0; ?> projects</div>
                         </div>
                     </div>
 
-                    <div class="stat-card orange">
-                        <div class="stat-card-header">
-                            <div>
-                                <div class="stat-label">This Month</div>
-                                <div class="stat-value"><?php echo formatHours($month_data['minutes'] ?? 0); ?></div>
-                                <div class="stat-change"><?php echo $month_data['tasks'] ?? 0; ?> tasks worked</div>
-                            </div>
-                            <div class="stat-icon">📈</div>
+                    <div class="dashboard-card">
+                        <div class="card-icon gradient-orange">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                        <div class="card-content">
+                            <div class="card-label">This Month</div>
+                            <div class="card-value"><?php echo formatHours($month_data['minutes'] ?? 0); ?></div>
+                            <div class="card-change"><?php echo $month_data['tasks'] ?? 0; ?> tasks worked</div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Performance Stats -->
-                <h3 style="margin: 32px 0 16px; color: var(--text-primary);">🎯 Performance</h3>
+                <h3 style="margin: 32px 0 16px; color: var(--text-primary);"><i class="fas fa-chart-line"></i> Performance</h3>
                 <div class="stats-grid">
-                    <div class="stat-card purple">
-                        <div class="stat-card-header">
-                            <div>
-                                <div class="stat-label">Completed This Month</div>
-                                <div class="stat-value"><?php echo $completed_count; ?></div>
-                                <div class="stat-change">Tasks finished</div>
-                            </div>
-                            <div class="stat-icon">✅</div>
+                    <div class="dashboard-card">
+                        <div class="card-icon gradient-purple">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="card-content">
+                            <div class="card-label">Completed This Month</div>
+                            <div class="card-value"><?php echo $completed_count; ?></div>
+                            <div class="card-change">Tasks finished</div>
                         </div>
                     </div>
 
-                    <div class="stat-card blue">
-                        <div class="stat-card-header">
-                            <div>
-                                <div class="stat-label">Avg Completion Time</div>
-                                <div class="stat-value"><?php echo round($avg_time); ?></div>
-                                <div class="stat-change">Hours per task</div>
-                            </div>
-                            <div class="stat-icon">⚡</div>
+                    <div class="dashboard-card">
+                        <div class="card-icon gradient-blue">
+                            <i class="fas fa-bolt"></i>
+                        </div>
+                        <div class="card-content">
+                            <div class="card-label">Avg Completion Time</div>
+                            <div class="card-value"><?php echo round($avg_time); ?></div>
+                            <div class="card-change">Hours per task</div>
                         </div>
                     </div>
 
-                    <div class="stat-card green">
-                        <div class="stat-card-header">
-                            <div>
-                                <div class="stat-label">Active Tasks</div>
-                                <div class="stat-value"><?php echo $task_breakdown['in_progress'] ?? 0; ?></div>
-                                <div class="stat-change">Currently working on</div>
-                            </div>
-                            <div class="stat-icon">🔄</div>
+                    <div class="dashboard-card">
+                        <div class="card-icon gradient-green">
+                            <i class="fas fa-sync"></i>
+                        </div>
+                        <div class="card-content">
+                            <div class="card-label">Active Tasks</div>
+                            <div class="card-value"><?php echo $task_breakdown['in_progress'] ?? 0; ?></div>
+                            <div class="card-change">Currently working on</div>
                         </div>
                     </div>
                 </div>
@@ -217,9 +213,9 @@ $trend_data = $productivityTrend->fetchAll();
                 <!-- Charts -->
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 24px; margin-top: 32px;">
                     <!-- Productivity Trend -->
-                    <div class="card">
+                    <div class="dashboard-card">
                         <div class="card-header">
-                            <h3>📊 7-Day Productivity Trend</h3>
+                            <h3><i class="fas fa-chart-bar"></i> 7-Day Productivity Trend</h3>
                         </div>
                         <div class="card-body">
                             <canvas id="trendChart" height="250"></canvas>
@@ -227,9 +223,9 @@ $trend_data = $productivityTrend->fetchAll();
                     </div>
 
                     <!-- Task Breakdown -->
-                    <div class="card">
+                    <div class="dashboard-card">
                         <div class="card-header">
-                            <h3>📋 Task Breakdown</h3>
+                            <h3><i class="fas fa-tasks"></i> Task Breakdown</h3>
                         </div>
                         <div class="card-body">
                             <canvas id="taskChart" height="250"></canvas>
@@ -238,9 +234,9 @@ $trend_data = $productivityTrend->fetchAll();
                 </div>
 
                 <!-- Recent Achievements -->
-                <div class="card" style="margin-top: 32px;">
+                <div class="dashboard-card" style="margin-top: 32px;">
                     <div class="card-header">
-                        <h3>🏆 Recent Achievements</h3>
+                        <h3><i class="fas fa-trophy"></i> Recent Achievements</h3>
                     </div>
                     <div class="card-body">
                         <?php if (empty($achievements)): ?>
@@ -248,7 +244,7 @@ $trend_data = $productivityTrend->fetchAll();
                                 No completed tasks yet. Keep going!
                             </p>
                         <?php else: ?>
-                            <table class="table">
+                            <table class="data-table">
                                 <thead>
                                     <tr>
                                         <th>Task</th>
@@ -272,7 +268,7 @@ $trend_data = $productivityTrend->fetchAll();
                     </div>
                 </div>
             </div>
-        </main>
+        </div>
     </div>
 
     <script src="../assets/js/theme.js"></script>

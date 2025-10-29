@@ -100,8 +100,9 @@ $activeTimeLog = getActiveTimeLog($currentUser['id']);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Tasks - <?php echo SITE_NAME; ?></title>
-    <link rel="stylesheet" href="../assets/css/ultra-premium.css">
+    <title>My Tasks V3 - <?php echo SITE_NAME; ?></title>
+    <link rel="stylesheet" href="../assets/css/vien-v3.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
     /* Task-specific premium styles */
     .tasks-header {
@@ -430,20 +431,23 @@ $activeTimeLog = getActiveTimeLog($currentUser['id']);
     <?php include '../includes/quick-actions-assets.php'; ?>
 </head>
 <body>
-    <div class="dashboard">
+    <div class="app-container">
         <!-- Sidebar -->
-        <?php include '../includes/employee-sidebar.php'; ?>
+        <?php include '../includes/v3-employee-sidebar.php'; ?>
 
         <!-- Main Content -->
-        <main class="main-content">
-            <div class="topbar">
-                <h1>✓ My Tasks</h1>
-                <div class="topbar-actions">
-                    <?php include '../includes/notifications-dropdown.php'; ?>
-                </div>
-            </div>
+        <div class="main-content">
+            <?php include '../includes/v3-header.php'; ?>
 
-            <div class="content">
+            <div class="content-wrapper">
+                <!-- Page Header -->
+                <div class="page-header">
+                    <div>
+                        <h1 class="page-title"><i class="fas fa-check-circle"></i> My Tasks</h1>
+                        <p class="page-description">Manage your tasks across all projects</p>
+                    </div>
+                </div>
+
                 <!-- Active Timer Banner -->
                 <?php if ($activeTimeLog): ?>
                 <div class="active-timer-banner">
@@ -457,47 +461,47 @@ $activeTimeLog = getActiveTimeLog($currentUser['id']);
 
                 <!-- Stats -->
                 <div class="stats-grid">
-                    <div class="stat-card orange">
-                        <div class="stat-card-header">
-                            <div>
-                                <div class="stat-label">To Do</div>
-                                <div class="stat-value"><?php echo $stats['todo']; ?></div>
-                                <div class="stat-change">Pending tasks</div>
-                            </div>
-                            <div class="stat-icon">📝</div>
+                    <div class="stat-card">
+                        <div class="stat-icon gradient-orange">
+                            <i class="fas fa-clipboard-list"></i>
+                        </div>
+                        <div class="stat-details">
+                            <p class="stat-label">To Do</p>
+                            <h3 class="stat-value"><?php echo $stats['todo']; ?></h3>
+                            <p class="stat-change">Pending tasks</p>
                         </div>
                     </div>
 
-                    <div class="stat-card blue">
-                        <div class="stat-card-header">
-                            <div>
-                                <div class="stat-label">In Progress</div>
-                                <div class="stat-value"><?php echo $stats['in_progress']; ?></div>
-                                <div class="stat-change">Working on</div>
-                            </div>
-                            <div class="stat-icon">🚀</div>
+                    <div class="stat-card">
+                        <div class="stat-icon gradient-blue">
+                            <i class="fas fa-rocket"></i>
+                        </div>
+                        <div class="stat-details">
+                            <p class="stat-label">In Progress</p>
+                            <h3 class="stat-value"><?php echo $stats['in_progress']; ?></h3>
+                            <p class="stat-change">Working on</p>
                         </div>
                     </div>
 
-                    <div class="stat-card purple">
-                        <div class="stat-card-header">
-                            <div>
-                                <div class="stat-label">In Review</div>
-                                <div class="stat-value"><?php echo $stats['review']; ?></div>
-                                <div class="stat-change">Awaiting feedback</div>
-                            </div>
-                            <div class="stat-icon">👀</div>
+                    <div class="stat-card">
+                        <div class="stat-icon gradient-purple">
+                            <i class="fas fa-eye"></i>
+                        </div>
+                        <div class="stat-details">
+                            <p class="stat-label">In Review</p>
+                            <h3 class="stat-value"><?php echo $stats['review']; ?></h3>
+                            <p class="stat-change">Awaiting feedback</p>
                         </div>
                     </div>
 
-                    <div class="stat-card green">
-                        <div class="stat-card-header">
-                            <div>
-                                <div class="stat-label">Completed</div>
-                                <div class="stat-value"><?php echo $stats['completed']; ?></div>
-                                <div class="stat-change"><?php echo $completionRate; ?>% completion</div>
-                            </div>
-                            <div class="stat-icon">✅</div>
+                    <div class="stat-card">
+                        <div class="stat-icon gradient-green">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <div class="stat-details">
+                            <p class="stat-label">Completed</p>
+                            <h3 class="stat-value"><?php echo $stats['completed']; ?></h3>
+                            <p class="stat-change"><?php echo $completionRate; ?>% completion</p>
                         </div>
                     </div>
                 </div>
@@ -506,7 +510,7 @@ $activeTimeLog = getActiveTimeLog($currentUser['id']);
                 <form class="tasks-filters" method="GET">
                     <div class="filter-group">
                         <label>Project</label>
-                        <select name="project" onchange="this.form.submit()">
+                        <select name="project" onchange="this.form.submit()" class="form-control">
                             <option value="all">All Projects</option>
                             <?php foreach ($projects as $project): ?>
                             <option value="<?php echo $project['id']; ?>" <?php echo $projectFilter == $project['id'] ? 'selected' : ''; ?>>
@@ -517,7 +521,7 @@ $activeTimeLog = getActiveTimeLog($currentUser['id']);
                     </div>
                     <div class="filter-group">
                         <label>Priority</label>
-                        <select name="priority" onchange="this.form.submit()">
+                        <select name="priority" onchange="this.form.submit()" class="form-control">
                             <option value="all">All Priorities</option>
                             <option value="low" <?php echo $priorityFilter == 'low' ? 'selected' : ''; ?>>Low</option>
                             <option value="medium" <?php echo $priorityFilter == 'medium' ? 'selected' : ''; ?>>Medium</option>
@@ -616,7 +620,7 @@ $activeTimeLog = getActiveTimeLog($currentUser['id']);
                     </div>
                 </div>
             </div>
-        </main>
+        </div>
     </div>
 
     <script src="../assets/js/theme.js"></script>

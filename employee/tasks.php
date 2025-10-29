@@ -75,27 +75,20 @@ $activeTimeLog = getActiveTimeLog($currentUser['id']);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Tasks - <?php echo SITE_NAME; ?></title>
-    <link rel="stylesheet" href="../assets/css/premium-theme.css">
+    <title>My Tasks V3 - <?php echo SITE_NAME; ?></title>
+    <link rel="stylesheet" href="../assets/css/vien-v3.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <div class="dashboard">
+    <div class="app-container">
         <!-- Sidebar -->
-        <?php include '../includes/employee-sidebar.php'; ?>
+        <?php include '../includes/v3-employee-sidebar.php'; ?>
 
         <!-- Main Content -->
-        <main class="main-content">
-            <div class="topbar">
-                <h1>My Tasks</h1>
-                <div class="topbar-actions">
-                    <a href="create-task.php" class="btn btn-primary btn-sm">+ Create Task</a>
-                    <span style="color: var(--text-secondary); font-size: 14px; margin-left: 16px;">
-                        <?php echo date('l, F j, Y'); ?>
-                    </span>
-                </div>
-            </div>
+        <div class="main-content">
+            <?php include '../includes/v3-header.php'; ?>
 
-            <div class="content">
+            <div class="content-wrapper">
                 <?php if (isset($_SESSION['success_message'])): ?>
                     <div class="alert alert-success" style="margin-bottom: 24px;">
                         <?php
@@ -107,43 +100,43 @@ $activeTimeLog = getActiveTimeLog($currentUser['id']);
 
                 <!-- Quick Stats -->
                 <div class="stats-grid">
-                    <div class="stat-card blue">
-                        <div class="stat-card-header">
-                            <div>
-                                <div class="stat-label">To Do</div>
-                                <div class="stat-value"><?php echo $stats['todo']; ?></div>
-                            </div>
-                            <div class="stat-icon">📋</div>
+                    <div class="dashboard-card">
+                        <div class="card-icon gradient-blue">
+                            <i class="fas fa-clipboard-list"></i>
+                        </div>
+                        <div class="card-content">
+                            <div class="card-label">To Do</div>
+                            <div class="card-value"><?php echo $stats['todo']; ?></div>
                         </div>
                     </div>
 
-                    <div class="stat-card orange">
-                        <div class="stat-card-header">
-                            <div>
-                                <div class="stat-label">In Progress</div>
-                                <div class="stat-value"><?php echo $stats['in_progress']; ?></div>
-                            </div>
-                            <div class="stat-icon">⚙️</div>
+                    <div class="dashboard-card">
+                        <div class="card-icon gradient-orange">
+                            <i class="fas fa-spinner"></i>
+                        </div>
+                        <div class="card-content">
+                            <div class="card-label">In Progress</div>
+                            <div class="card-value"><?php echo $stats['in_progress']; ?></div>
                         </div>
                     </div>
 
-                    <div class="stat-card purple">
-                        <div class="stat-card-header">
-                            <div>
-                                <div class="stat-label">In Review</div>
-                                <div class="stat-value"><?php echo $stats['review']; ?></div>
-                            </div>
-                            <div class="stat-icon">👁️</div>
+                    <div class="dashboard-card">
+                        <div class="card-icon gradient-purple">
+                            <i class="fas fa-eye"></i>
+                        </div>
+                        <div class="card-content">
+                            <div class="card-label">In Review</div>
+                            <div class="card-value"><?php echo $stats['review']; ?></div>
                         </div>
                     </div>
 
-                    <div class="stat-card green">
-                        <div class="stat-card-header">
-                            <div>
-                                <div class="stat-label">Done Today</div>
-                                <div class="stat-value"><?php echo $stats['completed_today']; ?></div>
-                            </div>
-                            <div class="stat-icon">✅</div>
+                    <div class="dashboard-card">
+                        <div class="card-icon gradient-green">
+                            <i class="fas fa-check-double"></i>
+                        </div>
+                        <div class="card-content">
+                            <div class="card-label">Done Today</div>
+                            <div class="card-value"><?php echo $stats['completed_today']; ?></div>
                         </div>
                     </div>
                 </div>
@@ -157,12 +150,12 @@ $activeTimeLog = getActiveTimeLog($currentUser['id']);
                 <?php endif; ?>
 
                 <!-- Filters -->
-                <div class="card">
+                <div class="dashboard-card">
                     <div class="card-body">
                         <form method="GET" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; align-items: end;">
                             <div class="form-group" style="margin-bottom: 0;">
                                 <label>Filter by Status</label>
-                                <select name="status" onchange="this.form.submit()">
+                                <select name="status" class="form-control" onchange="this.form.submit()">
                                     <option value="all" <?php echo $statusFilter === 'all' ? 'selected' : ''; ?>>All Statuses</option>
                                     <option value="todo" <?php echo $statusFilter === 'todo' ? 'selected' : ''; ?>>To Do</option>
                                     <option value="in_progress" <?php echo $statusFilter === 'in_progress' ? 'selected' : ''; ?>>In Progress</option>
@@ -174,7 +167,7 @@ $activeTimeLog = getActiveTimeLog($currentUser['id']);
 
                             <div class="form-group" style="margin-bottom: 0;">
                                 <label>Filter by Project</label>
-                                <select name="project" onchange="this.form.submit()">
+                                <select name="project" class="form-control" onchange="this.form.submit()">
                                     <option value="all" <?php echo $projectFilter === 'all' ? 'selected' : ''; ?>>All Projects</option>
                                     <?php foreach ($projects as $proj): ?>
                                         <option value="<?php echo $proj['id']; ?>" <?php echo $projectFilter == $proj['id'] ? 'selected' : ''; ?>>
@@ -192,7 +185,7 @@ $activeTimeLog = getActiveTimeLog($currentUser['id']);
                 </div>
 
                 <!-- Tasks List -->
-                <div class="card">
+                <div class="dashboard-card">
                     <div class="card-header">
                         <h3>Tasks (<?php echo count($tasks); ?>)</h3>
                     </div>
@@ -291,7 +284,7 @@ $activeTimeLog = getActiveTimeLog($currentUser['id']);
                     </div>
                 </div>
             </div>
-        </main>
+        </div>
     </div>
 
     <script src="../assets/js/main.js"></script>

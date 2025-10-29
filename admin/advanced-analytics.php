@@ -207,8 +207,9 @@ $needsImprovement = array_filter($employees, function($emp) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Advanced Analytics - <?php echo SITE_NAME; ?></title>
-    <link rel="stylesheet" href="../assets/css/ultra-premium.css">
+    <title>Advanced Analytics V3 - <?php echo SITE_NAME; ?></title>
+    <link rel="stylesheet" href="../assets/css/vien-v3.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
     .analytics-grid {
@@ -335,23 +336,21 @@ $needsImprovement = array_filter($employees, function($emp) {
     <?php include '../includes/quick-actions-assets.php'; ?>
 </head>
 <body>
-    <div class="dashboard">
-        <?php include '../includes/admin-sidebar.php'; ?>
+    <div class="app-container">
+        <?php include '../includes/v3-admin-sidebar.php'; ?>
 
         <main class="main-content">
-            <div class="topbar">
-                <h1>📊 Advanced Analytics</h1>
-                <div class="topbar-actions">
-                    <?php include '../includes/notifications-dropdown.php'; ?>
+            <?php include '../includes/v3-header.php'; ?>
+
+            <div class="content-wrapper">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-6);">
+                    <h1>📊 Advanced Analytics</h1>
                     <form method="GET" style="display: flex; gap: var(--space-2);">
                         <input type="date" name="start_date" value="<?php echo $startDate; ?>" class="form-control" style="width: auto;">
                         <input type="date" name="end_date" value="<?php echo $endDate; ?>" class="form-control" style="width: auto;">
                         <button type="submit" class="btn btn-primary btn-sm">Update</button>
                     </form>
                 </div>
-            </div>
-
-            <div class="content">
                 <!-- Summary Stats -->
                 <div class="stats-grid">
                     <div class="stat-card blue">

@@ -122,8 +122,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Task - <?php echo SITE_NAME; ?></title>
-    <link rel="stylesheet" href="../assets/css/ultra-premium.css">
+    <title>Create Task V3 - <?php echo SITE_NAME; ?></title>
+    <link rel="stylesheet" href="../assets/css/vien-v3.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         .dependency-info {
             background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
@@ -143,19 +144,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </style>
 </head>
 <body>
-    <div class="dashboard">
-        <?php include '../includes/manager-sidebar.php'; ?>
+    <div class="app-container">
+        <?php include '../includes/v3-manager-sidebar.php'; ?>
 
-        <main class="main-content">
-            <div class="topbar">
-                <h1>📝 Create New Task</h1>
-                <div class="topbar-actions">
-                    <a href="tasks.php" class="btn btn-secondary btn-sm">← Back to Tasks</a>
-                </div>
-            </div>
+        <div class="main-content">
+            <?php include '../includes/v3-header.php'; ?>
 
-            <div class="content">
-                <div class="card" style="max-width: 800px; margin: 0 auto;">
+            <div class="content-wrapper">
+                <div class="dashboard-card" style="max-width: 800px; margin: 0 auto;">
                     <div class="card-header">
                         <h3>Task Details</h3>
                         <p style="color: var(--text-secondary); font-size: 14px; margin-top: 8px;">
@@ -181,7 +177,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <!-- Project Selection -->
                             <div class="form-group">
                                 <label for="project_id">Project <span style="color: var(--danger);">*</span></label>
-                                <select id="project_id" name="project_id" required onchange="loadProjectTasks()">
+                                <select id="project_id" name="project_id" class="form-control" required onchange="loadProjectTasks()">
                                     <option value="">Select a project...</option>
                                     <?php foreach ($projects as $project): ?>
                                         <option value="<?php echo $project['id']; ?>" <?php echo $projectId == $project['id'] ? 'selected' : ''; ?>>
@@ -197,14 +193,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <!-- Task Name -->
                             <div class="form-group">
                                 <label for="task_name">Task Name <span style="color: var(--danger);">*</span></label>
-                                <input type="text" id="task_name" name="task_name" required
+                                <input type="text" id="task_name" name="task_name" class="form-control" required
                                        placeholder="e.g., Design homepage mockup">
                             </div>
 
                             <!-- Description -->
                             <div class="form-group">
                                 <label for="description">Description</label>
-                                <textarea id="description" name="description" rows="4"
+                                <textarea id="description" name="description" class="form-control" rows="4"
                                           placeholder="Describe what needs to be done..."></textarea>
                             </div>
 
@@ -212,7 +208,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
                                 <div class="form-group">
                                     <label for="assigned_to">Assign To <span style="color: var(--danger);">*</span></label>
-                                    <select id="assigned_to" name="assigned_to" required>
+                                    <select id="assigned_to" name="assigned_to" class="form-control" required>
                                         <option value="">Select team member...</option>
                                         <?php foreach ($employees as $employee): ?>
                                             <option value="<?php echo $employee['id']; ?>">
@@ -224,7 +220,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                                 <div class="form-group">
                                     <label for="priority">Priority</label>
-                                    <select id="priority" name="priority">
+                                    <select id="priority" name="priority" class="form-control">
                                         <option value="low">Low</option>
                                         <option value="medium" selected>Medium</option>
                                         <option value="high">High</option>
@@ -237,13 +233,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
                                 <div class="form-group">
                                     <label for="due_date">Due Date</label>
-                                    <input type="date" id="due_date" name="due_date"
+                                    <input type="date" id="due_date" name="due_date" class="form-control"
                                            min="<?php echo date('Y-m-d'); ?>">
                                 </div>
 
                                 <div class="form-group">
                                     <label for="estimated_hours">Estimated Hours</label>
-                                    <input type="number" id="estimated_hours" name="estimated_hours"
+                                    <input type="number" id="estimated_hours" name="estimated_hours" class="form-control"
                                            step="0.5" min="0" placeholder="e.g., 4.5">
                                 </div>
                             </div>
@@ -251,7 +247,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <!-- Task Dependencies -->
                             <div class="form-group">
                                 <label for="depends_on">Task Dependency (Optional)</label>
-                                <select id="depends_on" name="depends_on">
+                                <select id="depends_on" name="depends_on" class="form-control">
                                     <option value="0">No dependency - This task can start immediately</option>
                                     <?php if (!empty($availableTasks)): ?>
                                         <?php foreach ($availableTasks as $task): ?>
@@ -267,7 +263,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                                 <div id="dependencyOptions" style="display: none; margin-top: 12px;">
                                     <label for="dependency_type">Dependency Type</label>
-                                    <select id="dependency_type" name="dependency_type">
+                                    <select id="dependency_type" name="dependency_type" class="form-control">
                                         <option value="finish_to_start">Finish-to-Start (Default) - Predecessor must finish before this starts</option>
                                         <option value="start_to_start">Start-to-Start - Both tasks start together</option>
                                         <option value="finish_to_finish">Finish-to-Finish - Both tasks finish together</option>
@@ -299,7 +295,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                 </div>
             </div>
-        </main>
+        </div>
     </div>
 
     <script>

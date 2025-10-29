@@ -124,24 +124,23 @@ $completionRate = $taskStats['total_tasks'] > 0 ?
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo e($user['full_name']); ?> - Profile - <?php echo SITE_NAME; ?></title>
-    <link rel="stylesheet" href="../assets/css/ultra-premium.css">
+    <title><?php echo e($user['full_name']); ?> - Profile V3 - <?php echo SITE_NAME; ?></title>
+    <link rel="stylesheet" href="../assets/css/vien-v3.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <?php include '../includes/quick-actions-assets.php'; ?>
 </head>
 <body>
-    <div class="dashboard">
-        <?php include '../includes/admin-sidebar.php'; ?>
+    <div class="app-container">
+        <?php include '../includes/v3-admin-sidebar.php'; ?>
 
-        <main class="main-content">
-            <div class="topbar">
-                <h1>👤 User Profile</h1>
-                <div class="topbar-actions">
-                    <?php include '../includes/global-search-assets.php'; ?>
-                    <?php include '../includes/notifications-dropdown.php'; ?>
+        <div class="main-content">
+            <?php include '../includes/v3-header.php'; ?>
+
+            <div class="content-wrapper">
+                <div class="page-header">
+                    <h1><i class="fas fa-user"></i> User Profile</h1>
                 </div>
-            </div>
 
-            <div class="content">
                 <!-- User Header Card -->
                 <div class="card" style="margin-bottom: var(--space-6);">
                     <div class="card-body">
@@ -162,18 +161,18 @@ $completionRate = $taskStats['total_tasks'] > 0 ?
 
                                 <div style="display: flex; gap: var(--space-6); flex-wrap: wrap; margin-bottom: var(--space-4);">
                                     <div style="display: flex; align-items: center; gap: var(--space-2);">
-                                        <span style="font-size: 18px;">📧</span>
+                                        <span style="font-size: 18px;"><i class="fas fa-envelope"></i></span>
                                         <span style="color: var(--text-secondary);"><?php echo e($user['email']); ?></span>
                                     </div>
                                     <div style="display: flex; align-items: center; gap: var(--space-2);">
-                                        <span style="font-size: 18px;">🎯</span>
+                                        <span style="font-size: 18px;"><i class="fas fa-bullseye"></i></span>
                                         <span class="badge" style="background: var(--primary-gradient); color: white; font-weight: 700;">
                                             <?php echo ucfirst($user['role']); ?>
                                         </span>
                                     </div>
                                     <?php if ($user['hourly_rate']): ?>
                                     <div style="display: flex; align-items: center; gap: var(--space-2);">
-                                        <span style="font-size: 18px;">💰</span>
+                                        <span style="font-size: 18px;"><i class="fas fa-dollar-sign"></i></span>
                                         <span style="color: var(--text-secondary);">$<?php echo number_format($user['hourly_rate']); ?>/hr</span>
                                     </div>
                                     <?php endif; ?>
@@ -231,7 +230,7 @@ $completionRate = $taskStats['total_tasks'] > 0 ?
                                 <div class="stat-value"><?php echo $taskStats['total_tasks']; ?></div>
                                 <div class="stat-change"><?php echo $taskStats['completed']; ?> completed</div>
                             </div>
-                            <div class="stat-icon">✓</div>
+                            <div class="stat-icon"><i class="fas fa-check"></i></div>
                         </div>
                     </div>
 
@@ -242,7 +241,7 @@ $completionRate = $taskStats['total_tasks'] > 0 ?
                                 <div class="stat-value"><?php echo formatHours($timeStats['total_minutes'] ?? 0); ?></div>
                                 <div class="stat-change"><?php echo $timeStats['sessions'] ?? 0; ?> sessions</div>
                             </div>
-                            <div class="stat-icon">⏱️</div>
+                            <div class="stat-icon"><i class="fas fa-clock"></i></div>
                         </div>
                     </div>
 
@@ -253,7 +252,7 @@ $completionRate = $taskStats['total_tasks'] > 0 ?
                                 <div class="stat-value"><?php echo $points['tasks_completed_early']; ?></div>
                                 <div class="stat-change">Before deadline</div>
                             </div>
-                            <div class="stat-icon">🎁</div>
+                            <div class="stat-icon"><i class="fas fa-gift"></i></div>
                         </div>
                     </div>
 
@@ -264,7 +263,7 @@ $completionRate = $taskStats['total_tasks'] > 0 ?
                                 <div class="stat-value"><?php echo count($projects); ?></div>
                                 <div class="stat-change">Currently working</div>
                             </div>
-                            <div class="stat-icon">📁</div>
+                            <div class="stat-icon"><i class="fas fa-folder"></i></div>
                         </div>
                     </div>
                 </div>
@@ -273,7 +272,7 @@ $completionRate = $taskStats['total_tasks'] > 0 ?
                     <!-- Badges -->
                     <div class="card">
                         <div class="card-header">
-                            <h3>🏆 Earned Badges</h3>
+                            <h3><i class="fas fa-trophy"></i> Earned Badges</h3>
                         </div>
                         <div class="card-body">
                             <?php if (empty($badges)): ?>
@@ -303,7 +302,7 @@ $completionRate = $taskStats['total_tasks'] > 0 ?
                     <!-- Projects -->
                     <div class="card">
                         <div class="card-header">
-                            <h3>📁 Active Projects</h3>
+                            <h3><i class="fas fa-folder"></i> Active Projects</h3>
                         </div>
                         <div class="card-body">
                             <?php if (empty($projects)): ?>
@@ -331,7 +330,7 @@ $completionRate = $taskStats['total_tasks'] > 0 ?
                 <!-- Recent Activity -->
                 <div class="card" style="margin-top: var(--space-6);">
                     <div class="card-header">
-                        <h3>📋 Recent Completions</h3>
+                        <h3><i class="fas fa-list"></i> Recent Completions</h3>
                     </div>
                     <div class="card-body">
                         <?php if (empty($recentTasks)): ?>
@@ -339,7 +338,7 @@ $completionRate = $taskStats['total_tasks'] > 0 ?
                                 No completed tasks yet
                             </p>
                         <?php else: ?>
-                            <table class="table">
+                            <table class="data-table">
                                 <thead>
                                     <tr>
                                         <th>Task</th>
@@ -361,7 +360,7 @@ $completionRate = $taskStats['total_tasks'] > 0 ?
                     </div>
                 </div>
             </div>
-        </main>
+        </div>
     </div>
 
     <script src="../assets/js/theme.js"></script>

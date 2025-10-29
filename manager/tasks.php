@@ -46,24 +46,19 @@ foreach ($tasks as $task) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tasks - <?php echo SITE_NAME; ?></title>
-    <link rel="stylesheet" href="../assets/css/ultra-premium.css">
+    <title>Tasks V3 - <?php echo SITE_NAME; ?></title>
+    <link rel="stylesheet" href="../assets/css/vien-v3.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <?php include '../includes/quick-actions-assets.php'; ?>
 </head>
 <body>
-    <div class="dashboard">
-        <?php include '../includes/manager-sidebar.php'; ?>
+    <div class="app-container">
+        <?php include '../includes/v3-manager-sidebar.php'; ?>
 
-        <main class="main-content">
-            <div class="topbar">
-                <h1>✓ Tasks Management</h1>
-                <div class="topbar-actions">
-                    <?php include '../includes/global-search-assets.php'; ?>
-                    <?php include '../includes/notifications-dropdown.php'; ?>
-                </div>
-            </div>
+        <div class="main-content">
+            <?php include '../includes/v3-header.php'; ?>
 
-            <div class="content">
+            <div class="content-wrapper">
                 <!-- Task Stats -->
                 <div class="stats-grid" style="margin-bottom: var(--space-6);">
                     <div class="stat-card orange">
@@ -105,7 +100,7 @@ foreach ($tasks as $task) {
                 </div>
 
                 <!-- All Tasks Table -->
-                <div class="card">
+                <div class="dashboard-card">
                     <div class="card-header">
                         <h3>All Tasks</h3>
                     </div>
@@ -115,7 +110,7 @@ foreach ($tasks as $task) {
                                 No tasks found
                             </p>
                         <?php else: ?>
-                            <table class="table">
+                            <table class="data-table">
                                 <thead>
                                     <tr>
                                         <th>Task</th>
@@ -167,7 +162,7 @@ foreach ($tasks as $task) {
                     </div>
                 </div>
             </div>
-        </main>
+        </div>
     </div>
 
     <script src="../assets/js/theme.js"></script>
