@@ -55,49 +55,60 @@ $managers = $db->query("SELECT id, full_name FROM users WHERE role IN ('admin', 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Projects - <?php echo SITE_NAME; ?></title>
-    <link rel="stylesheet" href="../assets/css/ultra-premium.css">
-    <?php include '../includes/quick-actions-assets.php'; ?>
+    <title>Projects - <?php echo SITE_NAME; ?> V3</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../assets/css/vien-v3.css">
 </head>
 <body>
-    <div class="dashboard">
-        <?php include '../includes/admin-sidebar.php'; ?>
+    <div class="app-container">
+        <?php include '../includes/v3-admin-sidebar.php'; ?>
 
-        <main class="main-content">
-            <div class="topbar">
-                <h1>📁 Projects</h1>
-                <div class="topbar-actions">
-                    <?php include '../includes/global-search-assets.php'; ?>
-                    <?php include '../includes/notifications-dropdown.php'; ?>
+        <div class="main-content">
+            <?php include '../includes/v3-header.php'; ?>
+
+            <div class="content-wrapper">
+                <!-- Page Title -->
+                <div style="margin-bottom: 30px;">
+                    <h1 style="margin-bottom: 8px;">Projects</h1>
+                    <p style="color: var(--text-secondary); font-size: 14px; margin: 0;">
+                        Manage all projects, assign managers, and track progress
+                    </p>
                 </div>
-            </div>
 
-            <div class="content">
                 <?php if (isset($successMessage)): ?>
-                    <div class="alert alert-success"><?php echo e($successMessage); ?></div>
+                    <div class="alert alert-success" style="margin-bottom: 20px;">
+                        <i class="fas fa-check-circle"></i> <?php echo e($successMessage); ?>
+                    </div>
                 <?php endif; ?>
                 <?php if (isset($errorMessage)): ?>
-                    <div class="alert alert-error"><?php echo e($errorMessage); ?></div>
+                    <div class="alert alert-error" style="margin-bottom: 20px;">
+                        <i class="fas fa-exclamation-circle"></i> <?php echo e($errorMessage); ?>
+                    </div>
                 <?php endif; ?>
 
                 <!-- Create Project Form -->
-                <div class="card" style="margin-bottom: var(--space-6);">
+                <div class="card" style="margin-bottom: 30px;">
                     <div class="card-header">
-                        <h3>+ Create New Project</h3>
+                        <div>
+                            <h3 style="margin: 0;">Create New Project</h3>
+                            <p style="font-size: 13px; color: var(--text-secondary); margin: 4px 0 0 0;">
+                                Fill in the details below to create a new project
+                            </p>
+                        </div>
                     </div>
                     <div class="card-body">
-                        <form method="POST" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-4);">
+                        <form method="POST" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
                             <div class="form-group">
-                                <label for="project_name">Project Name *</label>
-                                <input type="text" id="project_name" name="project_name" class="form-control" required>
+                                <label>Project Name <span class="required">*</span></label>
+                                <input type="text" name="project_name" class="form-control" placeholder="Enter project name" required>
                             </div>
                             <div class="form-group">
-                                <label for="client_name">Client Name</label>
-                                <input type="text" id="client_name" name="client_name" class="form-control">
+                                <label>Client Name</label>
+                                <input type="text" name="client_name" class="form-control" placeholder="Enter client name">
                             </div>
                             <div class="form-group">
-                                <label for="assigned_manager">Assign Manager</label>
-                                <select id="assigned_manager" name="assigned_manager" class="form-control">
+                                <label>Assign Manager</label>
+                                <select name="assigned_manager" class="form-control">
                                     <option value="">Unassigned</option>
                                     <?php foreach ($managers as $manager): ?>
                                         <option value="<?php echo $manager['id']; ?>"><?php echo e($manager['full_name']); ?></option>
@@ -105,20 +116,20 @@ $managers = $db->query("SELECT id, full_name FROM users WHERE role IN ('admin', 
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label for="budget">Budget ($)</label>
-                                <input type="number" id="budget" name="budget" class="form-control" step="0.01">
+                                <label>Budget ($)</label>
+                                <input type="number" name="budget" class="form-control" step="0.01" placeholder="0.00">
                             </div>
                             <div class="form-group">
-                                <label for="start_date">Start Date *</label>
-                                <input type="date" id="start_date" name="start_date" class="form-control" value="<?php echo date('Y-m-d'); ?>" required>
+                                <label>Start Date <span class="required">*</span></label>
+                                <input type="date" name="start_date" class="form-control" value="<?php echo date('Y-m-d'); ?>" required>
                             </div>
                             <div class="form-group">
-                                <label for="due_date">Due Date *</label>
-                                <input type="date" id="due_date" name="due_date" class="form-control" value="<?php echo date('Y-m-d', strtotime('+30 days')); ?>" required>
+                                <label>Due Date <span class="required">*</span></label>
+                                <input type="date" name="due_date" class="form-control" value="<?php echo date('Y-m-d', strtotime('+30 days')); ?>" required>
                             </div>
                             <div class="form-group">
-                                <label for="status">Status</label>
-                                <select id="status" name="status" class="form-control">
+                                <label>Status</label>
+                                <select name="status" class="form-control">
                                     <option value="planning">Planning</option>
                                     <option value="in_progress">In Progress</option>
                                     <option value="review">Review</option>
@@ -127,8 +138,8 @@ $managers = $db->query("SELECT id, full_name FROM users WHERE role IN ('admin', 
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label for="priority">Priority</label>
-                                <select id="priority" name="priority" class="form-control">
+                                <label>Priority</label>
+                                <select name="priority" class="form-control">
                                     <option value="low">Low</option>
                                     <option value="medium" selected>Medium</option>
                                     <option value="high">High</option>
@@ -136,11 +147,13 @@ $managers = $db->query("SELECT id, full_name FROM users WHERE role IN ('admin', 
                                 </select>
                             </div>
                             <div class="form-group" style="grid-column: span 2;">
-                                <label for="description">Description</label>
-                                <textarea id="description" name="description" class="form-control" rows="3"></textarea>
+                                <label>Description</label>
+                                <textarea name="description" class="form-control" rows="3" placeholder="Enter project description"></textarea>
                             </div>
                             <div style="grid-column: span 2;">
-                                <button type="submit" name="create_project" class="btn btn-primary">Create Project</button>
+                                <button type="submit" name="create_project" class="btn btn-primary">
+                                    <i class="fas fa-plus"></i> Create Project
+                                </button>
                             </div>
                         </form>
                     </div>
@@ -149,81 +162,129 @@ $managers = $db->query("SELECT id, full_name FROM users WHERE role IN ('admin', 
                 <!-- Projects List -->
                 <div class="card">
                     <div class="card-header">
-                        <h3>All Projects (<?php echo count($projects); ?>)</h3>
-                    </div>
-                    <div class="card-body">
-                        <?php if (empty($projects)): ?>
-                            <p style="text-align: center; color: var(--text-secondary); padding: var(--space-10);">
-                                No projects created yet.
+                        <div>
+                            <h3 style="margin: 0;">All Projects (<?php echo count($projects); ?>)</h3>
+                            <p style="font-size: 13px; color: var(--text-secondary); margin: 4px 0 0 0;">
+                                View and manage all projects in the system
                             </p>
+                        </div>
+                    </div>
+                    <div class="card-body" style="padding: 0;">
+                        <?php if (empty($projects)): ?>
+                            <div style="text-align: center; padding: 60px 20px;">
+                                <i class="fas fa-folder-open" style="font-size: 48px; color: var(--text-tertiary); margin-bottom: 16px;"></i>
+                                <p style="color: var(--text-secondary); margin: 0;">No projects created yet.</p>
+                            </div>
                         <?php else: ?>
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th>Project Name</th>
-                                        <th>Client</th>
-                                        <th>Manager</th>
-                                        <th>Status</th>
-                                        <th>Priority</th>
-                                        <th>Progress</th>
-                                        <th>Due Date</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php foreach ($projects as $project): ?>
-                                    <?php
-                                    $completion = $project['task_count'] > 0 ?
-                                        round(($project['completed_tasks'] / $project['task_count']) * 100) : 0;
-                                    ?>
-                                    <tr class="<?php echo isOverdue($project['due_date'], $project['status']) ? 'overdue' : ''; ?>">
-                                        <td><strong><?php echo e($project['project_name']); ?></strong></td>
-                                        <td><?php echo e($project['client_name'] ?? 'N/A'); ?></td>
-                                        <td><?php echo e($project['manager_name'] ?? 'Unassigned'); ?></td>
-                                        <td>
-                                            <span class="badge <?php echo getStatusClass($project['status']); ?>">
-                                                <?php echo ucfirst(str_replace('_', ' ', $project['status'])); ?>
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <span class="badge <?php echo getPriorityClass($project['priority']); ?>">
-                                                <?php echo ucfirst($project['priority']); ?>
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <div class="progress-bar-container">
-                                                <div class="progress-bar" style="width: <?php echo $completion; ?>%"></div>
-                                            </div>
-                                            <small style="color: var(--text-secondary);">
-                                                <?php echo $completion; ?>% (<?php echo $project['completed_tasks']; ?>/<?php echo $project['task_count']; ?>)
-                                            </small>
-                                        </td>
-                                        <td>
-                                            <?php if ($project['due_date']): ?>
-                                                <?php echo date('M d, Y', strtotime($project['due_date'])); ?>
-                                                <?php if (isOverdue($project['due_date'], $project['status'])): ?>
-                                                    <br><span style="color: var(--status-blocked); font-size: var(--font-xs);">⚠️ Overdue</span>
+                            <div class="data-table-container" style="border: none; box-shadow: none;">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th class="sortable">Project Name</th>
+                                            <th class="sortable">Client</th>
+                                            <th class="sortable">Manager</th>
+                                            <th>Status</th>
+                                            <th>Priority</th>
+                                            <th>Progress</th>
+                                            <th class="sortable">Due Date</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php foreach ($projects as $project): ?>
+                                        <?php
+                                        $completion = $project['task_count'] > 0 ?
+                                            round(($project['completed_tasks'] / $project['task_count']) * 100) : 0;
+                                        $isOverdue = isOverdue($project['due_date'], $project['status']);
+                                        ?>
+                                        <tr>
+                                            <td>
+                                                <strong style="color: var(--heading-color);"><?php echo e($project['project_name']); ?></strong>
+                                            </td>
+                                            <td><?php echo e($project['client_name'] ?? 'N/A'); ?></td>
+                                            <td><?php echo e($project['manager_name'] ?? 'Unassigned'); ?></td>
+                                            <td>
+                                                <?php
+                                                $statusClass = 'badge-info';
+                                                if ($project['status'] === 'completed') $statusClass = 'badge-success';
+                                                elseif ($project['status'] === 'in_progress') $statusClass = 'badge-primary';
+                                                elseif ($project['status'] === 'on_hold') $statusClass = 'badge-warning';
+                                                elseif ($project['status'] === 'planning') $statusClass = 'badge-info';
+                                                ?>
+                                                <span class="badge <?php echo $statusClass; ?>">
+                                                    <?php echo ucfirst(str_replace('_', ' ', $project['status'])); ?>
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <?php
+                                                $priorityClass = 'badge-info';
+                                                if ($project['priority'] === 'urgent') $priorityClass = 'badge-danger';
+                                                elseif ($project['priority'] === 'high') $priorityClass = 'badge-warning';
+                                                elseif ($project['priority'] === 'medium') $priorityClass = 'badge-primary';
+                                                elseif ($project['priority'] === 'low') $priorityClass = 'badge-success';
+                                                ?>
+                                                <span class="badge <?php echo $priorityClass; ?>">
+                                                    <?php echo ucfirst($project['priority']); ?>
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <div style="display: flex; align-items: center; gap: 8px;">
+                                                    <div style="flex: 1; height: 6px; background: var(--border-light); border-radius: 3px; overflow: hidden;">
+                                                        <div style="width: <?php echo $completion; ?>%; height: 100%;
+                                                                    background: linear-gradient(90deg, #17b06b 0%, #14d48f 100%);
+                                                                    border-radius: 3px; transition: width 300ms ease;"></div>
+                                                    </div>
+                                                    <span style="font-size: 12px; font-weight: 600; color: var(--text-primary); min-width: 45px;">
+                                                        <?php echo $completion; ?>%
+                                                    </span>
+                                                </div>
+                                                <div style="font-size: 11px; color: var(--text-secondary); margin-top: 4px;">
+                                                    <?php echo $project['completed_tasks']; ?>/<?php echo $project['task_count']; ?> tasks
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <?php if ($project['due_date']): ?>
+                                                    <div style="<?php echo $isOverdue ? 'color: var(--danger);' : ''; ?>">
+                                                        <?php echo date('M d, Y', strtotime($project['due_date'])); ?>
+                                                        <?php if ($isOverdue): ?>
+                                                            <div style="font-size: 11px; margin-top: 2px;">
+                                                                <i class="fas fa-exclamation-triangle"></i> Overdue
+                                                            </div>
+                                                        <?php endif; ?>
+                                                    </div>
+                                                <?php else: ?>
+                                                    <span style="color: var(--text-tertiary);">No deadline</span>
                                                 <?php endif; ?>
-                                            <?php else: ?>
-                                                <span style="color: var(--text-tertiary);">No deadline</span>
-                                            <?php endif; ?>
-                                        </td>
-                                        <td>
-                                            <a href="project-detail.php?id=<?php echo $project['id']; ?>" class="btn btn-primary btn-sm">
-                                                View Details
-                                            </a>
-                                        </td>
-                                    </tr>
-                                    <?php endforeach; ?>
-                                </tbody>
-                            </table>
+                                            </td>
+                                            <td>
+                                                <a href="project-detail.php?id=<?php echo $project['id']; ?>" class="btn btn-primary btn-sm">
+                                                    <i class="fas fa-eye"></i> View
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        <?php endforeach; ?>
+                                    </tbody>
+                                </table>
+                            </div>
                         <?php endif; ?>
                     </div>
                 </div>
+
             </div>
-        </main>
+        </div>
     </div>
 
-    <script src="../assets/js/theme.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Auto-hide alerts after 5 seconds
+        const alerts = document.querySelectorAll('.alert');
+        alerts.forEach(alert => {
+            setTimeout(() => {
+                alert.style.opacity = '0';
+                setTimeout(() => alert.remove(), 300);
+            }, 5000);
+        });
+    });
+    </script>
 </body>
 </html>

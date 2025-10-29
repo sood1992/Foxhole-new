@@ -176,86 +176,98 @@ $pageTitle = $action === 'add' ? 'Add Team Member' : 'Edit Team Member';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo $pageTitle; ?> - <?php echo SITE_NAME; ?></title>
-    <link rel="stylesheet" href="../assets/css/ultra-premium.css">
+    <title><?php echo $pageTitle; ?> - <?php echo SITE_NAME; ?> V3</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../assets/css/vien-v3.css">
 </head>
 <body>
-    <div class="dashboard">
-        <!-- Sidebar -->
-        <?php include '../includes/admin-sidebar.php'; ?>
+    <div class="app-container">
+        <?php include '../includes/v3-admin-sidebar.php'; ?>
 
-        <!-- Main Content -->
-        <main class="main-content">
-            <div class="topbar">
-                <h1><?php echo $pageTitle; ?></h1>
-                <div class="topbar-actions">
-                    <a href="team.php" class="btn btn-secondary btn-sm">← Back to Team</a>
+        <div class="main-content">
+            <?php include '../includes/v3-header.php'; ?>
+
+            <div class="content-wrapper">
+                <!-- Page Title -->
+                <div style="margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <h1 style="margin-bottom: 8px;"><?php echo $pageTitle; ?></h1>
+                        <p style="color: var(--text-secondary); font-size: 14px; margin: 0;">
+                            <?php echo $action === 'add' ? 'Add a new team member to the system' : 'Update user information and permissions'; ?>
+                        </p>
+                    </div>
+                    <a href="team.php" class="btn btn-outline btn-sm">
+                        <i class="fas fa-arrow-left"></i> Back to Team
+                    </a>
                 </div>
-            </div>
 
-            <div class="content">
-                <div class="card" style="max-width: 800px; margin: 0 auto;">
+                <!-- User Form -->
+                <div class="card" style="max-width: 900px; margin: 0 auto;">
                     <div class="card-header">
-                        <h3><?php echo $action === 'add' ? 'New User Information' : 'Update User Information'; ?></h3>
+                        <div>
+                            <h3 style="margin: 0;"><?php echo $action === 'add' ? 'New User Information' : 'Update User Information'; ?></h3>
+                            <p style="font-size: 13px; color: var(--text-secondary); margin: 4px 0 0 0;">
+                                Fill in the user details below
+                            </p>
+                        </div>
                     </div>
                     <div class="card-body">
                         <?php if ($error): ?>
                             <div class="alert alert-error" style="margin-bottom: 24px;">
-                                <?php echo e($error); ?>
+                                <i class="fas fa-exclamation-circle"></i> <?php echo e($error); ?>
                             </div>
                         <?php endif; ?>
 
                         <?php if ($success): ?>
                             <div class="alert alert-success" style="margin-bottom: 24px;">
-                                <?php echo e($success); ?>
-                                <br><small>Redirecting to team page...</small>
+                                <i class="fas fa-check-circle"></i> <?php echo e($success); ?>
                             </div>
                         <?php endif; ?>
 
-                        <form method="POST" action="" style="display: grid; gap: 24px;">
-                            <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <form method="POST" action="" style="display: grid; gap: 20px;">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
                                 <div class="form-group">
-                                    <label for="full_name">Full Name <span style="color: var(--danger);">*</span></label>
-                                    <input type="text" id="full_name" name="full_name" required
+                                    <label>Full Name <span class="required">*</span></label>
+                                    <input type="text" name="full_name" class="form-control" required
                                            value="<?php echo e($user['full_name'] ?? ''); ?>"
                                            placeholder="John Doe">
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="username">Username <span style="color: var(--danger);">*</span></label>
-                                    <input type="text" id="username" name="username" required
+                                    <label>Username <span class="required">*</span></label>
+                                    <input type="text" name="username" class="form-control" required
                                            value="<?php echo e($user['username'] ?? ''); ?>"
                                            placeholder="johndoe">
                                 </div>
                             </div>
 
-                            <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
                                 <div class="form-group">
-                                    <label for="email">Email <span style="color: var(--danger);">*</span></label>
-                                    <input type="email" id="email" name="email" required
+                                    <label>Email <span class="required">*</span></label>
+                                    <input type="email" name="email" class="form-control" required
                                            value="<?php echo e($user['email'] ?? ''); ?>"
                                            placeholder="john@example.com">
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="password">
+                                    <label>
                                         Password
                                         <?php if ($action === 'add'): ?>
-                                            <span style="color: var(--danger);">*</span>
+                                            <span class="required">*</span>
                                         <?php else: ?>
-                                            <span style="color: var(--text-secondary); font-weight: 400;">(leave blank to keep current)</span>
+                                            <span style="color: var(--text-secondary); font-weight: 400; font-size: 12px;">(leave blank to keep current)</span>
                                         <?php endif; ?>
                                     </label>
-                                    <input type="password" id="password" name="password"
+                                    <input type="password" name="password" class="form-control"
                                            <?php echo $action === 'add' ? 'required' : ''; ?>
                                            placeholder="<?php echo $action === 'add' ? 'Min. 6 characters' : 'Leave blank to keep current'; ?>">
                                 </div>
                             </div>
 
-                            <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
                                 <div class="form-group">
-                                    <label for="role">Role <span style="color: var(--danger);">*</span></label>
-                                    <select id="role" name="role" required>
+                                    <label>Role <span class="required">*</span></label>
+                                    <select name="role" class="form-control" required>
                                         <option value="employee" <?php echo ($user['role'] ?? '') === 'employee' ? 'selected' : ''; ?>>
                                             Employee
                                         </option>
@@ -269,29 +281,28 @@ $pageTitle = $action === 'add' ? 'Add Team Member' : 'Edit Team Member';
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="job_title">Job Title</label>
-                                    <input type="text" id="job_title" name="job_title"
+                                    <label>Job Title</label>
+                                    <input type="text" name="job_title" class="form-control"
                                            value="<?php echo e($user['job_title'] ?? ''); ?>"
                                            placeholder="e.g., Senior Developer">
                                 </div>
                             </div>
 
-                            <div class="form-row" style="display: grid; grid-template-columns: 1fr; gap: 20px;">
-                                <div class="form-group">
-                                    <label style="display: flex; align-items: center; gap: 12px; cursor: pointer;">
-                                        <input type="checkbox" id="is_active" name="is_active"
-                                               <?php echo ($user['is_active'] ?? 1) ? 'checked' : ''; ?>
-                                               style="width: 20px; height: 20px;">
-                                        <span>Active User</span>
-                                    </label>
-                                    <small style="color: var(--text-secondary); font-size: 12px;">Inactive users cannot log in</small>
-                                </div>
+                            <div class="form-group">
+                                <label class="custom-checkbox">
+                                    <input type="checkbox" name="is_active"
+                                           <?php echo ($user['is_active'] ?? 1) ? 'checked' : ''; ?>>
+                                    <span class="checkmark"></span>
+                                    <span class="checkbox-label">Active User</span>
+                                </label>
+                                <small class="form-text">Inactive users cannot log in</small>
                             </div>
 
-                            <div style="border-top: 2px solid var(--border); padding-top: 24px; display: flex; gap: 12px; justify-content: flex-end;">
-                                <a href="team.php" class="btn btn-secondary">Cancel</a>
+                            <div style="border-top: 2px solid var(--border-light); padding-top: 24px; display: flex; gap: 12px; justify-content: flex-end;">
+                                <a href="team.php" class="btn btn-outline">Cancel</a>
                                 <button type="submit" class="btn btn-primary">
-                                    <?php echo $action === 'add' ? '+ Add User' : 'Save Changes'; ?>
+                                    <i class="fas fa-<?php echo $action === 'add' ? 'plus' : 'save'; ?>"></i>
+                                    <?php echo $action === 'add' ? 'Add User' : 'Save Changes'; ?>
                                 </button>
                             </div>
                         </form>
@@ -300,9 +311,14 @@ $pageTitle = $action === 'add' ? 'Add Team Member' : 'Edit Team Member';
 
                 <?php if ($action === 'edit' && $user): ?>
                 <!-- User Statistics -->
-                <div class="card" style="max-width: 800px; margin: 24px auto 0;">
+                <div class="card" style="max-width: 900px; margin: 30px auto 0;">
                     <div class="card-header">
-                        <h3>User Statistics</h3>
+                        <div>
+                            <h3 style="margin: 0;">User Performance Statistics</h3>
+                            <p style="font-size: 13px; color: var(--text-secondary); margin: 4px 0 0 0;">
+                                Overview of user activity and performance metrics
+                            </p>
+                        </div>
                     </div>
                     <div class="card-body">
                         <?php
@@ -319,36 +335,62 @@ $pageTitle = $action === 'add' ? 'Add Team Member' : 'Edit Team Member';
                         $stats->execute([$userId, $userId, $userId]);
                         $userStats = $stats->fetch();
                         ?>
-                        <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));">
-                            <div class="stat-card blue">
-                                <div class="stat-label">Projects</div>
-                                <div class="stat-value"><?php echo $userStats['projects'] ?? 0; ?></div>
+                        <div class="row">
+                            <div class="col-lg-3 col-md-6">
+                                <div class="dashboard-card">
+                                    <div class="card-icon primary">
+                                        <i class="fas fa-folder"></i>
+                                    </div>
+                                    <div class="card-value"><?php echo $userStats['projects'] ?? 0; ?></div>
+                                    <div class="card-label">Projects</div>
+                                </div>
                             </div>
-                            <div class="stat-card green">
-                                <div class="stat-label">Total Tasks</div>
-                                <div class="stat-value"><?php echo $userStats['total_tasks'] ?? 0; ?></div>
+                            <div class="col-lg-3 col-md-6">
+                                <div class="dashboard-card">
+                                    <div class="card-icon info">
+                                        <i class="fas fa-tasks"></i>
+                                    </div>
+                                    <div class="card-value"><?php echo $userStats['total_tasks'] ?? 0; ?></div>
+                                    <div class="card-label">Total Tasks</div>
+                                </div>
                             </div>
-                            <div class="stat-card orange">
-                                <div class="stat-label">Completed</div>
-                                <div class="stat-value"><?php echo $userStats['completed_tasks'] ?? 0; ?></div>
+                            <div class="col-lg-3 col-md-6">
+                                <div class="dashboard-card">
+                                    <div class="card-icon success">
+                                        <i class="fas fa-check-circle"></i>
+                                    </div>
+                                    <div class="card-value"><?php echo $userStats['completed_tasks'] ?? 0; ?></div>
+                                    <div class="card-label">Completed</div>
+                                </div>
                             </div>
-                            <div class="stat-card purple">
-                                <div class="stat-label">Total Hours</div>
-                                <div class="stat-value"><?php echo formatHours($userStats['total_minutes'] ?? 0); ?>h</div>
-                            </div>
-                            <div class="stat-card blue">
-                                <div class="stat-label">Time Sessions</div>
-                                <div class="stat-value"><?php echo $userStats['total_sessions'] ?? 0; ?></div>
+                            <div class="col-lg-3 col-md-6">
+                                <div class="dashboard-card">
+                                    <div class="card-icon warning">
+                                        <i class="fas fa-clock"></i>
+                                    </div>
+                                    <div class="card-value"><?php echo formatHours($userStats['total_minutes'] ?? 0); ?>h</div>
+                                    <div class="card-label">Total Hours</div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
                 <?php endif; ?>
             </div>
-        </main>
+        </div>
     </div>
 
-    <script src="../assets/js/main.js"></script>
-    <script src="../assets/js/theme.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Auto-hide alerts after 5 seconds
+        const alerts = document.querySelectorAll('.alert');
+        alerts.forEach(alert => {
+            setTimeout(() => {
+                alert.style.opacity = '0';
+                setTimeout(() => alert.remove(), 300);
+            }, 5000);
+        });
+    });
+    </script>
 </body>
 </html>
