@@ -28,6 +28,10 @@ $current_page = basename($_SERVER['PHP_SELF']);
                data-menu="team" title="Team">
                 <i class="fas fa-users"></i>
             </a>
+            <a href="../admin/bulk-operations.php" class="main-menu-item <?php echo (in_array($current_page, ['bulk-operations.php', 'bulk-import.php'])) ? 'active' : ''; ?>"
+               data-menu="bulk" title="Bulk Operations">
+                <i class="fas fa-layer-group"></i>
+            </a>
             <a href="../admin/gamification.php" class="main-menu-item <?php echo ($current_page == 'gamification.php') ? 'active' : ''; ?>"
                data-menu="gamification" title="Gamification">
                 <i class="fas fa-trophy"></i>
@@ -65,7 +69,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
             <a href="../admin/projects.php" class="menu-item <?php echo ($current_page == 'projects.php') ? 'active' : ''; ?>">
                 <i class="fas fa-list"></i> All Projects
             </a>
-            <a href="../admin/create-project.php" class="menu-item <?php echo ($current_page == 'create-project.php') ? 'active' : ''; ?>">
+            <a href="../admin/projects.php#create" class="menu-item">
                 <i class="fas fa-plus"></i> Create Project
             </a>
             <a href="../admin/projects.php?status=in_progress" class="menu-item">
@@ -90,6 +94,17 @@ $current_page = basename($_SERVER['PHP_SELF']);
             </a>
             <a href="../admin/team.php?role=employee" class="menu-item">
                 <i class="fas fa-user"></i> Employees
+            </a>
+        </div>
+
+        <!-- Bulk Operations Section -->
+        <div class="menu-section" data-menu="bulk">
+            <div class="menu-title">Bulk Operations</div>
+            <a href="../admin/bulk-operations.php" class="menu-item <?php echo ($current_page == 'bulk-operations.php') ? 'active' : ''; ?>">
+                <i class="fas fa-users-cog"></i> Bulk User Operations
+            </a>
+            <a href="../admin/bulk-import.php" class="menu-item <?php echo ($current_page == 'bulk-import.php') ? 'active' : ''; ?>">
+                <i class="fas fa-file-import"></i> Bulk Import
             </a>
         </div>
 

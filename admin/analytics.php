@@ -95,102 +95,161 @@ $hourlyDist = $db->query("
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Analytics - <?php echo SITE_NAME; ?></title>
-    <link rel="stylesheet" href="../assets/css/ultra-premium.css">
+    <title>Analytics - <?php echo SITE_NAME; ?> V3</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../assets/css/vien-v3.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
 <body>
-    <div class="dashboard">
-        <!-- Sidebar -->
-        <?php include '../includes/admin-sidebar.php'; ?>
+    <div class="app-container">
+        <?php include '../includes/v3-admin-sidebar.php'; ?>
 
-        <!-- Main Content -->
-        <main class="main-content">
-            <div class="topbar">
-                <h1>📈 Analytics & Insights</h1>
-                <div class="topbar-actions">
-                    <?php include '../includes/notifications-dropdown.php'; ?>
-                    <form method="GET" style="display: flex; gap: 8px; margin-left: 12px;">
-                        <input type="date" name="start_date" value="<?php echo $startDate; ?>" class="form-control" style="width: auto; padding: 6px 12px;">
-                        <input type="date" name="end_date" value="<?php echo $endDate; ?>" class="form-control" style="width: auto; padding: 6px 12px;">
-                        <button type="submit" class="btn btn-primary btn-sm">Filter</button>
+        <div class="main-content">
+            <?php include '../includes/v3-header.php'; ?>
+
+            <div class="content-wrapper">
+                <!-- Page Title -->
+                <div style="margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+                    <div>
+                        <h1 style="margin-bottom: 8px;">Analytics & Insights</h1>
+                        <p style="color: var(--text-secondary); font-size: 14px; margin: 0;">
+                            Visual analytics and performance metrics
+                        </p>
+                    </div>
+                    <form method="GET" style="display: flex; gap: 8px; align-items: center;">
+                        <input type="date" name="start_date" value="<?php echo $startDate; ?>" class="form-control" style="width: auto;">
+                        <span style="color: var(--text-secondary);">to</span>
+                        <input type="date" name="end_date" value="<?php echo $endDate; ?>" class="form-control" style="width: auto;">
+                        <button type="submit" class="btn btn-primary btn-sm">
+                            <i class="fas fa-filter"></i> Filter
+                        </button>
                     </form>
                 </div>
-            </div>
 
-            <div class="content">
                 <!-- Chart Grid -->
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(500px, 1fr)); gap: 20px;">
 
                     <!-- Daily Hours Trend -->
                     <div class="card">
                         <div class="card-header">
-                            <h3>📊 Daily Hours Tracked</h3>
+                            <div>
+                                <h3 style="margin: 0;"><i class="fas fa-chart-area"></i> Daily Hours Tracked</h3>
+                                <p style="font-size: 13px; color: var(--text-secondary); margin: 4px 0 0 0;">
+                                    Time logged per day
+                                </p>
+                            </div>
                         </div>
                         <div class="card-body">
-                            <canvas id="dailyHoursChart" height="250"></canvas>
+                            <div style="position: relative; height: 250px;">
+                                <canvas id="dailyHoursChart"></canvas>
+                            </div>
                         </div>
                     </div>
 
                     <!-- Employee Productivity -->
                     <div class="card">
                         <div class="card-header">
-                            <h3>👥 Employee Productivity (This Month)</h3>
+                            <div>
+                                <h3 style="margin: 0;"><i class="fas fa-users"></i> Employee Productivity</h3>
+                                <p style="font-size: 13px; color: var(--text-secondary); margin: 4px 0 0 0;">
+                                    Top 10 employees this month
+                                </p>
+                            </div>
                         </div>
                         <div class="card-body">
-                            <canvas id="employeeChart" height="250"></canvas>
+                            <div style="position: relative; height: 250px;">
+                                <canvas id="employeeChart"></canvas>
+                            </div>
                         </div>
                     </div>
 
                     <!-- Project Status Distribution -->
                     <div class="card">
                         <div class="card-header">
-                            <h3>📁 Project Status Distribution</h3>
+                            <div>
+                                <h3 style="margin: 0;"><i class="fas fa-folder"></i> Project Status Distribution</h3>
+                                <p style="font-size: 13px; color: var(--text-secondary); margin: 4px 0 0 0;">
+                                    Projects by status
+                                </p>
+                            </div>
                         </div>
                         <div class="card-body">
-                            <canvas id="projectStatusChart" height="250"></canvas>
+                            <div style="position: relative; height: 250px;">
+                                <canvas id="projectStatusChart"></canvas>
+                            </div>
                         </div>
                     </div>
 
                     <!-- Task Completion Trend -->
                     <div class="card">
                         <div class="card-header">
-                            <h3>✓ Task Completion Trend (12 Weeks)</h3>
+                            <div>
+                                <h3 style="margin: 0;"><i class="fas fa-chart-line"></i> Task Completion Trend</h3>
+                                <p style="font-size: 13px; color: var(--text-secondary); margin: 4px 0 0 0;">
+                                    Tasks completed over last 12 weeks
+                                </p>
+                            </div>
                         </div>
                         <div class="card-body">
-                            <canvas id="taskTrendChart" height="250"></canvas>
+                            <div style="position: relative; height: 250px;">
+                                <canvas id="taskTrendChart"></canvas>
+                            </div>
                         </div>
                     </div>
 
                     <!-- Priority Distribution -->
                     <div class="card">
                         <div class="card-header">
-                            <h3>⚡ Active Tasks by Priority</h3>
+                            <div>
+                                <h3 style="margin: 0;"><i class="fas fa-exclamation-circle"></i> Active Tasks by Priority</h3>
+                                <p style="font-size: 13px; color: var(--text-secondary); margin: 4px 0 0 0;">
+                                    Distribution of incomplete tasks
+                                </p>
+                            </div>
                         </div>
                         <div class="card-body">
-                            <canvas id="priorityChart" height="250"></canvas>
+                            <div style="position: relative; height: 250px;">
+                                <canvas id="priorityChart"></canvas>
+                            </div>
                         </div>
                     </div>
 
                     <!-- Peak Working Hours -->
                     <div class="card">
                         <div class="card-header">
-                            <h3>⏰ Peak Working Hours (Last 30 Days)</h3>
+                            <div>
+                                <h3 style="margin: 0;"><i class="fas fa-clock"></i> Peak Working Hours</h3>
+                                <p style="font-size: 13px; color: var(--text-secondary); margin: 4px 0 0 0;">
+                                    Session starts by hour (last 30 days)
+                                </p>
+                            </div>
                         </div>
                         <div class="card-body">
-                            <canvas id="hourlyChart" height="250"></canvas>
+                            <div style="position: relative; height: 250px;">
+                                <canvas id="hourlyChart"></canvas>
+                            </div>
                         </div>
                     </div>
 
                 </div>
             </div>
-        </main>
+        </div>
     </div>
 
     <script>
-    // Chart.js defaults
-    Chart.defaults.font.family = "'Inter', sans-serif";
-    Chart.defaults.color = '#64748b';
+    // Chart.js defaults - V3 colors
+    Chart.defaults.font.family = "'Nunito', sans-serif";
+    Chart.defaults.color = '#6b7280';
+
+    // V3 Color palette
+    const v3Colors = {
+        primary: '#145388',
+        success: '#17b06b',
+        warning: '#f8b739',
+        danger: '#ec4561',
+        info: '#0dcaf0',
+        purple: '#9b59b6'
+    };
 
     // Daily Hours Chart
     const dailyHoursCtx = document.getElementById('dailyHoursChart').getContext('2d');
@@ -201,8 +260,8 @@ $hourlyDist = $db->query("
             datasets: [{
                 label: 'Hours',
                 data: <?php echo json_encode(array_column($dailyHoursData, 'hours')); ?>,
-                borderColor: '#3b82f6',
-                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                borderColor: v3Colors.primary,
+                backgroundColor: 'rgba(20, 83, 136, 0.1)',
                 fill: true,
                 tension: 0.4
             }]
@@ -228,7 +287,7 @@ $hourlyDist = $db->query("
             datasets: [{
                 label: 'Hours Worked',
                 data: <?php echo json_encode(array_column($employeeProductivity, 'total_hours')); ?>,
-                backgroundColor: '#10b981'
+                backgroundColor: v3Colors.success
             }]
         },
         options: {
@@ -251,7 +310,7 @@ $hourlyDist = $db->query("
             labels: <?php echo json_encode(array_column($projectStatus, 'status')); ?>,
             datasets: [{
                 data: <?php echo json_encode(array_column($projectStatus, 'count')); ?>,
-                backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4']
+                backgroundColor: [v3Colors.primary, v3Colors.success, v3Colors.warning, v3Colors.danger, v3Colors.purple, v3Colors.info]
             }]
         },
         options: {
@@ -269,8 +328,8 @@ $hourlyDist = $db->query("
             datasets: [{
                 label: 'Tasks Completed',
                 data: <?php echo json_encode(array_column($taskTrend, 'completed')); ?>,
-                borderColor: '#10b981',
-                backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                borderColor: v3Colors.success,
+                backgroundColor: 'rgba(23, 176, 107, 0.1)',
                 fill: true,
                 tension: 0.4
             }]
@@ -295,7 +354,7 @@ $hourlyDist = $db->query("
             labels: <?php echo json_encode(array_column($priorityDist, 'priority')); ?>,
             datasets: [{
                 data: <?php echo json_encode(array_column($priorityDist, 'count')); ?>,
-                backgroundColor: ['#10b981', '#3b82f6', '#f59e0b', '#ef4444']
+                backgroundColor: [v3Colors.success, v3Colors.primary, v3Colors.warning, v3Colors.danger]
             }]
         },
         options: {
@@ -313,7 +372,7 @@ $hourlyDist = $db->query("
             datasets: [{
                 label: 'Sessions Started',
                 data: <?php echo json_encode(array_column($hourlyDist, 'sessions')); ?>,
-                backgroundColor: '#3b82f6'
+                backgroundColor: v3Colors.primary
             }]
         },
         options: {
@@ -328,6 +387,5 @@ $hourlyDist = $db->query("
         }
     });
     </script>
-    <script src="../assets/js/theme.js"></script>
 </body>
 </html>
