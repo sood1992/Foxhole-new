@@ -72,4 +72,3 @@ function getCurrentUser() {
     $stmt->execute([$_SESSION['user_id']]);
     return $stmt->fetch();
 }
-?>

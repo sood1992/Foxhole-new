@@ -196,4 +196,3 @@ function notifyMention($userId, $mentionedByName, $entityType, $entityId) {
         $entityId
     );
 }
-?>

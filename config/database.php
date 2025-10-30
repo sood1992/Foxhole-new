@@ -22,4 +22,3 @@ function getDBConnection() {
         die("Database connection failed. Please check your configuration.");
     }
 }
-?>
