@@ -52,9 +52,9 @@
   --spacing-xxl: 48px;
 
   /* Layout */
-  --sidebar-width: 320px;
+  --sidebar-width: 260px;
   --sidebar-collapsed: 80px;
-  --sidebar-sub-width: 180px;
+  --sidebar-sub-width: 230px;
   --header-height: 60px;
   --container-padding: 30px;
 
@@ -201,7 +201,7 @@ a:hover {
 
 /* Main Panel (Icons + Text) */
 .sidebar-main-panel {
-  width: 140px;
+  width: 60px;
   background: var(--sidebar-bg);
   border-right: 1px solid rgba(255,255,255,0.05);
   display: flex;
@@ -236,13 +236,12 @@ a:hover {
   height: 48px;
   display: flex;
   align-items: center;
-  justify-content: flex-start;
-  padding: 0 16px;
+  justify-content: center;
+  padding: 0;
   color: var(--text-secondary);
   cursor: pointer;
   transition: all var(--transition-speed) var(--transition-timing);
   position: relative;
-  gap: 12px;
   text-decoration: none;
   margin: 2px 8px;
   border-radius: 8px;
@@ -266,14 +265,12 @@ a:hover {
 }
 
 .main-menu-item span {
-  font-size: 14px;
-  font-weight: 500;
-  white-space: nowrap;
+  display: none;
 }
 
 /* Sub Panel (Menu Items) */
 .sidebar-sub-panel {
-  width: var(--sidebar-sub-width);
+  flex: 1;
   padding: 20px 0;
   overflow-y: auto;
 }
