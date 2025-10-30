@@ -143,8 +143,28 @@ $currentUser = getCurrentUser();
             <?php include '../includes/v3-header.php'; ?>
 
             <div class="content-wrapper">
-                <div class="page-header">
-                    <h1><i class="fas fa-calendar-alt"></i> Calendar</h1>
+                <!-- Page Title -->
+                <div style="margin-bottom: 30px;">
+                    <h1 style="margin-bottom: 8px;">Calendar</h1>
+                    <p style="color: var(--text-secondary); font-size: 14px; margin: 0;">
+                        View and manage tasks, deadlines, and milestones
+                    </p>
+                </div>
+
+                <!-- Tab Navigation -->
+                <div class="tab-nav" style="margin-bottom: 30px;">
+                    <a href="#" class="tab-link" data-view="dayGridMonth">
+                        <i class="fas fa-calendar"></i> Month
+                    </a>
+                    <a href="#" class="tab-link" data-view="timeGridWeek">
+                        <i class="fas fa-calendar-week"></i> Week
+                    </a>
+                    <a href="#" class="tab-link" data-view="timeGridDay">
+                        <i class="fas fa-calendar-day"></i> Day
+                    </a>
+                    <a href="#" class="tab-link" data-view="listWeek">
+                        <i class="fas fa-list"></i> Agenda
+                    </a>
                 </div>
 
                 <div class="calendar-legend">
@@ -191,10 +211,24 @@ $currentUser = getCurrentUser();
     </div>
 
     <script>
+    let calendarInstance; // Store calendar instance globally
+
     document.addEventListener('DOMContentLoaded', function() {
         const calendarEl = document.getElementById('calendar');
-        const calendar = new FullCalendar.Calendar(calendarEl, {
-            initialView: 'dayGridMonth',
+
+        // Determine initial view from URL hash
+        let initialView = 'dayGridMonth';
+        const hash = window.location.hash.slice(1);
+        if (hash === 'today' || hash === 'day') {
+            initialView = 'timeGridDay';
+        } else if (hash === 'week') {
+            initialView = 'timeGridWeek';
+        } else if (hash === 'month') {
+            initialView = 'dayGridMonth';
+        }
+
+        calendarInstance = new FullCalendar.Calendar(calendarEl, {
+            initialView: initialView,
             headerToolbar: {
                 left: 'prev,next today',
                 center: 'title',
@@ -223,10 +257,37 @@ $currentUser = getCurrentUser();
             },
             height: 'auto',
             navLinks: true,
-            dayMaxEvents: true
+            dayMaxEvents: true,
+            viewDidMount: function(info) {
+                // Update active tab when view changes
+                updateActiveTab(info.view.type);
+            }
         });
 
-        calendar.render();
+        calendarInstance.render();
+
+        // Tab navigation handlers
+        const tabLinks = document.querySelectorAll('.tab-link[data-view]');
+        tabLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const viewName = this.getAttribute('data-view');
+                calendarInstance.changeView(viewName);
+                updateActiveTab(viewName);
+            });
+        });
+
+        // Update active tab indicator
+        function updateActiveTab(viewType) {
+            tabLinks.forEach(link => link.classList.remove('active'));
+            const activeLink = document.querySelector(`.tab-link[data-view="${viewType}"]`);
+            if (activeLink) {
+                activeLink.classList.add('active');
+            }
+        }
+
+        // Set initial active tab
+        updateActiveTab(initialView);
 
         // Show event details
         window.showEventDetails = function(event) {
