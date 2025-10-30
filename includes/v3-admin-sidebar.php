@@ -16,7 +16,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
         </div>
 
         <div class="main-menu">
-            <a href="../admin/index.php" class="main-menu-item <?php echo ($current_page == 'index.php') ? 'active' : ''; ?>"
+            <a href="../admin/index.php" class="main-menu-item <?php echo (in_array($current_page, ['index.php', 'master-dashboard.php'])) ? 'active' : ''; ?>"
                data-menu="dashboard" title="Dashboard">
                 <i class="fas fa-home"></i>
                 <span>Dashboard</span>
