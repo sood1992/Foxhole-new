@@ -97,8 +97,14 @@ try {
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if (!$user) {
-            $errors[] = "User ID $userId not found in database";
+            $errors[] = "User ID $userId not found in database (may have been already deleted)";
             error_log("Bulk delete: User $userId not found");
+            continue;
+        }
+
+        // Don't allow deleting yourself through bulk delete (extra safety)
+        if ($userId == $currentUserId) {
+            $errors[] = "Cannot delete your own account (ID: $userId)";
             continue;
         }
 
