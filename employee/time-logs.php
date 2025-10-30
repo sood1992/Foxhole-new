@@ -9,9 +9,30 @@ if (!isLoggedIn() || !hasRole('employee')) {
 $db = getDBConnection();
 $currentUser = getCurrentUser();
 
-// Get date range filter
-$startDate = isset($_GET['start_date']) ? $_GET['start_date'] : date('Y-m-d', strtotime('-30 days'));
-$endDate = isset($_GET['end_date']) ? $_GET['end_date'] : date('Y-m-d');
+// Get period filter and set date range accordingly
+$period = isset($_GET['period']) ? $_GET['period'] : 'month';
+
+switch ($period) {
+    case 'today':
+        $startDate = date('Y-m-d');
+        $endDate = date('Y-m-d');
+        break;
+    case 'week':
+        $startDate = date('Y-m-d', strtotime('monday this week'));
+        $endDate = date('Y-m-d', strtotime('sunday this week'));
+        break;
+    case 'month':
+        $startDate = date('Y-m-01'); // First day of current month
+        $endDate = date('Y-m-d'); // Today
+        break;
+    case 'custom':
+        $startDate = isset($_GET['start_date']) ? $_GET['start_date'] : date('Y-m-d', strtotime('-30 days'));
+        $endDate = isset($_GET['end_date']) ? $_GET['end_date'] : date('Y-m-d');
+        break;
+    default:
+        $startDate = date('Y-m-01');
+        $endDate = date('Y-m-d');
+}
 
 // Get all time logs for this user
 $timeLogs = $db->prepare("
@@ -92,32 +113,46 @@ $projectData = $projectSummary->fetchAll();
                     </div>
                 </div>
 
+                <!-- Tab Navigation -->
+                <div class="tab-nav" style="margin-bottom: 30px;">
+                    <a href="time-logs.php?period=today" class="tab-link <?php echo ($period === 'today') ? 'active' : ''; ?>">
+                        <i class="fas fa-calendar-day"></i> Today
+                    </a>
+                    <a href="time-logs.php?period=week" class="tab-link <?php echo ($period === 'week') ? 'active' : ''; ?>">
+                        <i class="fas fa-calendar-week"></i> This Week
+                    </a>
+                    <a href="time-logs.php?period=month" class="tab-link <?php echo ($period === 'month') ? 'active' : ''; ?>">
+                        <i class="fas fa-calendar"></i> This Month
+                    </a>
+                </div>
+
                 <!-- Summary Stats -->
-                <div class="stats-grid">
-                    <div class="dashboard-card">
-                        <div class="card-icon gradient-blue">
-                            <i class="fas fa-clock"></i>
-                        </div>
-                        <div class="card-content">
+                <div class="row" style="margin-bottom: 30px;">
+                    <div class="col-lg-4 col-md-6">
+                        <div class="dashboard-card">
+                            <div class="card-icon primary">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="card-value"><?php echo formatHours($totalMinutes); ?>h</div>
                             <div class="card-label">Total Hours</div>
-                            <div class="card-value"><?php echo formatHours($totalMinutes); ?></div>
-                            <div class="card-change">In selected period</div>
+                            <div class="card-trend up">In selected period</div>
                         </div>
                     </div>
 
-                    <div class="dashboard-card">
-                        <div class="card-icon gradient-green">
-                            <i class="fas fa-list"></i>
-                        </div>
-                        <div class="card-content">
-                            <div class="card-label">Sessions</div>
+                    <div class="col-lg-4 col-md-6">
+                        <div class="dashboard-card">
+                            <div class="card-icon success">
+                                <i class="fas fa-list"></i>
+                            </div>
                             <div class="card-value"><?php echo $totalSessions; ?></div>
-                            <div class="card-change">Total work sessions</div>
+                            <div class="card-label">Sessions</div>
+                            <div class="card-trend up">Total work sessions</div>
                         </div>
                     </div>
 
-                    <div class="dashboard-card">
-                        <div class="card-icon gradient-orange">
+                    <div class="col-lg-4 col-md-6">
+                        <div class="dashboard-card">
+                            <div class="card-icon warning">
                             <i class="fas fa-chart-bar"></i>
                         </div>
                         <div class="card-content">

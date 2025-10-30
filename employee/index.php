@@ -132,57 +132,65 @@ $weekSummaryData = $weekSummary->fetchAll();
                 </div>
                 <?php endif; ?>
 
-                <!-- Stats Grid -->
-                <div class="stats-grid">
-                    <div class="dashboard-card">
-                        <div class="card-icon gradient-blue">
-                            <i class="fas fa-tasks"></i>
-                        </div>
-                        <div class="card-content">
-                            <div class="card-label">My Tasks</div>
+                <!-- Compact Stats Grid -->
+                <div class="row" style="margin-bottom: 30px;">
+                    <div class="col-lg-3 col-md-6">
+                        <div class="dashboard-card">
+                            <div class="card-icon primary">
+                                <i class="fas fa-tasks"></i>
+                            </div>
                             <div class="card-value"><?php echo $stats['my_tasks']; ?></div>
-                            <div class="card-change">Active</div>
+                            <div class="card-label">My Tasks</div>
+                            <div class="card-trend up">Active</div>
                         </div>
                     </div>
 
-                    <div class="dashboard-card">
-                        <div class="card-icon gradient-green">
-                            <i class="fas fa-check-circle"></i>
-                        </div>
-                        <div class="card-content">
-                            <div class="card-label">Completed</div>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="dashboard-card">
+                            <div class="card-icon success">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
                             <div class="card-value"><?php echo $stats['completed_week']; ?></div>
-                            <div class="card-change">This Week</div>
+                            <div class="card-label">Completed</div>
+                            <div class="card-trend up">This Week</div>
                         </div>
                     </div>
 
-                    <div class="dashboard-card">
-                        <div class="card-icon gradient-orange">
-                            <i class="fas fa-clock"></i>
-                        </div>
-                        <div class="card-content">
+                    <div class="col-lg-3 col-md-6">
+                        <div class="dashboard-card">
+                            <div class="card-icon warning">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="card-value"><?php echo $stats['hours_week']; ?>h</div>
                             <div class="card-label">Hours Logged</div>
-                            <div class="card-value"><?php echo $stats['hours_week']; ?></div>
-                            <div class="card-change">This Week</div>
+                            <div class="card-trend up">This Week</div>
                         </div>
                     </div>
 
-                    <div class="dashboard-card">
-                        <div class="card-icon gradient-purple">
-                            <i class="fas fa-folder"></i>
-                        </div>
-                        <div class="card-content">
-                            <div class="card-label">Projects</div>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="dashboard-card">
+                            <div class="card-icon info">
+                                <i class="fas fa-folder"></i>
+                            </div>
                             <div class="card-value"><?php echo $stats['projects']; ?></div>
-                            <div class="card-change">Involved</div>
+                            <div class="card-label">Projects</div>
+                            <div class="card-trend up">Involved</div>
                         </div>
                     </div>
                 </div>
 
                 <!-- My Tasks -->
-                <div class="dashboard-card">
+                <div class="card">
                     <div class="card-header">
-                        <h3>My Tasks</h3>
+                        <div>
+                            <h3 style="margin: 0;">My Tasks</h3>
+                            <p style="font-size: 13px; color: var(--text-secondary); margin: 4px 0 0 0;">
+                                Your active tasks and deadlines
+                            </p>
+                        </div>
+                        <a href="tasks.php" class="btn btn-primary btn-sm">
+                            <i class="fas fa-list"></i> View All
+                        </a>
                     </div>
                     <div class="card-body">
                         <div class="task-list">
@@ -266,23 +274,28 @@ $weekSummaryData = $weekSummary->fetchAll();
                 </div>
 
                 <!-- Today's Time Logs -->
-                <div class="dashboard-card">
+                <div class="card" style="margin-top: 30px;">
                     <div class="card-header">
-                        <h3>Today's Time Logs</h3>
-                        <span style="color: var(--text-secondary); font-size: 14px;">
-                            Total: <?php
-                                $todayTotal = 0;
-                                foreach ($todayLogsData as $log) {
-                                    if ($log['end_time']) {
-                                        $todayTotal += $log['duration_minutes'];
+                        <div>
+                            <h3 style="margin: 0;">Today's Time Logs</h3>
+                            <p style="font-size: 13px; color: var(--text-secondary); margin: 4px 0 0 0;">
+                                Total: <?php
+                                    $todayTotal = 0;
+                                    foreach ($todayLogsData as $log) {
+                                        if ($log['end_time']) {
+                                            $todayTotal += $log['duration_minutes'];
+                                        }
                                     }
-                                }
-                                echo formatHours($todayTotal);
-                            ?>h
-                        </span>
+                                    echo formatHours($todayTotal);
+                                ?>h logged today
+                            </p>
+                        </div>
+                        <a href="time-logs.php" class="btn btn-outline btn-sm">
+                            <i class="fas fa-clock"></i> View All Logs
+                        </a>
                     </div>
-                    <div class="card-body">
-                        <div class="table-container">
+                    <div class="card-body" style="padding: 0;">
+                        <div class="data-table-container" style="border: none; box-shadow: none;">
                             <table class="data-table">
                                 <thead>
                                     <tr>
@@ -337,12 +350,17 @@ $weekSummaryData = $weekSummary->fetchAll();
                 </div>
 
                 <!-- This Week's Summary -->
-                <div class="dashboard-card">
+                <div class="card" style="margin-top: 30px;">
                     <div class="card-header">
-                        <h3>This Week's Summary by Project</h3>
+                        <div>
+                            <h3 style="margin: 0;">This Week's Summary by Project</h3>
+                            <p style="font-size: 13px; color: var(--text-secondary); margin: 4px 0 0 0;">
+                                Time distribution across projects this week
+                            </p>
+                        </div>
                     </div>
-                    <div class="card-body">
-                        <div class="table-container">
+                    <div class="card-body" style="padding: 0;">
+                        <div class="data-table-container" style="border: none; box-shadow: none;">
                             <table class="data-table">
                                 <thead>
                                     <tr>
