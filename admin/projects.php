@@ -33,18 +33,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create_project'])) {
     }
 }
 
-// Get all projects
-$projects = $db->query("
+// Get status filter from query parameter
+$statusFilter = isset($_GET['status']) ? $_GET['status'] : 'all';
+
+// Build query based on filter
+$query = "
     SELECT p.*,
            u.full_name as manager_name,
            (SELECT COUNT(*) FROM tasks WHERE project_id = p.id) as task_count,
            (SELECT COUNT(*) FROM tasks WHERE project_id = p.id AND status = 'completed') as completed_tasks
     FROM projects p
     LEFT JOIN users u ON p.assigned_manager = u.id
-    ORDER BY
-        FIELD(p.status, 'in_progress', 'review', 'planning', 'on_hold', 'completed'),
-        p.due_date ASC
-")->fetchAll();
+";
+
+// Add WHERE clause if status filter is applied
+if ($statusFilter !== 'all') {
+    $query .= " WHERE p.status = " . $db->quote($statusFilter);
+}
+
+$query .= " ORDER BY
+    FIELD(p.status, 'in_progress', 'review', 'planning', 'on_hold', 'completed'),
+    p.due_date ASC
+";
+
+$projects = $db->query($query)->fetchAll();
 
 // Get managers for assignment
 $managers = $db->query("SELECT id, full_name FROM users WHERE role IN ('admin', 'manager') AND is_active = 1 ORDER BY full_name")->fetchAll();
@@ -73,6 +85,22 @@ $managers = $db->query("SELECT id, full_name FROM users WHERE role IN ('admin', 
                     <p style="color: var(--text-secondary); font-size: 14px; margin: 0;">
                         Manage all projects, assign managers, and track progress
                     </p>
+                </div>
+
+                <!-- Tab Navigation -->
+                <div class="tab-nav" style="margin-bottom: 30px;">
+                    <a href="projects.php" class="tab-link <?php echo ($statusFilter === 'all') ? 'active' : ''; ?>">
+                        <i class="fas fa-list"></i> All Projects
+                    </a>
+                    <a href="projects.php?status=in_progress" class="tab-link <?php echo ($statusFilter === 'in_progress') ? 'active' : ''; ?>">
+                        <i class="fas fa-spinner"></i> In Progress
+                    </a>
+                    <a href="projects.php?status=completed" class="tab-link <?php echo ($statusFilter === 'completed') ? 'active' : ''; ?>">
+                        <i class="fas fa-check-circle"></i> Completed
+                    </a>
+                    <a href="#create" class="tab-link" id="createProjectTab">
+                        <i class="fas fa-plus"></i> Create Project
+                    </a>
                 </div>
 
                 <?php if (isset($successMessage)): ?>
@@ -163,9 +191,27 @@ $managers = $db->query("SELECT id, full_name FROM users WHERE role IN ('admin', 
                 <div class="card">
                     <div class="card-header">
                         <div>
-                            <h3 style="margin: 0;">All Projects (<?php echo count($projects); ?>)</h3>
+                            <h3 style="margin: 0;">
+                                <?php
+                                if ($statusFilter === 'in_progress') {
+                                    echo 'In Progress Projects';
+                                } elseif ($statusFilter === 'completed') {
+                                    echo 'Completed Projects';
+                                } else {
+                                    echo 'All Projects';
+                                }
+                                ?> (<?php echo count($projects); ?>)
+                            </h3>
                             <p style="font-size: 13px; color: var(--text-secondary); margin: 4px 0 0 0;">
-                                View and manage all projects in the system
+                                <?php
+                                if ($statusFilter === 'in_progress') {
+                                    echo 'Projects currently in progress';
+                                } elseif ($statusFilter === 'completed') {
+                                    echo 'Successfully completed projects';
+                                } else {
+                                    echo 'View and manage all projects in the system';
+                                }
+                                ?>
                             </p>
                         </div>
                     </div>
@@ -284,6 +330,23 @@ $managers = $db->query("SELECT id, full_name FROM users WHERE role IN ('admin', 
                 setTimeout(() => alert.remove(), 300);
             }, 5000);
         });
+
+        // Handle "Create Project" tab click
+        const createProjectTab = document.getElementById('createProjectTab');
+        if (createProjectTab) {
+            createProjectTab.addEventListener('click', function(e) {
+                e.preventDefault();
+                const createForm = document.querySelector('.card');
+                if (createForm) {
+                    createForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    // Highlight the form briefly
+                    createForm.style.boxShadow = '0 0 0 3px var(--primary)';
+                    setTimeout(() => {
+                        createForm.style.boxShadow = '';
+                    }, 2000);
+                }
+            });
+        }
     });
     </script>
 </body>

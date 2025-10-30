@@ -103,6 +103,21 @@ $teamProductivity = $db->query("
                     </p>
                 </div>
 
+                <!-- Tab Navigation -->
+                <div class="tab-nav" style="margin-bottom: 30px;">
+                    <a href="#overview" class="tab-link active" data-tab="overview">
+                        <i class="fas fa-tachometer-alt"></i> Overview
+                    </a>
+                    <a href="#stats" class="tab-link" data-tab="stats">
+                        <i class="fas fa-chart-bar"></i> Statistics
+                    </a>
+                    <a href="#activity" class="tab-link" data-tab="activity">
+                        <i class="fas fa-clock"></i> Recent Activity
+                    </a>
+                </div>
+
+                <!-- Tab: Overview -->
+                <div class="tab-content active" id="overview">
                 <!-- Stats Grid -->
                 <div class="row">
                     <!-- Active Team -->
@@ -369,6 +384,271 @@ $teamProductivity = $db->query("
                         </a>
                     </div>
                 </div>
+                </div>
+                <!-- End Tab: Overview -->
+
+                <!-- Tab: Statistics -->
+                <div class="tab-content" id="stats">
+                    <!-- Stats Grid -->
+                    <div class="row">
+                        <!-- Active Team -->
+                        <div class="col-lg-3 col-md-6">
+                            <div class="dashboard-card">
+                                <div class="card-icon info">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                                <div class="card-value"><?php echo $stats['employees']; ?></div>
+                                <div class="card-label">Active Team Members</div>
+                                <div class="card-trend up">All Active</div>
+                            </div>
+                        </div>
+
+                        <!-- Active Projects -->
+                        <div class="col-lg-3 col-md-6">
+                            <div class="dashboard-card">
+                                <div class="card-icon warning">
+                                    <i class="fas fa-folder-open"></i>
+                                </div>
+                                <div class="card-value"><?php echo $stats['active_projects']; ?></div>
+                                <div class="card-label">Active Projects</div>
+                                <div class="card-trend up">In Progress</div>
+                            </div>
+                        </div>
+
+                        <!-- Completed This Month -->
+                        <div class="col-lg-3 col-md-6">
+                            <div class="dashboard-card">
+                                <div class="card-icon success">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                                <div class="card-value"><?php echo $stats['completed_month']; ?></div>
+                                <div class="card-label">Completed This Month</div>
+                                <?php if ($stats['completed_trend'] > 0): ?>
+                                    <div class="card-trend up"><?php echo $stats['completed_trend']; ?>%</div>
+                                <?php elseif ($stats['completed_trend'] < 0): ?>
+                                    <div class="card-trend down"><?php echo abs($stats['completed_trend']); ?>%</div>
+                                <?php else: ?>
+                                    <div class="card-trend up">No Change</div>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+
+                        <!-- Hours Logged -->
+                        <div class="col-lg-3 col-md-6">
+                            <div class="dashboard-card">
+                                <div class="card-icon primary">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                                <div class="card-value"><?php echo $stats['hours_week']; ?>h</div>
+                                <div class="card-label">Hours This Week</div>
+                                <div class="card-trend up">Total Logged</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Detailed Statistics Charts -->
+                    <div class="row" style="margin-top: 30px;">
+                        <div class="col-lg-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h3 style="margin: 0;">Project Status Distribution</h3>
+                                </div>
+                                <div class="card-body">
+                                    <div style="text-align: center; padding: 40px 20px; color: var(--text-secondary);">
+                                        <i class="fas fa-chart-pie" style="font-size: 48px; margin-bottom: 16px; opacity: 0.3;"></i>
+                                        <p>Detailed statistics and charts will be displayed here</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h3 style="margin: 0;">Team Performance Trends</h3>
+                                </div>
+                                <div class="card-body">
+                                    <div style="text-align: center; padding: 40px 20px; color: var(--text-secondary);">
+                                        <i class="fas fa-chart-line" style="font-size: 48px; margin-bottom: 16px; opacity: 0.3;"></i>
+                                        <p>Performance trends will be displayed here</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- End Tab: Statistics -->
+
+                <!-- Tab: Recent Activity -->
+                <div class="tab-content" id="activity">
+                    <!-- Team Productivity -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div>
+                                <h3 style="margin: 0;">Team Productivity</h3>
+                                <p style="font-size: 13px; color: var(--text-secondary); margin: 4px 0 0 0;">
+                                    Performance overview for this week
+                                </p>
+                            </div>
+                            <a href="reports.php" class="btn btn-outline btn-sm">
+                                <i class="fas fa-chart-bar"></i> View All Reports
+                            </a>
+                        </div>
+                        <div class="card-body" style="padding: 0;">
+                            <div class="data-table-container" style="border: none; box-shadow: none;">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th class="sortable">Team Member</th>
+                                            <th class="sortable">Role</th>
+                                            <th class="sortable">Projects</th>
+                                            <th class="sortable">Tasks</th>
+                                            <th class="sortable">Completed</th>
+                                            <th class="sortable">Hours</th>
+                                            <th>Activity</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php if (empty($teamProductivity)): ?>
+                                            <tr>
+                                                <td colspan="7" style="text-align: center; padding: 40px; color: var(--text-secondary);">
+                                                    <i class="fas fa-inbox" style="font-size: 48px; margin-bottom: 16px; opacity: 0.3;"></i>
+                                                    <div>No activity recorded this week</div>
+                                                </td>
+                                            </tr>
+                                        <?php else: ?>
+                                            <?php foreach ($teamProductivity as $member): ?>
+                                            <tr>
+                                                <td>
+                                                    <div style="display: flex; align-items: center; gap: 10px;">
+                                                        <div style="width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 12px;">
+                                                            <?php echo strtoupper(substr($member['full_name'], 0, 2)); ?>
+                                                        </div>
+                                                        <strong><?php echo e($member['full_name']); ?></strong>
+                                                    </div>
+                                                </td>
+                                                <td><?php echo e($member['job_title'] ?? 'N/A'); ?></td>
+                                                <td><?php echo $member['projects']; ?></td>
+                                                <td><?php echo $member['tasks']; ?></td>
+                                                <td>
+                                                    <span class="badge badge-success">
+                                                        <?php echo $member['completed_this_week']; ?> completed
+                                                    </span>
+                                                </td>
+                                                <td><strong><?php echo formatHours($member['total_minutes'] ?? 0); ?>h</strong></td>
+                                                <td>
+                                                    <?php
+                                                    $hours = ($member['total_minutes'] ?? 0) / 60;
+                                                    if ($hours >= 30) {
+                                                        echo '<span class="badge badge-success"><i class="fas fa-fire"></i> Highly Active</span>';
+                                                    } elseif ($hours >= 15) {
+                                                        echo '<span class="badge badge-info">Active</span>';
+                                                    } elseif ($hours > 0) {
+                                                        echo '<span class="badge badge-warning">Moderate</span>';
+                                                    } else {
+                                                        echo '<span class="badge badge-secondary">Inactive</span>';
+                                                    }
+                                                    ?>
+                                                </td>
+                                            </tr>
+                                            <?php endforeach; ?>
+                                        <?php endif; ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Projects -->
+                    <div class="card" style="margin-top: 30px;">
+                        <div class="card-header">
+                            <div>
+                                <h3 style="margin: 0;">Recent Projects</h3>
+                                <p style="font-size: 13px; color: var(--text-secondary); margin: 4px 0 0 0;">
+                                    Latest projects in the system
+                                </p>
+                            </div>
+                            <a href="projects.php" class="btn btn-primary btn-sm">
+                                <i class="fas fa-plus"></i> New Project
+                            </a>
+                        </div>
+                        <div class="card-body" style="padding: 0;">
+                            <div class="data-table-container" style="border: none; box-shadow: none;">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th class="sortable">Project Name</th>
+                                            <th class="sortable">Client</th>
+                                            <th class="sortable">Manager</th>
+                                            <th class="sortable">Progress</th>
+                                            <th class="sortable">Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php if (empty($recentProjects)): ?>
+                                            <tr>
+                                                <td colspan="6" style="text-align: center; padding: 40px; color: var(--text-secondary);">
+                                                    <i class="fas fa-folder-open" style="font-size: 48px; margin-bottom: 16px; opacity: 0.3;"></i>
+                                                    <div>No projects found</div>
+                                                    <a href="projects.php" class="btn btn-primary btn-sm" style="margin-top: 16px;">
+                                                        Create Your First Project
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        <?php else: ?>
+                                            <?php foreach ($recentProjects as $project): ?>
+                                            <tr>
+                                                <td>
+                                                    <strong><?php echo e($project['project_name']); ?></strong>
+                                                </td>
+                                                <td><?php echo e($project['client_name']); ?></td>
+                                                <td><?php echo e($project['manager_name'] ?? 'Unassigned'); ?></td>
+                                                <td>
+                                                    <?php
+                                                    $progress = $project['task_count'] > 0
+                                                        ? round(($project['completed_tasks'] / $project['task_count']) * 100)
+                                                        : 0;
+                                                    ?>
+                                                    <div style="display: flex; align-items: center; gap: 8px;">
+                                                        <div style="flex: 1; height: 6px; background: var(--border-light); border-radius: 3px; overflow: hidden;">
+                                                            <div style="width: <?php echo $progress; ?>%; height: 100%; background: linear-gradient(90deg, #17b06b 0%, #14d48f 100%); transition: width 0.3s;"></div>
+                                                        </div>
+                                                        <span style="font-size: 12px; font-weight: 600; color: var(--text-secondary);">
+                                                            <?php echo $progress; ?>%
+                                                        </span>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <?php
+                                                    $statusColors = [
+                                                        'planning' => 'info',
+                                                        'in_progress' => 'warning',
+                                                        'review' => 'primary',
+                                                        'completed' => 'success',
+                                                        'on_hold' => 'secondary'
+                                                    ];
+                                                    $badgeClass = 'badge-' . ($statusColors[$project['status']] ?? 'secondary');
+                                                    ?>
+                                                    <span class="badge <?php echo $badgeClass; ?>">
+                                                        <?php echo ucfirst(str_replace('_', ' ', $project['status'])); ?>
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <a href="project-detail.php?id=<?php echo $project['id']; ?>" class="btn btn-outline btn-sm btn-icon" title="View Details">
+                                                        <i class="fas fa-eye"></i>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                            <?php endforeach; ?>
+                                        <?php endif; ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- End Tab: Recent Activity -->
+
             </div>
         </div>
     </div>
@@ -408,6 +688,45 @@ $teamProductivity = $db->query("
                 card.style.opacity = '1';
                 card.style.transform = 'translateY(0)';
             }, 100 * index);
+        });
+
+        // Tab navigation functionality
+        const tabLinks = document.querySelectorAll('.tab-link');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        // Check for hash in URL on page load
+        const currentHash = window.location.hash.slice(1) || 'overview';
+        switchTab(currentHash);
+
+        tabLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const tabId = this.getAttribute('data-tab');
+                switchTab(tabId);
+                // Update URL hash without scrolling
+                history.pushState(null, null, '#' + tabId);
+            });
+        });
+
+        function switchTab(tabId) {
+            // Remove active class from all tabs
+            tabLinks.forEach(l => l.classList.remove('active'));
+            tabContents.forEach(c => c.classList.remove('active'));
+
+            // Add active class to selected tab
+            const selectedLink = document.querySelector(`.tab-link[data-tab="${tabId}"]`);
+            const selectedContent = document.getElementById(tabId);
+
+            if (selectedLink && selectedContent) {
+                selectedLink.classList.add('active');
+                selectedContent.classList.add('active');
+            }
+        }
+
+        // Listen for hash changes
+        window.addEventListener('hashchange', function() {
+            const hash = window.location.hash.slice(1) || 'overview';
+            switchTab(hash);
         });
     });
     </script>

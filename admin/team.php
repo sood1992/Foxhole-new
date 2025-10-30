@@ -9,8 +9,11 @@ if (!isLoggedIn() || !hasRole('admin')) {
 $db = getDBConnection();
 $currentUser = getCurrentUser();
 
-// Get all team members with their stats
-$teamMembers = $db->query("
+// Get role filter from query parameter
+$roleFilter = isset($_GET['role']) ? $_GET['role'] : 'all';
+
+// Build query based on filter
+$query = "
     SELECT
         u.*,
         COUNT(DISTINCT t.project_id) as projects,
@@ -20,9 +23,16 @@ $teamMembers = $db->query("
     FROM users u
     LEFT JOIN tasks t ON u.id = t.assigned_to
     WHERE u.role IN ('manager', 'employee')
-    GROUP BY u.id
-    ORDER BY u.full_name
-")->fetchAll();
+";
+
+// Add role filter if specified
+if ($roleFilter === 'manager' || $roleFilter === 'employee') {
+    $query .= " AND u.role = " . $db->quote($roleFilter);
+}
+
+$query .= " GROUP BY u.id ORDER BY u.full_name";
+
+$teamMembers = $db->query($query)->fetchAll();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -47,6 +57,22 @@ $teamMembers = $db->query("
                     <p style="color: var(--text-secondary); font-size: 14px; margin: 0;">
                         View and manage all team members and their performance
                     </p>
+                </div>
+
+                <!-- Tab Navigation -->
+                <div class="tab-nav" style="margin-bottom: 30px;">
+                    <a href="team.php" class="tab-link <?php echo ($roleFilter === 'all') ? 'active' : ''; ?>">
+                        <i class="fas fa-users"></i> All Team Members
+                    </a>
+                    <a href="team.php?role=manager" class="tab-link <?php echo ($roleFilter === 'manager') ? 'active' : ''; ?>">
+                        <i class="fas fa-user-tie"></i> Managers
+                    </a>
+                    <a href="team.php?role=employee" class="tab-link <?php echo ($roleFilter === 'employee') ? 'active' : ''; ?>">
+                        <i class="fas fa-user"></i> Employees
+                    </a>
+                    <a href="users.php?action=add" class="tab-link">
+                        <i class="fas fa-user-plus"></i> Add User
+                    </a>
                 </div>
 
                 <?php if (isset($_SESSION['success_message'])): ?>
@@ -120,9 +146,27 @@ $teamMembers = $db->query("
                 <div class="card">
                     <div class="card-header">
                         <div>
-                            <h3 style="margin: 0;">Team Overview</h3>
+                            <h3 style="margin: 0;">
+                                <?php
+                                if ($roleFilter === 'manager') {
+                                    echo 'Managers';
+                                } elseif ($roleFilter === 'employee') {
+                                    echo 'Employees';
+                                } else {
+                                    echo 'Team Overview';
+                                }
+                                ?> (<?php echo count($teamMembers); ?>)
+                            </h3>
                             <p style="font-size: 13px; color: var(--text-secondary); margin: 4px 0 0 0;">
-                                All team members with their performance metrics
+                                <?php
+                                if ($roleFilter === 'manager') {
+                                    echo 'All managers with their performance metrics';
+                                } elseif ($roleFilter === 'employee') {
+                                    echo 'All employees with their performance metrics';
+                                } else {
+                                    echo 'All team members with their performance metrics';
+                                }
+                                ?>
                             </p>
                         </div>
                         <div style="display: flex; gap: 12px; align-items: center;">
