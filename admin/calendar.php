@@ -232,7 +232,7 @@ $currentUser = getCurrentUser();
             headerToolbar: {
                 left: 'prev,next today',
                 center: 'title',
-                right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
+                right: '' // Remove toolbar buttons, use tabs instead
             },
             events: function(info, successCallback, failureCallback) {
                 fetch(`../api/calendar.php?start=${info.startStr}&end=${info.endStr}`)
@@ -266,25 +266,29 @@ $currentUser = getCurrentUser();
 
         calendarInstance.render();
 
-        // Tab navigation handlers
-        const tabLinks = document.querySelectorAll('.tab-link[data-view]');
-        tabLinks.forEach(link => {
-            link.addEventListener('click', function(e) {
-                e.preventDefault();
-                const viewName = this.getAttribute('data-view');
-                calendarInstance.changeView(viewName);
-                updateActiveTab(viewName);
-            });
-        });
-
         // Update active tab indicator
         function updateActiveTab(viewType) {
+            const tabLinks = document.querySelectorAll('.tab-link[data-view]');
             tabLinks.forEach(link => link.classList.remove('active'));
             const activeLink = document.querySelector(`.tab-link[data-view="${viewType}"]`);
             if (activeLink) {
                 activeLink.classList.add('active');
             }
         }
+
+        // Tab navigation handlers
+        const tabLinks = document.querySelectorAll('.tab-link[data-view]');
+        tabLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                const viewName = this.getAttribute('data-view');
+                console.log('Switching to view:', viewName);
+                if (calendarInstance) {
+                    calendarInstance.changeView(viewName);
+                }
+            });
+        });
 
         // Set initial active tab
         updateActiveTab(initialView);

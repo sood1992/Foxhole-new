@@ -52,9 +52,9 @@
   --spacing-xxl: 48px;
 
   /* Layout */
-  --sidebar-width: 260px;
+  --sidebar-width: 390px;
   --sidebar-collapsed: 80px;
-  --sidebar-sub-width: 230px;
+  --sidebar-sub-width: 210px;
   --header-height: 60px;
   --container-padding: 30px;
 
@@ -273,7 +273,7 @@ a:hover {
 
 /* Sub Panel (Menu Items) */
 .sidebar-sub-panel {
-  flex: 1;
+  width: var(--sidebar-sub-width);
   padding: 20px 0;
   overflow-y: auto;
 }

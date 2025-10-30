@@ -98,45 +98,54 @@ $activeTimeLog = getActiveTimeLog($currentUser['id']);
                     </div>
                 <?php endif; ?>
 
+                <!-- Page Title -->
+                <div style="margin-bottom: 30px;">
+                    <h1 style="margin-bottom: 8px;">My Tasks</h1>
+                    <p style="color: var(--text-secondary); font-size: 14px; margin: 0;">
+                        Track and manage your assigned tasks
+                    </p>
+                </div>
+
                 <!-- Quick Stats -->
-                <div class="stats-grid">
-                    <div class="dashboard-card">
-                        <div class="card-icon gradient-blue">
-                            <i class="fas fa-clipboard-list"></i>
-                        </div>
-                        <div class="card-content">
-                            <div class="card-label">To Do</div>
+                <div class="row" style="margin-bottom: 30px;">
+                    <div class="col-lg-3 col-md-6">
+                        <div class="dashboard-card">
+                            <div class="card-icon primary">
+                                <i class="fas fa-clipboard-list"></i>
+                            </div>
                             <div class="card-value"><?php echo $stats['todo']; ?></div>
+                            <div class="card-label">To Do</div>
+                            <div class="card-trend up">Pending</div>
                         </div>
                     </div>
-
-                    <div class="dashboard-card">
-                        <div class="card-icon gradient-orange">
-                            <i class="fas fa-spinner"></i>
-                        </div>
-                        <div class="card-content">
-                            <div class="card-label">In Progress</div>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="dashboard-card">
+                            <div class="card-icon warning">
+                                <i class="fas fa-spinner"></i>
+                            </div>
                             <div class="card-value"><?php echo $stats['in_progress']; ?></div>
+                            <div class="card-label">In Progress</div>
+                            <div class="card-trend up">Active</div>
                         </div>
                     </div>
-
-                    <div class="dashboard-card">
-                        <div class="card-icon gradient-purple">
-                            <i class="fas fa-eye"></i>
-                        </div>
-                        <div class="card-content">
-                            <div class="card-label">In Review</div>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="dashboard-card">
+                            <div class="card-icon info">
+                                <i class="fas fa-eye"></i>
+                            </div>
                             <div class="card-value"><?php echo $stats['review']; ?></div>
+                            <div class="card-label">In Review</div>
+                            <div class="card-trend up">Review</div>
                         </div>
                     </div>
-
-                    <div class="dashboard-card">
-                        <div class="card-icon gradient-green">
-                            <i class="fas fa-check-double"></i>
-                        </div>
-                        <div class="card-content">
-                            <div class="card-label">Done Today</div>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="dashboard-card">
+                            <div class="card-icon success">
+                                <i class="fas fa-check-double"></i>
+                            </div>
                             <div class="card-value"><?php echo $stats['completed_today']; ?></div>
+                            <div class="card-label">Done Today</div>
+                            <div class="card-trend up">Completed</div>
                         </div>
                     </div>
                 </div>
