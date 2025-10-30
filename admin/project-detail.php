@@ -115,151 +115,170 @@ $budgetPercentage = $project['budget'] > 0 ? round(($budgetUsed / $project['budg
             <?php include '../includes/v3-header.php'; ?>
 
             <div class="content-wrapper">
-                <div class="page-header">
-                    <div>
-                        <a href="index.php" style="color: var(--text-secondary); text-decoration: none; font-size: var(--font-sm);"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
-                        <h1><?php echo e($project['project_name']); ?></h1>
+                <!-- Page Title -->
+                <div style="margin-bottom: 30px;">
+                    <a href="projects.php" style="color: var(--text-secondary); text-decoration: none; font-size: 13px; display: inline-block; margin-bottom: 12px;">
+                        <i class="fas fa-arrow-left"></i> Back to Projects
+                    </a>
+                    <h1 style="margin-bottom: 8px;"><?php echo e($project['project_name']); ?></h1>
+                    <div style="display: flex; gap: 12px; align-items: center;">
+                        <span class="badge <?php echo getStatusClass($project['status']); ?>">
+                            <?php echo ucfirst(str_replace('_', ' ', $project['status'])); ?>
+                        </span>
+                        <span class="badge <?php echo getPriorityClass($project['priority']); ?>">
+                            <?php echo ucfirst($project['priority']); ?> Priority
+                        </span>
                     </div>
                 </div>
 
-                <!-- Project Overview Card -->
-                <div class="card" style="margin-bottom: var(--space-6);">
-                    <div class="card-body">
-                        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: var(--space-8);">
-                            <!-- Left: Project Info -->
-                            <div>
-                                <div style="display: flex; gap: var(--space-4); margin-bottom: var(--space-6);">
-                                    <span class="badge <?php echo getStatusClass($project['status']); ?>" style="font-size: var(--font-base); padding: var(--space-2) var(--space-4);">
-                                        <?php echo ucfirst(str_replace('_', ' ', $project['status'])); ?>
-                                    </span>
-                                    <span class="badge <?php echo getPriorityClass($project['priority']); ?>" style="font-size: var(--font-base); padding: var(--space-2) var(--space-4);">
-                                        <?php echo ucfirst($project['priority']); ?> Priority
-                                    </span>
-                                </div>
+                <!-- Project Stats Cards -->
+                <div class="row" style="margin-bottom: 30px;">
+                    <div class="col-lg-3 col-md-6">
+                        <div class="dashboard-card">
+                            <div class="card-icon success">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="card-value"><?php echo $completionRate; ?>%</div>
+                            <div class="card-label">Progress</div>
+                            <div class="card-trend up"><?php echo $taskStats['completed']; ?>/<?php echo $taskStats['total_tasks']; ?> Tasks</div>
+                        </div>
+                    </div>
 
-                                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-4); margin-bottom: var(--space-6);">
-                                    <div>
-                                        <div style="font-size: var(--font-xs); color: var(--text-secondary); margin-bottom: var(--space-1);">Client</div>
-                                        <div style="font-size: var(--font-lg); font-weight: 700; color: var(--text-primary);">
+                    <div class="col-lg-3 col-md-6">
+                        <div class="dashboard-card">
+                            <div class="card-icon primary">
+                                <i class="fas fa-tasks"></i>
+                            </div>
+                            <div class="card-value"><?php echo $taskStats['in_progress']; ?></div>
+                            <div class="card-label">In Progress</div>
+                            <div class="card-trend up">Active Tasks</div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-3 col-md-6">
+                        <div class="dashboard-card">
+                            <div class="card-icon <?php echo $taskStats['overdue'] > 0 ? 'danger' : 'success'; ?>">
+                                <i class="fas fa-calendar-check"></i>
+                            </div>
+                            <div class="card-value"><?php echo $taskStats['overdue']; ?></div>
+                            <div class="card-label">Overdue</div>
+                            <div class="card-trend <?php echo $taskStats['overdue'] > 0 ? 'down' : 'up'; ?>">
+                                <?php echo $taskStats['overdue'] > 0 ? 'Need Attention' : 'On Track'; ?>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-3 col-md-6">
+                        <div class="dashboard-card">
+                            <div class="card-icon info">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="card-value"><?php echo count($teamMembers); ?></div>
+                            <div class="card-label">Team Members</div>
+                            <div class="card-trend up">Assigned</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project Info & Details -->
+                <div class="row" style="margin-bottom: 30px;">
+                    <!-- Project Information -->
+                    <div class="col-lg-8">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 style="margin: 0;">Project Information</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6" style="margin-bottom: 20px;">
+                                        <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">Client</div>
+                                        <div style="font-size: 16px; font-weight: 600; color: var(--heading-color);">
                                             <?php echo e($project['client_name'] ?? 'No client'); ?>
                                         </div>
                                     </div>
-                                    <div>
-                                        <div style="font-size: var(--font-xs); color: var(--text-secondary); margin-bottom: var(--space-1);">Project Manager</div>
-                                        <div style="font-size: var(--font-lg); font-weight: 700; color: var(--text-primary);">
+                                    <div class="col-md-6" style="margin-bottom: 20px;">
+                                        <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">Project Manager</div>
+                                        <div style="font-size: 16px; font-weight: 600; color: var(--heading-color);">
                                             <?php echo e($project['manager_name'] ?? 'Unassigned'); ?>
                                         </div>
                                     </div>
-                                    <div>
-                                        <div style="font-size: var(--font-xs); color: var(--text-secondary); margin-bottom: var(--space-1);">Start Date</div>
-                                        <div style="font-size: var(--font-base); color: var(--text-primary);">
+                                    <div class="col-md-6" style="margin-bottom: 20px;">
+                                        <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">Start Date</div>
+                                        <div style="font-size: 14px; color: var(--text-primary);">
                                             <?php echo date('M d, Y', strtotime($project['start_date'])); ?>
                                         </div>
                                     </div>
-                                    <div>
-                                        <div style="font-size: var(--font-xs); color: var(--text-secondary); margin-bottom: var(--space-1);">Due Date</div>
-                                        <div style="font-size: var(--font-base); color: var(--text-primary);">
+                                    <div class="col-md-6" style="margin-bottom: 20px;">
+                                        <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">Due Date</div>
+                                        <div style="font-size: 14px; color: var(--text-primary);">
                                             <?php echo date('M d, Y', strtotime($project['due_date'])); ?>
                                             <?php if (isOverdue($project['due_date'], $project['status'])): ?>
-                                                <span style="color: var(--status-blocked); margin-left: var(--space-2);"><i class="fas fa-exclamation-triangle"></i> Overdue</span>
+                                                <span style="color: var(--danger); margin-left: 8px;"><i class="fas fa-exclamation-triangle"></i> Overdue</span>
                                             <?php endif; ?>
                                         </div>
                                     </div>
                                 </div>
 
                                 <?php if ($project['description']): ?>
-                                <div>
-                                    <div style="font-size: var(--font-sm); font-weight: 700; color: var(--text-primary); margin-bottom: var(--space-2);">Description</div>
-                                    <div style="font-size: var(--font-sm); color: var(--text-secondary); line-height: 1.6;">
+                                <div style="border-top: 1px solid var(--border-light); padding-top: 16px; margin-top: 8px;">
+                                    <div style="font-size: 13px; font-weight: 600; color: var(--heading-color); margin-bottom: 8px;">Description</div>
+                                    <div style="font-size: 14px; color: var(--text-secondary); line-height: 1.6;">
                                         <?php echo nl2br(e($project['description'])); ?>
-                                    </div>
-                                </div>
-                                <?php endif; ?>
-                            </div>
-
-                            <!-- Right: Stats -->
-                            <div>
-                                <div style="background: var(--bg-tertiary); border-radius: var(--radius-lg); padding: var(--space-6);">
-                                    <h3 style="font-size: var(--font-lg); font-weight: 700; margin-bottom: var(--space-6); color: var(--text-primary);">
-                                        Project Progress
-                                    </h3>
-
-                                    <div style="text-align: center; margin-bottom: var(--space-6);">
-                                        <div style="font-size: 64px; font-weight: 900; background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
-                                            <?php echo $completionRate; ?>%
-                                        </div>
-                                        <div style="font-size: var(--font-sm); color: var(--text-secondary);">Complete</div>
-                                    </div>
-
-                                    <div style="display: flex; flex-direction: column; gap: var(--space-3);">
-                                        <div style="display: flex; justify-content: space-between;">
-                                            <span style="color: var(--text-secondary);">Total Tasks</span>
-                                            <span style="font-weight: 700; color: var(--text-primary);"><?php echo $taskStats['total_tasks']; ?></span>
-                                        </div>
-                                        <div style="display: flex; justify-content: space-between;">
-                                            <span style="color: var(--text-secondary);">Completed</span>
-                                            <span style="font-weight: 700; color: #10b981;"><?php echo $taskStats['completed']; ?></span>
-                                        </div>
-                                        <div style="display: flex; justify-content: space-between;">
-                                            <span style="color: var(--text-secondary);">In Progress</span>
-                                            <span style="font-weight: 700; color: #3b82f6;"><?php echo $taskStats['in_progress']; ?></span>
-                                        </div>
-                                        <?php if ($taskStats['overdue'] > 0): ?>
-                                        <div style="display: flex; justify-content: space-between;">
-                                            <span style="color: var(--text-secondary);">Overdue</span>
-                                            <span style="font-weight: 700; color: #ef4444;"><?php echo $taskStats['overdue']; ?></span>
-                                        </div>
-                                        <?php endif; ?>
-                                    </div>
-                                </div>
-
-                                <!-- Budget Info -->
-                                <?php if ($project['budget'] > 0): ?>
-                                <div style="background: var(--bg-tertiary); border-radius: var(--radius-lg); padding: var(--space-6); margin-top: var(--space-4);">
-                                    <h3 style="font-size: var(--font-lg); font-weight: 700; margin-bottom: var(--space-4); color: var(--text-primary);">
-                                        Budget
-                                    </h3>
-                                    <div style="display: flex; justify-content: space-between; margin-bottom: var(--space-3);">
-                                        <span style="color: var(--text-secondary);">Total</span>
-                                        <span style="font-weight: 700; color: var(--text-primary);">$<?php echo number_format($project['budget']); ?></span>
-                                    </div>
-                                    <div style="display: flex; justify-content: space-between; margin-bottom: var(--space-3);">
-                                        <span style="color: var(--text-secondary);">Used</span>
-                                        <span style="font-weight: 700; color: <?php echo $budgetPercentage > 90 ? '#ef4444' : '#10b981'; ?>;">
-                                            $<?php echo number_format($budgetUsed); ?>
-                                        </span>
-                                    </div>
-                                    <div class="progress-bar-container" style="margin-top: var(--space-4);">
-                                        <div class="progress-bar <?php echo $budgetPercentage > 90 ? 'overbudget' : 'high'; ?>" style="width: <?php echo min(100, $budgetPercentage); ?>%"></div>
-                                    </div>
-                                    <div style="font-size: var(--font-xs); color: var(--text-tertiary); margin-top: var(--space-2); text-align: center;">
-                                        <?php echo $budgetPercentage; ?>% of budget used
                                     </div>
                                 </div>
                                 <?php endif; ?>
                             </div>
                         </div>
                     </div>
+
+                    <!-- Budget & Progress -->
+                    <div class="col-lg-4">
+                        <?php if ($project['budget'] > 0): ?>
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 style="margin: 0;">Budget</h3>
+                            </div>
+                            <div class="card-body">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+                                    <span style="color: var(--text-secondary); font-size: 13px;">Total Budget</span>
+                                    <span style="font-weight: 600; color: var(--heading-color); font-size: 14px;">$<?php echo number_format($project['budget']); ?></span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 16px;">
+                                    <span style="color: var(--text-secondary); font-size: 13px;">Used</span>
+                                    <span style="font-weight: 600; color: <?php echo $budgetPercentage > 90 ? 'var(--danger)' : 'var(--success)'; ?>; font-size: 14px;">
+                                        $<?php echo number_format($budgetUsed); ?>
+                                    </span>
+                                </div>
+                                <div style="height: 8px; background: var(--border-light); border-radius: 4px; overflow: hidden; margin-bottom: 8px;">
+                                    <div style="width: <?php echo min(100, $budgetPercentage); ?>%; height: 100%; background: <?php echo $budgetPercentage > 90 ? 'linear-gradient(90deg, #ef4444 0%, #dc2626 100%)' : 'linear-gradient(90deg, #17b06b 0%, #14d48f 100%)'; ?>; transition: width 0.3s;"></div>
+                                </div>
+                                <div style="font-size: 12px; color: var(--text-secondary); text-align: center;">
+                                    <?php echo $budgetPercentage; ?>% of budget used
+                                </div>
+                            </div>
+                        </div>
+                        <?php endif; ?>
+                    </div>
                 </div>
 
                 <!-- Team Members -->
                 <?php if (!empty($teamMembers)): ?>
-                <div class="card" style="margin-bottom: var(--space-6);">
+                <div class="card" style="margin-bottom: 30px;">
                     <div class="card-header">
-                        <h3><i class="fas fa-users"></i> Team Members (<?php echo count($teamMembers); ?>)</h3>
+                        <h3 style="margin: 0;"><i class="fas fa-users"></i> Team Members (<?php echo count($teamMembers); ?>)</h3>
                     </div>
                     <div class="card-body">
-                        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: var(--space-4);">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 16px;">
                             <?php foreach ($teamMembers as $member): ?>
-                            <div style="padding: var(--space-4); background: var(--bg-tertiary); border-radius: var(--radius-lg); display: flex; align-items: center; gap: var(--space-3);">
-                                <div style="width: 48px; height: 48px; border-radius: var(--radius-md); background: var(--primary-gradient); display: flex; align-items: center; justify-content: center; color: white; font-weight: 900; font-size: var(--font-lg);">
+                            <div style="padding: 16px; background: var(--bg-secondary); border-radius: 8px; display: flex; align-items: center; gap: 12px;">
+                                <div style="width: 48px; height: 48px; border-radius: 8px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 18px;">
                                     <?php echo strtoupper(substr($member['full_name'], 0, 1)); ?>
                                 </div>
                                 <div style="flex: 1;">
-                                    <div style="font-weight: 700; color: var(--text-primary); margin-bottom: var(--space-1);">
+                                    <div style="font-weight: 600; color: var(--heading-color); margin-bottom: 4px;">
                                         <?php echo e($member['full_name']); ?>
                                     </div>
-                                    <div style="font-size: var(--font-xs); color: var(--text-secondary);">
+                                    <div style="font-size: 12px; color: var(--text-secondary);">
                                         <?php echo $member['task_count']; ?> tasks • <?php echo $member['completed_count']; ?> done
                                     </div>
                                 </div>
@@ -273,15 +292,24 @@ $budgetPercentage = $project['budget'] > 0 ? round(($budgetUsed / $project['budg
                 <!-- All Tasks -->
                 <div class="card">
                     <div class="card-header">
-                        <h3><i class="fas fa-check-square"></i> All Tasks (<?php echo $taskStats['total_tasks']; ?>)</h3>
-                        <a href="tasks.php?project=<?php echo $projectId; ?>" class="btn btn-primary btn-sm">+ Add Task</a>
+                        <div>
+                            <h3 style="margin: 0;"><i class="fas fa-check-square"></i> All Tasks (<?php echo $taskStats['total_tasks']; ?>)</h3>
+                        </div>
+                        <a href="project-detail.php?id=<?php echo $projectId; ?>#add-task" class="btn btn-primary btn-sm">
+                            <i class="fas fa-plus"></i> Add Task
+                        </a>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body" style="padding: 0;">
                         <?php if (empty($tasks)): ?>
-                            <p style="text-align: center; color: var(--text-secondary); padding: var(--space-10);">
-                                No tasks created yet
-                            </p>
+                            <div style="text-align: center; padding: 60px 20px; color: var(--text-secondary);">
+                                <i class="fas fa-inbox" style="font-size: 48px; margin-bottom: 16px; opacity: 0.3;"></i>
+                                <p>No tasks created yet</p>
+                                <a href="project-detail.php?id=<?php echo $projectId; ?>#add-task" class="btn btn-primary btn-sm" style="margin-top: 16px;">
+                                    <i class="fas fa-plus"></i> Create First Task
+                                </a>
+                            </div>
                         <?php else: ?>
+                            <div class="data-table-container" style="border: none; box-shadow: none;">
                             <table class="data-table">
                                 <thead>
                                     <tr>
@@ -326,15 +354,20 @@ $budgetPercentage = $project['budget'] > 0 ? round(($budgetUsed / $project['budg
                                             <?php endif; ?>
                                         </td>
                                         <td>
-                                            <div class="progress-bar-container">
-                                                <div class="progress-bar <?php echo $task['status'] == 'completed' ? 'complete' : 'medium'; ?>"
-                                                     style="width: <?php echo calculateProgress($task['status']); ?>%"></div>
+                                            <div style="display: flex; align-items: center; gap: 8px;">
+                                                <div style="flex: 1; height: 6px; background: var(--border-light); border-radius: 3px; overflow: hidden;">
+                                                    <div style="width: <?php echo calculateProgress($task['status']); ?>%; height: 100%; background: <?php echo $task['status'] == 'completed' ? 'linear-gradient(90deg, #17b06b 0%, #14d48f 100%)' : 'linear-gradient(90deg, #3b82f6 0%, #2563eb 100%)'; ?>; transition: width 0.3s;"></div>
+                                                </div>
+                                                <span style="font-size: 12px; font-weight: 600; color: var(--text-secondary); min-width: 35px;">
+                                                    <?php echo calculateProgress($task['status']); ?>%
+                                                </span>
                                             </div>
                                         </td>
                                     </tr>
                                     <?php endforeach; ?>
                                 </tbody>
                             </table>
+                            </div>
                         <?php endif; ?>
                     </div>
                 </div>
