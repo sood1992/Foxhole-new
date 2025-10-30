@@ -163,6 +163,364 @@ try {
         LIMIT 10
     ")->fetchAll(PDO::FETCH_ASSOC);
 
+    // ==================== FINANCIAL OVERVIEW ====================
+    $financial = [];
+
+    // Total Revenue (sum of all active project budgets)
+    $stmt = $db->query("
+        SELECT
+            COALESCE(SUM(pb.client_quote), 0) as total_revenue,
+            COALESCE(SUM(pb.total_budget), 0) as total_budgets
+        FROM projects p
+        LEFT JOIN project_budgets pb ON p.id = pb.project_id
+        WHERE p.status IN ('planning', 'in_progress', 'review')
+    ");
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    $financial['total_revenue'] = $result['total_revenue'] ?? 0;
+    $financial['total_budgets'] = $result['total_budgets'] ?? 0;
+
+    // Total spent across all projects
+    $stmt = $db->query("
+        SELECT
+            COALESCE(SUM(tl.duration_minutes * u.hourly_rate / 60), 0) as labor_cost,
+            COALESCE((SELECT SUM(amount) FROM project_expenses WHERE approval_status = 'approved'), 0) as expenses_total
+        FROM time_logs tl
+        JOIN users u ON tl.user_id = u.id
+        WHERE tl.end_time IS NOT NULL
+    ");
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    $financial['labor_cost'] = $result['labor_cost'] ?? 0;
+    $financial['expenses_total'] = $result['expenses_total'] ?? 0;
+    $financial['total_spent'] = $financial['labor_cost'] + $financial['expenses_total'];
+    $financial['profit_margin'] = $financial['total_revenue'] > 0
+        ? round((($financial['total_revenue'] - $financial['total_spent']) / $financial['total_revenue']) * 100, 1)
+        : 0;
+
+    // Over-budget projects
+    $stmt = $db->query("
+        SELECT COUNT(*) as count
+        FROM projects p
+        JOIN project_budgets pb ON p.id = pb.project_id
+        WHERE p.status IN ('planning', 'in_progress', 'review')
+        AND (SELECT COALESCE(SUM(tl.duration_minutes * u.hourly_rate / 60), 0) + COALESCE((SELECT SUM(amount) FROM project_expenses pe WHERE pe.project_id = p.id AND pe.approval_status = 'approved'), 0)
+             FROM time_logs tl
+             JOIN users u ON tl.user_id = u.id
+             JOIN tasks t ON tl.task_id = t.id
+             WHERE t.project_id = p.id) > pb.total_budget
+    ");
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    $financial['over_budget_count'] = $result['count'] ?? 0;
+
+    // Most profitable project this month
+    $stmt = $db->query("
+        SELECT p.project_name, pb.client_quote,
+            (SELECT COALESCE(SUM(tl.duration_minutes * u.hourly_rate / 60), 0)
+             FROM time_logs tl
+             JOIN users u ON tl.user_id = u.id
+             JOIN tasks t ON tl.task_id = t.id
+             WHERE t.project_id = p.id) as cost,
+            pb.client_quote - (SELECT COALESCE(SUM(tl.duration_minutes * u.hourly_rate / 60), 0)
+                               FROM time_logs tl
+                               JOIN users u ON tl.user_id = u.id
+                               JOIN tasks t ON tl.task_id = t.id
+                               WHERE t.project_id = p.id) as profit
+        FROM projects p
+        JOIN project_budgets pb ON p.id = pb.project_id
+        WHERE p.status = 'completed'
+        AND MONTH(p.completed_date) = MONTH(CURRENT_DATE())
+        AND pb.client_quote > 0
+        ORDER BY profit DESC
+        LIMIT 1
+    ");
+    $financial['top_project'] = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    // ==================== CLIENT HAPPINESS METRICS ====================
+    $clientMetrics = [];
+
+    // Total feedback and approval stats
+    $stmt = $db->query("
+        SELECT
+            COUNT(*) as total_feedback,
+            SUM(CASE WHEN client_approval_status = 'approved' THEN 1 ELSE 0 END) as approved_count,
+            SUM(CASE WHEN client_approval_status = 'revision_requested' THEN 1 ELSE 0 END) as revision_count,
+            AVG(revision_count) as avg_revisions
+        FROM client_feedback
+        WHERE created_at >= DATE_SUB(CURRENT_DATE(), INTERVAL 30 DAY)
+    ");
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    $clientMetrics['total_feedback'] = $result['total_feedback'] ?? 0;
+    $clientMetrics['approved_count'] = $result['approved_count'] ?? 0;
+    $clientMetrics['revision_count'] = $result['revision_count'] ?? 0;
+    $clientMetrics['avg_revisions'] = round($result['avg_revisions'] ?? 0, 1);
+    $clientMetrics['approval_rate'] = $clientMetrics['total_feedback'] > 0
+        ? round(($clientMetrics['approved_count'] / $clientMetrics['total_feedback']) * 100, 1)
+        : 0;
+
+    // Pending feedback count
+    $stmt = $db->query("SELECT COUNT(*) as count FROM client_feedback WHERE status != 'completed'");
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    $clientMetrics['pending_feedback'] = $result['count'] ?? 0;
+
+    // Projects with 0 revisions
+    $stmt = $db->query("
+        SELECT COUNT(DISTINCT project_id) as count
+        FROM client_feedback
+        WHERE revision_count = 0
+        AND client_approval_status = 'approved'
+        AND created_at >= DATE_SUB(CURRENT_DATE(), INTERVAL 30 DAY)
+    ");
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    $clientMetrics['perfect_projects'] = $result['count'] ?? 0;
+
+    // ==================== PROJECT TYPE BREAKDOWN ====================
+    // Note: You'll need to add a 'project_type' column to projects table or categorize by description
+    $projectTypes = $db->query("
+        SELECT
+            CASE
+                WHEN LOWER(project_name) LIKE '%video%' OR LOWER(project_name) LIKE '%edit%' THEN 'Video Editing'
+                WHEN LOWER(project_name) LIKE '%photo%' THEN 'Photography'
+                WHEN LOWER(project_name) LIKE '%shoot%' OR LOWER(project_name) LIKE '%videography%' THEN 'Videography'
+                WHEN LOWER(project_name) LIKE '%strategy%' OR LOWER(project_name) LIKE '%creative%' THEN 'Creative Strategy'
+                ELSE 'Other'
+            END as project_type,
+            COUNT(*) as count
+        FROM projects
+        WHERE status IN ('planning', 'in_progress', 'review')
+        GROUP BY project_type
+    ")->fetchAll(PDO::FETCH_ASSOC);
+
+    // ==================== TEAM CAPACITY & UTILIZATION ====================
+    $teamCapacity = [];
+
+    // Calculate team utilization (40 hours = 100% capacity)
+    $stmt = $db->query("
+        SELECT
+            COUNT(DISTINCT u.id) as total_team,
+            SUM(CASE WHEN weekly_hours >= 40 THEN 1 ELSE 0 END) as overloaded,
+            SUM(CASE WHEN weekly_hours < 30 THEN 1 ELSE 0 END) as available,
+            AVG(weekly_hours) as avg_hours
+        FROM (
+            SELECT
+                u.id,
+                COALESCE(SUM(tl.duration_minutes) / 60, 0) as weekly_hours
+            FROM users u
+            LEFT JOIN time_logs tl ON u.id = tl.user_id
+                AND WEEK(tl.start_time) = WEEK(CURRENT_DATE())
+            WHERE u.role IN ('manager', 'employee') AND u.is_active = 1
+            GROUP BY u.id
+        ) as user_hours
+    ");
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    $teamCapacity['total_team'] = $result['total_team'] ?? 0;
+    $teamCapacity['overloaded'] = $result['overloaded'] ?? 0;
+    $teamCapacity['available'] = $result['available'] ?? 0;
+    $teamCapacity['avg_hours'] = round($result['avg_hours'] ?? 0, 1);
+    $teamCapacity['utilization'] = $teamCapacity['total_team'] > 0
+        ? round(($teamCapacity['avg_hours'] / 40) * 100, 1)
+        : 0;
+
+    // Overloaded team members
+    $overloadedTeam = $db->query("
+        SELECT
+            u.full_name,
+            COALESCE(SUM(tl.duration_minutes) / 60, 0) as weekly_hours,
+            COUNT(DISTINCT t.id) as active_tasks
+        FROM users u
+        LEFT JOIN time_logs tl ON u.id = tl.user_id
+            AND WEEK(tl.start_time) = WEEK(CURRENT_DATE())
+        LEFT JOIN tasks t ON u.id = t.assigned_to
+            AND t.status IN ('in_progress', 'todo')
+        WHERE u.role IN ('manager', 'employee') AND u.is_active = 1
+        GROUP BY u.id
+        HAVING weekly_hours >= 40
+        ORDER BY weekly_hours DESC
+    ")->fetchAll(PDO::FETCH_ASSOC);
+
+    // ==================== THIS WEEK'S SHOOTS & SESSIONS ====================
+    $weekEvents = $db->query("
+        SELECT
+            ce.*,
+            p.project_name,
+            p.client_name
+        FROM calendar_events ce
+        LEFT JOIN projects p ON ce.project_id = p.id
+        WHERE ce.start_datetime >= CURDATE()
+        AND ce.start_datetime <= DATE_ADD(CURDATE(), INTERVAL 7 DAY)
+        AND ce.status != 'cancelled'
+        ORDER BY ce.start_datetime ASC
+    ")->fetchAll(PDO::FETCH_ASSOC);
+
+    // Count by type
+    $eventCounts = [];
+    foreach ($weekEvents as $event) {
+        $type = $event['event_type'];
+        $eventCounts[$type] = ($eventCounts[$type] ?? 0) + 1;
+    }
+
+    // ==================== TOP PERFORMERS ====================
+    $topPerformers = [];
+
+    // Most tasks completed this month
+    $stmt = $db->query("
+        SELECT u.full_name, COUNT(*) as completed_tasks
+        FROM users u
+        JOIN tasks t ON u.id = t.assigned_to
+        WHERE t.status = 'completed'
+        AND MONTH(t.completed_date) = MONTH(CURRENT_DATE())
+        GROUP BY u.id
+        ORDER BY completed_tasks DESC
+        LIMIT 1
+    ");
+    $topPerformers['most_tasks'] = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    // Most hours logged this week
+    $stmt = $db->query("
+        SELECT u.full_name, SUM(tl.duration_minutes) / 60 as hours
+        FROM users u
+        JOIN time_logs tl ON u.id = tl.user_id
+        WHERE WEEK(tl.start_time) = WEEK(CURRENT_DATE())
+        GROUP BY u.id
+        ORDER BY hours DESC
+        LIMIT 1
+    ");
+    $topPerformers['most_hours'] = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    // Best on-time delivery
+    $stmt = $db->query("
+        SELECT u.full_name,
+            COUNT(*) as total_tasks,
+            SUM(CASE WHEN t.completed_date <= t.due_date THEN 1 ELSE 0 END) as on_time,
+            ROUND((SUM(CASE WHEN t.completed_date <= t.due_date THEN 1 ELSE 0 END) / COUNT(*)) * 100, 1) as on_time_rate
+        FROM users u
+        JOIN tasks t ON u.id = t.assigned_to
+        WHERE t.status = 'completed'
+        AND t.completed_date IS NOT NULL
+        AND t.due_date IS NOT NULL
+        AND MONTH(t.completed_date) = MONTH(CURRENT_DATE())
+        GROUP BY u.id
+        HAVING total_tasks >= 5
+        ORDER BY on_time_rate DESC, total_tasks DESC
+        LIMIT 1
+    ");
+    $topPerformers['best_delivery'] = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    // ==================== RISK INDICATORS ====================
+    $risks = [];
+
+    // Projects at risk (>90% budget, <50% complete)
+    $riskyProjects = $db->query("
+        SELECT
+            p.project_name,
+            p.client_name,
+            (SELECT COUNT(*) FROM tasks WHERE project_id = p.id AND status = 'completed') as completed_tasks,
+            (SELECT COUNT(*) FROM tasks WHERE project_id = p.id) as total_tasks,
+            pb.total_budget,
+            (SELECT COALESCE(SUM(tl.duration_minutes * u.hourly_rate / 60), 0)
+             FROM time_logs tl
+             JOIN users u ON tl.user_id = u.id
+             JOIN tasks t ON tl.task_id = t.id
+             WHERE t.project_id = p.id) as spent,
+            DATEDIFF(p.due_date, CURDATE()) as days_remaining
+        FROM projects p
+        LEFT JOIN project_budgets pb ON p.id = pb.project_id
+        WHERE p.status IN ('in_progress', 'review')
+        HAVING (spent / NULLIF(total_budget, 0) > 0.9 AND completed_tasks / NULLIF(total_tasks, 0) < 0.5)
+            OR (days_remaining < 7 AND completed_tasks / NULLIF(total_tasks, 0) < 0.7)
+            OR spent > total_budget
+        ORDER BY days_remaining ASC
+        LIMIT 5
+    ")->fetchAll(PDO::FETCH_ASSOC);
+
+    // Projects with long-blocked tasks
+    $stmt = $db->query("
+        SELECT DISTINCT p.project_name, COUNT(DISTINCT t.id) as blocked_count
+        FROM projects p
+        JOIN tasks t ON p.id = t.project_id
+        WHERE t.status = 'blocked'
+        AND t.updated_at < DATE_SUB(NOW(), INTERVAL 3 DAY)
+        GROUP BY p.id
+        ORDER BY blocked_count DESC
+    ");
+    $risks['blocked_projects'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // ==================== PENDING DELIVERABLES ====================
+    $deliverables = [];
+
+    // Awaiting client approval
+    $stmt = $db->query("
+        SELECT COUNT(*) as count
+        FROM client_feedback
+        WHERE client_approval_status = 'pending'
+    ");
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    $deliverables['pending_approval'] = $result['count'] ?? 0;
+
+    // By version
+    $stmt = $db->query("
+        SELECT
+            SUM(CASE WHEN revision_count = 0 THEN 1 ELSE 0 END) as v1,
+            SUM(CASE WHEN revision_count = 1 THEN 1 ELSE 0 END) as v2,
+            SUM(CASE WHEN revision_count >= 2 THEN 1 ELSE 0 END) as v3_plus
+        FROM client_feedback
+        WHERE client_approval_status = 'pending'
+    ");
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    $deliverables['by_version'] = $result;
+
+    // Longest pending
+    $stmt = $db->query("
+        SELECT p.project_name, cf.feedback_title,
+            DATEDIFF(CURDATE(), cf.created_at) as days_pending
+        FROM client_feedback cf
+        JOIN projects p ON cf.project_id = p.id
+        WHERE cf.client_approval_status = 'pending'
+        ORDER BY cf.created_at ASC
+        LIMIT 1
+    ");
+    $deliverables['longest_pending'] = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    // ==================== PROJECT HEALTH SCORE ====================
+    $healthScores = $db->query("
+        SELECT
+            p.id,
+            p.project_name,
+            p.status,
+            (SELECT COUNT(*) FROM tasks WHERE project_id = p.id AND status = 'blocked') as blocked_count,
+            (SELECT COUNT(*) FROM tasks WHERE project_id = p.id AND due_date < CURDATE() AND status != 'completed') as overdue_count,
+            pb.total_budget,
+            (SELECT COALESCE(SUM(tl.duration_minutes * u.hourly_rate / 60), 0)
+             FROM time_logs tl
+             JOIN users u ON tl.user_id = u.id
+             JOIN tasks t ON tl.task_id = t.id
+             WHERE t.project_id = p.id) as spent,
+            DATEDIFF(p.due_date, CURDATE()) as days_remaining,
+            CASE
+                WHEN (SELECT COUNT(*) FROM tasks WHERE project_id = p.id AND status = 'blocked') > 0 THEN 'critical'
+                WHEN (SELECT COUNT(*) FROM tasks WHERE project_id = p.id AND due_date < CURDATE() AND status != 'completed') > 2 THEN 'critical'
+                WHEN (SELECT COALESCE(SUM(tl.duration_minutes * u.hourly_rate / 60), 0)
+                      FROM time_logs tl
+                      JOIN users u ON tl.user_id = u.id
+                      JOIN tasks t ON tl.task_id = t.id
+                      WHERE t.project_id = p.id) > pb.total_budget THEN 'critical'
+                WHEN DATEDIFF(p.due_date, CURDATE()) < 7 THEN 'warning'
+                WHEN (SELECT COALESCE(SUM(tl.duration_minutes * u.hourly_rate / 60), 0)
+                      FROM time_logs tl
+                      JOIN users u ON tl.user_id = u.id
+                      JOIN tasks t ON tl.task_id = t.id
+                      WHERE t.project_id = p.id) > (pb.total_budget * 0.8) THEN 'warning'
+                ELSE 'healthy'
+            END as health_status
+        FROM projects p
+        LEFT JOIN project_budgets pb ON p.id = pb.project_id
+        WHERE p.status IN ('planning', 'in_progress', 'review')
+    ")->fetchAll(PDO::FETCH_ASSOC);
+
+    // Count by health
+    $healthCount = ['healthy' => 0, 'warning' => 0, 'critical' => 0];
+    foreach ($healthScores as $project) {
+        $healthCount[$project['health_status']]++;
+    }
+
 } catch (PDOException $e) {
     die("Database Error: " . $e->getMessage() . "<br>File: " . $e->getFile() . "<br>Line: " . $e->getLine());
 } catch (Exception $e) {
