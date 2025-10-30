@@ -288,6 +288,7 @@ $currentUser = getCurrentUser();
                 console.log('Switching to view:', viewName);
                 if (calendarInstance) {
                     calendarInstance.changeView(viewName);
+                    updateActiveTab(viewName);
                 }
             });
         });

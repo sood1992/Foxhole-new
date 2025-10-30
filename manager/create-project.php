@@ -183,7 +183,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                 </div>
 
-                <div class="dashboard-card" style="max-width: 1000px; margin: 0 auto;">
+                <div class="dashboard-card">
                     <div class="card-body">
                         <?php if ($error): ?>
                             <div class="alert alert-error" style="margin-bottom: 24px;">
