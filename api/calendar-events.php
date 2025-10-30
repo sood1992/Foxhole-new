@@ -21,86 +21,100 @@ $userRole = $_SESSION['role'];
 
 // GET - Fetch calendar events
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-    $start = $_GET['start'] ?? null;
-    $end = $_GET['end'] ?? null;
-    $projectId = $_GET['project_id'] ?? null;
-    $eventType = $_GET['event_type'] ?? null;
+    try {
+        $start = $_GET['start'] ?? null;
+        $end = $_GET['end'] ?? null;
+        $projectId = $_GET['project_id'] ?? null;
+        $eventType = $_GET['event_type'] ?? null;
 
-    $query = "
-        SELECT ce.*,
-               p.project_name,
-               t.task_name,
-               u.full_name as created_by_name
-        FROM calendar_events ce
-        LEFT JOIN projects p ON ce.project_id = p.id
-        LEFT JOIN tasks t ON ce.task_id = t.id
-        JOIN users u ON ce.created_by = u.id
-        WHERE 1=1
-    ";
+        // Check if calendar_events table exists
+        $tableCheck = $db->query("SHOW TABLES LIKE 'calendar_events'");
+        if ($tableCheck->rowCount() === 0) {
+            // Table doesn't exist, return empty array
+            echo json_encode(['success' => true, 'events' => []]);
+            exit;
+        }
 
-    $params = [];
+        $query = "
+            SELECT ce.*,
+                   p.project_name,
+                   t.task_name,
+                   u.full_name as created_by_name
+            FROM calendar_events ce
+            LEFT JOIN projects p ON ce.project_id = p.id
+            LEFT JOIN tasks t ON ce.task_id = t.id
+            JOIN users u ON ce.created_by = u.id
+            WHERE 1=1
+        ";
 
-    // Filter by date range
-    if ($start && $end) {
-        $query .= " AND ce.start_datetime >= ? AND ce.start_datetime <= ?";
-        $params[] = $start;
-        $params[] = $end;
+        $params = [];
+
+        // Filter by date range
+        if ($start && $end) {
+            $query .= " AND ce.start_datetime >= ? AND ce.start_datetime <= ?";
+            $params[] = $start;
+            $params[] = $end;
+        }
+
+        // Filter by project
+        if ($projectId) {
+            $query .= " AND ce.project_id = ?";
+            $params[] = $projectId;
+        }
+
+        // Filter by event type
+        if ($eventType) {
+            $query .= " AND ce.event_type = ?";
+            $params[] = $eventType;
+        }
+
+        // Filter by user access for employees
+        if ($userRole === 'employee') {
+            $query .= " AND (FIND_IN_SET(?, ce.assigned_users) OR ce.created_by = ? OR ce.assigned_users IS NULL OR ce.assigned_users = '')";
+            $params[] = $userId;
+            $params[] = $userId;
+        }
+
+        $query .= " ORDER BY ce.start_datetime ASC";
+
+        $stmt = $db->prepare($query);
+        $stmt->execute($params);
+        $events = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // Format for FullCalendar
+        $formattedEvents = [];
+        foreach ($events as $event) {
+            $formattedEvents[] = [
+                'id' => $event['id'],
+                'title' => $event['event_title'],
+                'start' => $event['start_datetime'],
+                'end' => $event['end_datetime'],
+                'allDay' => (bool)$event['all_day'],
+                'backgroundColor' => $event['color'],
+                'borderColor' => $event['color'],
+                'extendedProps' => [
+                    'type' => $event['event_type'],
+                    'description' => $event['description'],
+                    'location' => $event['location'],
+                    'project_id' => $event['project_id'],
+                    'project_name' => $event['project_name'],
+                    'task_id' => $event['task_id'],
+                    'task_name' => $event['task_name'],
+                    'assigned_users' => $event['assigned_users'],
+                    'equipment_needed' => $event['equipment_needed'],
+                    'notes' => $event['notes'],
+                    'status' => $event['status'],
+                    'created_by' => $event['created_by_name']
+                ]
+            ];
+        }
+
+        echo json_encode(['success' => true, 'events' => $formattedEvents]);
+    } catch (Exception $e) {
+        // If calendar_events table doesn't exist or any error, return empty events array
+        error_log("Calendar events error: " . $e->getMessage());
+        echo json_encode(['success' => true, 'events' => []]);
     }
-
-    // Filter by project
-    if ($projectId) {
-        $query .= " AND ce.project_id = ?";
-        $params[] = $projectId;
-    }
-
-    // Filter by event type
-    if ($eventType) {
-        $query .= " AND ce.event_type = ?";
-        $params[] = $eventType;
-    }
-
-    // Filter by user access for employees
-    if ($userRole === 'employee') {
-        $query .= " AND (FIND_IN_SET(?, ce.assigned_users) OR ce.created_by = ? OR ce.assigned_users IS NULL OR ce.assigned_users = '')";
-        $params[] = $userId;
-        $params[] = $userId;
-    }
-
-    $query .= " ORDER BY ce.start_datetime ASC";
-
-    $stmt = $db->prepare($query);
-    $stmt->execute($params);
-    $events = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-    // Format for FullCalendar
-    $formattedEvents = [];
-    foreach ($events as $event) {
-        $formattedEvents[] = [
-            'id' => $event['id'],
-            'title' => $event['event_title'],
-            'start' => $event['start_datetime'],
-            'end' => $event['end_datetime'],
-            'allDay' => (bool)$event['all_day'],
-            'backgroundColor' => $event['color'],
-            'borderColor' => $event['color'],
-            'extendedProps' => [
-                'type' => $event['event_type'],
-                'description' => $event['description'],
-                'location' => $event['location'],
-                'project_id' => $event['project_id'],
-                'project_name' => $event['project_name'],
-                'task_id' => $event['task_id'],
-                'task_name' => $event['task_name'],
-                'assigned_users' => $event['assigned_users'],
-                'equipment_needed' => $event['equipment_needed'],
-                'notes' => $event['notes'],
-                'status' => $event['status'],
-                'created_by' => $event['created_by_name']
-            ]
-        ];
-    }
-
-    echo json_encode(['success' => true, 'events' => $formattedEvents]);
     exit;
 }
 
