@@ -1576,11 +1576,43 @@ select.form-control {
   }
 
   .sidebar-sub-panel {
-    display: none;
+    display: none !important;
   }
 
   .main-content {
     margin-left: 60px;
+  }
+
+  /* Show tooltip on hover for icon-only view */
+  .main-menu-item {
+    position: relative;
+  }
+
+  .main-menu-item:hover::after {
+    content: attr(title);
+    position: absolute;
+    left: 65px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--dark);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    white-space: nowrap;
+    z-index: 1000;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  }
+
+  .main-menu-item:hover::before {
+    content: '';
+    position: absolute;
+    left: 60px;
+    top: 50%;
+    transform: translateY(-50%);
+    border: 6px solid transparent;
+    border-right-color: var(--dark);
+    z-index: 1000;
   }
 }
 

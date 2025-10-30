@@ -33,18 +33,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create_project'])) {
     }
 }
 
-// Get all projects
-$projects = $db->query("
+// Get filter status if provided
+$filterStatus = $_GET['status'] ?? null;
+$pageTitle = 'All Projects';
+if ($filterStatus === 'in_progress') {
+    $pageTitle = 'In Progress Projects';
+} elseif ($filterStatus === 'completed') {
+    $pageTitle = 'Completed Projects';
+} elseif ($filterStatus === 'planning') {
+    $pageTitle = 'Planning Projects';
+} elseif ($filterStatus === 'on_hold') {
+    $pageTitle = 'On Hold Projects';
+}
+
+// Get all projects (with optional status filter)
+$query = "
     SELECT p.*,
            u.full_name as manager_name,
            (SELECT COUNT(*) FROM tasks WHERE project_id = p.id) as task_count,
            (SELECT COUNT(*) FROM tasks WHERE project_id = p.id AND status = 'completed') as completed_tasks
     FROM projects p
     LEFT JOIN users u ON p.assigned_manager = u.id
+";
+
+if ($filterStatus) {
+    $query .= " WHERE p.status = " . $db->quote($filterStatus);
+}
+
+$query .= "
     ORDER BY
         FIELD(p.status, 'in_progress', 'review', 'planning', 'on_hold', 'completed'),
         p.due_date ASC
-")->fetchAll();
+";
+
+$projects = $db->query($query)->fetchAll();
 
 // Get managers for assignment
 $managers = $db->query("SELECT id, full_name FROM users WHERE role IN ('admin', 'manager') AND is_active = 1 ORDER BY full_name")->fetchAll();
@@ -68,11 +90,25 @@ $managers = $db->query("SELECT id, full_name FROM users WHERE role IN ('admin', 
 
             <div class="content-wrapper">
                 <!-- Page Title -->
-                <div style="margin-bottom: 30px;">
-                    <h1 style="margin-bottom: 8px;">Projects</h1>
-                    <p style="color: var(--text-secondary); font-size: 14px; margin: 0;">
-                        Manage all projects, assign managers, and track progress
-                    </p>
+                <div style="margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <h1 style="margin-bottom: 8px;"><?php echo $pageTitle; ?></h1>
+                        <p style="color: var(--text-secondary); font-size: 14px; margin: 0;">
+                            <?php if ($filterStatus): ?>
+                                Viewing <?php echo strtolower($pageTitle); ?>
+                                <a href="projects.php" style="margin-left: 10px; color: var(--primary);">
+                                    <i class="fas fa-arrow-left"></i> View All Projects
+                                </a>
+                            <?php else: ?>
+                                Manage all projects, assign managers, and track progress
+                            <?php endif; ?>
+                        </p>
+                    </div>
+                    <?php if (!$filterStatus): ?>
+                    <a href="#create-form" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Create Project
+                    </a>
+                    <?php endif; ?>
                 </div>
 
                 <?php if (isset($successMessage)): ?>
@@ -86,8 +122,9 @@ $managers = $db->query("SELECT id, full_name FROM users WHERE role IN ('admin', 
                     </div>
                 <?php endif; ?>
 
+                <?php if (!$filterStatus): ?>
                 <!-- Create Project Form -->
-                <div class="card" style="margin-bottom: 30px;">
+                <div class="card" id="create-form" style="margin-bottom: 30px;">
                     <div class="card-header">
                         <div>
                             <h3 style="margin: 0;">Create New Project</h3>
@@ -158,12 +195,13 @@ $managers = $db->query("SELECT id, full_name FROM users WHERE role IN ('admin', 
                         </form>
                     </div>
                 </div>
+                <?php endif; ?>
 
                 <!-- Projects List -->
                 <div class="card">
                     <div class="card-header">
                         <div>
-                            <h3 style="margin: 0;">All Projects (<?php echo count($projects); ?>)</h3>
+                            <h3 style="margin: 0;"><?php echo $pageTitle; ?> (<?php echo count($projects); ?>)</h3>
                             <p style="font-size: 13px; color: var(--text-secondary); margin: 4px 0 0 0;">
                                 View and manage all projects in the system
                             </p>

@@ -29,17 +29,39 @@ if (!hasRole('manager')) {
 $db = getDBConnection();
 $currentUser = getCurrentUser();
 
-// Get manager's projects
-$stmt = $db->prepare("
+// Get filter status if provided
+$filterStatus = $_GET['status'] ?? null;
+$pageTitle = 'My Projects';
+if ($filterStatus === 'in_progress') {
+    $pageTitle = 'In Progress Projects';
+} elseif ($filterStatus === 'completed') {
+    $pageTitle = 'Completed Projects';
+} elseif ($filterStatus === 'planning') {
+    $pageTitle = 'Planning Projects';
+} elseif ($filterStatus === 'on_hold') {
+    $pageTitle = 'On Hold Projects';
+}
+
+// Get manager's projects (with optional status filter)
+$query = "
     SELECT p.*,
            (SELECT COUNT(*) FROM tasks WHERE project_id = p.id) as task_count,
            (SELECT COUNT(*) FROM tasks WHERE project_id = p.id AND status = 'completed') as completed_tasks
     FROM projects p
     WHERE p.assigned_manager = ?
+";
+
+if ($filterStatus) {
+    $query .= " AND p.status = " . $db->quote($filterStatus);
+}
+
+$query .= "
     ORDER BY
         FIELD(p.status, 'in_progress', 'review', 'planning', 'on_hold', 'completed'),
         p.due_date ASC
-");
+";
+
+$stmt = $db->prepare($query);
 $stmt->execute([$currentUser['id']]);
 $projects = $stmt->fetchAll();
 
@@ -64,7 +86,17 @@ $projects = $stmt->fetchAll();
             <div class="content-wrapper">
                 <div class="dashboard-card">
                     <div class="card-header">
-                        <h3>Projects Overview</h3>
+                        <div>
+                            <h3><?php echo $pageTitle; ?> (<?php echo count($projects); ?>)</h3>
+                            <?php if ($filterStatus): ?>
+                            <p style="font-size: 13px; color: var(--text-secondary); margin: 4px 0 0 0;">
+                                Viewing <?php echo strtolower($pageTitle); ?>
+                                <a href="projects.php" style="margin-left: 10px; color: var(--primary);">
+                                    <i class="fas fa-arrow-left"></i> View All Projects
+                                </a>
+                            </p>
+                            <?php endif; ?>
+                        </div>
                     </div>
                     <div class="card-body">
                         <?php if (empty($projects)): ?>

@@ -218,9 +218,20 @@ $currentUser = getCurrentUser();
 
     <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // Get view from URL parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const view = urlParams.get('view');
+
+        // Map view parameter to FullCalendar view names
+        let initialView = 'dayGridMonth'; // default
+        if (view === 'day') initialView = 'timeGridDay';
+        else if (view === 'week') initialView = 'timeGridWeek';
+        else if (view === 'month') initialView = 'dayGridMonth';
+        else if (view === 'list') initialView = 'listWeek';
+
         const calendarEl = document.getElementById('calendar');
         const calendar = new FullCalendar.Calendar(calendarEl, {
-            initialView: 'dayGridMonth',
+            initialView: initialView,
             headerToolbar: {
                 left: 'prev,next today',
                 center: 'title',
