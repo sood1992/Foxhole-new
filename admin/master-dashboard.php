@@ -4,6 +4,10 @@
  * Shows all projects, team activities, bottlenecks, and metrics in one comprehensive view
  */
 
+// Enable error reporting for debugging
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 require_once '../config/config.php';
 require_once '../includes/functions.php';
 
@@ -14,143 +18,157 @@ if (!isLoggedIn() || !hasRole('admin')) {
 $db = getDBConnection();
 $currentUser = getCurrentUser();
 
-// ==================== KEY METRICS ====================
-$metrics = [];
+try {
+    // ==================== KEY METRICS ====================
+    $metrics = [];
 
-// Total Active Projects
-$stmt = $db->query("SELECT COUNT(*) as count FROM projects WHERE status IN ('planning', 'in_progress', 'review')");
-$metrics['active_projects'] = $stmt->fetch()['count'];
+    // Total Active Projects
+    $stmt = $db->query("SELECT COUNT(*) as count FROM projects WHERE status IN ('planning', 'in_progress', 'review')");
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    $metrics['active_projects'] = $result['count'] ?? 0;
 
-// Total Team Members
-$stmt = $db->query("SELECT COUNT(*) as count FROM users WHERE role IN ('manager', 'employee') AND is_active = 1");
-$metrics['team_members'] = $stmt->fetch()['count'];
+    // Total Team Members
+    $stmt = $db->query("SELECT COUNT(*) as count FROM users WHERE role IN ('manager', 'employee') AND is_active = 1");
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    $metrics['team_members'] = $result['count'] ?? 0;
 
-// Tasks In Progress
-$stmt = $db->query("SELECT COUNT(*) as count FROM tasks WHERE status = 'in_progress'");
-$metrics['tasks_in_progress'] = $stmt->fetch()['count'];
+    // Tasks In Progress
+    $stmt = $db->query("SELECT COUNT(*) as count FROM tasks WHERE status = 'in_progress'");
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    $metrics['tasks_in_progress'] = $result['count'] ?? 0;
 
-// Blocked/Overdue Tasks
-$stmt = $db->query("SELECT COUNT(*) as count FROM tasks WHERE status = 'blocked' OR (due_date < CURDATE() AND status NOT IN ('completed', 'cancelled'))");
-$metrics['bottlenecks'] = $stmt->fetch()['count'];
+    // Blocked/Overdue Tasks
+    $stmt = $db->query("SELECT COUNT(*) as count FROM tasks WHERE status = 'blocked' OR (due_date < CURDATE() AND status NOT IN ('completed', 'cancelled'))");
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    $metrics['bottlenecks'] = $result['count'] ?? 0;
 
-// Hours This Week
-$stmt = $db->query("SELECT SUM(duration_minutes) as total FROM time_logs WHERE WEEK(start_time) = WEEK(CURRENT_DATE()) AND YEAR(start_time) = YEAR(CURRENT_DATE())");
-$totalMinutes = $stmt->fetch()['total'] ?? 0;
-$metrics['hours_week'] = round($totalMinutes / 60, 1);
+    // Hours This Week
+    $stmt = $db->query("SELECT SUM(duration_minutes) as total FROM time_logs WHERE WEEK(start_time) = WEEK(CURRENT_DATE()) AND YEAR(start_time) = YEAR(CURRENT_DATE())");
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    $totalMinutes = $result['total'] ?? 0;
+    $metrics['hours_week'] = round($totalMinutes / 60, 1);
 
-// Completion Rate This Month
-$stmt = $db->query("SELECT COUNT(*) as total FROM tasks WHERE MONTH(created_at) = MONTH(CURRENT_DATE())");
-$totalTasks = $stmt->fetch()['total'];
-$stmt = $db->query("SELECT COUNT(*) as completed FROM tasks WHERE MONTH(completed_date) = MONTH(CURRENT_DATE())");
-$completedTasks = $stmt->fetch()['completed'];
-$metrics['completion_rate'] = $totalTasks > 0 ? round(($completedTasks / $totalTasks) * 100) : 0;
+    // Completion Rate This Month
+    $stmt = $db->query("SELECT COUNT(*) as total FROM tasks WHERE MONTH(created_at) = MONTH(CURRENT_DATE())");
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    $totalTasks = $result['total'] ?? 0;
+    $stmt = $db->query("SELECT COUNT(*) as completed FROM tasks WHERE MONTH(completed_date) = MONTH(CURRENT_DATE())");
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    $completedTasks = $result['completed'] ?? 0;
+    $metrics['completion_rate'] = $totalTasks > 0 ? round(($completedTasks / $totalTasks) * 100) : 0;
 
-// ==================== ALL PROJECTS WITH DETAILS ====================
-$projects = $db->query("
-    SELECT
-        p.*,
-        u.full_name as manager_name,
-        (SELECT COUNT(*) FROM tasks WHERE project_id = p.id) as total_tasks,
-        (SELECT COUNT(*) FROM tasks WHERE project_id = p.id AND status = 'completed') as completed_tasks,
-        (SELECT COUNT(*) FROM tasks WHERE project_id = p.id AND status = 'in_progress') as active_tasks,
-        (SELECT COUNT(*) FROM tasks WHERE project_id = p.id AND status = 'blocked') as blocked_tasks,
-        (SELECT COUNT(*) FROM tasks WHERE project_id = p.id AND due_date < CURDATE() AND status NOT IN ('completed', 'cancelled')) as overdue_tasks,
-        (SELECT SUM(duration_minutes) FROM time_logs tl JOIN tasks t ON tl.task_id = t.id WHERE t.project_id = p.id) as total_minutes,
-        DATEDIFF(p.due_date, CURDATE()) as days_remaining
-    FROM projects p
-    LEFT JOIN users u ON p.assigned_manager = u.id
-    WHERE p.status != 'cancelled'
-    ORDER BY
-        FIELD(p.status, 'in_progress', 'planning', 'review', 'on_hold', 'completed'),
-        p.due_date ASC
-")->fetchAll();
+    // ==================== ALL PROJECTS WITH DETAILS ====================
+    $projects = $db->query("
+        SELECT
+            p.*,
+            u.full_name as manager_name,
+            (SELECT COUNT(*) FROM tasks WHERE project_id = p.id) as total_tasks,
+            (SELECT COUNT(*) FROM tasks WHERE project_id = p.id AND status = 'completed') as completed_tasks,
+            (SELECT COUNT(*) FROM tasks WHERE project_id = p.id AND status = 'in_progress') as active_tasks,
+            (SELECT COUNT(*) FROM tasks WHERE project_id = p.id AND status = 'blocked') as blocked_tasks,
+            (SELECT COUNT(*) FROM tasks WHERE project_id = p.id AND due_date < CURDATE() AND status NOT IN ('completed', 'cancelled')) as overdue_tasks,
+            (SELECT SUM(duration_minutes) FROM time_logs tl JOIN tasks t ON tl.task_id = t.id WHERE t.project_id = p.id) as total_minutes,
+            DATEDIFF(p.due_date, CURDATE()) as days_remaining
+        FROM projects p
+        LEFT JOIN users u ON p.assigned_manager = u.id
+        WHERE p.status != 'cancelled'
+        ORDER BY
+            FIELD(p.status, 'in_progress', 'planning', 'review', 'on_hold', 'completed'),
+            p.due_date ASC
+    ")->fetchAll(PDO::FETCH_ASSOC);
 
-// ==================== TEAM ACTIVITY ====================
-$teamActivity = $db->query("
-    SELECT
-        u.id,
-        u.full_name,
-        u.email,
-        u.role,
-        u.profile_image,
-        (SELECT COUNT(*) FROM tasks WHERE assigned_to = u.id AND status != 'completed') as active_tasks,
-        (SELECT COUNT(*) FROM tasks WHERE assigned_to = u.id AND status = 'in_progress') as in_progress_tasks,
-        (SELECT COUNT(*) FROM tasks WHERE assigned_to = u.id AND status = 'completed' AND MONTH(completed_date) = MONTH(CURRENT_DATE())) as completed_this_month,
-        (SELECT SUM(duration_minutes) FROM time_logs WHERE user_id = u.id AND WEEK(start_time) = WEEK(CURRENT_DATE())) as minutes_this_week,
-        (SELECT task_name FROM tasks WHERE assigned_to = u.id AND status = 'in_progress' ORDER BY due_date ASC LIMIT 1) as current_task,
-        (SELECT project_name FROM projects p JOIN tasks t ON p.id = t.project_id WHERE t.assigned_to = u.id AND t.status = 'in_progress' ORDER BY t.due_date ASC LIMIT 1) as current_project
-    FROM users u
-    WHERE u.role IN ('manager', 'employee') AND u.is_active = 1
-    ORDER BY active_tasks DESC, minutes_this_week DESC
-")->fetchAll();
+    // ==================== TEAM ACTIVITY ====================
+    $teamActivity = $db->query("
+        SELECT
+            u.id,
+            u.full_name,
+            u.email,
+            u.role,
+            u.profile_image,
+            (SELECT COUNT(*) FROM tasks WHERE assigned_to = u.id AND status != 'completed') as active_tasks,
+            (SELECT COUNT(*) FROM tasks WHERE assigned_to = u.id AND status = 'in_progress') as in_progress_tasks,
+            (SELECT COUNT(*) FROM tasks WHERE assigned_to = u.id AND status = 'completed' AND MONTH(completed_date) = MONTH(CURRENT_DATE())) as completed_this_month,
+            (SELECT SUM(duration_minutes) FROM time_logs WHERE user_id = u.id AND WEEK(start_time) = WEEK(CURRENT_DATE())) as minutes_this_week,
+            (SELECT task_name FROM tasks WHERE assigned_to = u.id AND status = 'in_progress' ORDER BY due_date ASC LIMIT 1) as current_task,
+            (SELECT project_name FROM projects p JOIN tasks t ON p.id = t.project_id WHERE t.assigned_to = u.id AND t.status = 'in_progress' ORDER BY t.due_date ASC LIMIT 1) as current_project
+        FROM users u
+        WHERE u.role IN ('manager', 'employee') AND u.is_active = 1
+        ORDER BY active_tasks DESC, minutes_this_week DESC
+    ")->fetchAll(PDO::FETCH_ASSOC);
 
-// ==================== BOTTLENECKS & CRITICAL ISSUES ====================
-$bottlenecks = $db->query("
-    SELECT
-        t.*,
-        p.project_name,
-        p.client_name,
-        u.full_name as assigned_name,
-        DATEDIFF(CURDATE(), t.due_date) as days_overdue
-    FROM tasks t
-    JOIN projects p ON t.project_id = p.id
-    LEFT JOIN users u ON t.assigned_to = u.id
-    WHERE t.status = 'blocked'
-       OR (t.due_date < CURDATE() AND t.status NOT IN ('completed', 'cancelled'))
-    ORDER BY
-        FIELD(t.status, 'blocked', 'in_progress', 'todo'),
-        t.due_date ASC
-    LIMIT 10
-")->fetchAll();
+    // ==================== BOTTLENECKS & CRITICAL ISSUES ====================
+    $bottlenecks = $db->query("
+        SELECT
+            t.*,
+            p.project_name,
+            p.client_name,
+            u.full_name as assigned_name,
+            DATEDIFF(CURDATE(), t.due_date) as days_overdue
+        FROM tasks t
+        JOIN projects p ON t.project_id = p.id
+        LEFT JOIN users u ON t.assigned_to = u.id
+        WHERE t.status = 'blocked'
+           OR (t.due_date < CURDATE() AND t.status NOT IN ('completed', 'cancelled'))
+        ORDER BY
+            FIELD(t.status, 'blocked', 'in_progress', 'todo'),
+            t.due_date ASC
+        LIMIT 10
+    ")->fetchAll(PDO::FETCH_ASSOC);
 
-// ==================== UPCOMING DEADLINES ====================
-$upcomingDeadlines = $db->query("
-    SELECT
-        t.*,
-        p.project_name,
-        p.client_name,
-        u.full_name as assigned_name,
-        DATEDIFF(t.due_date, CURDATE()) as days_until_due
-    FROM tasks t
-    JOIN projects p ON t.project_id = p.id
-    LEFT JOIN users u ON t.assigned_to = u.id
-    WHERE t.due_date >= CURDATE()
-      AND t.status NOT IN ('completed', 'cancelled')
-    ORDER BY t.due_date ASC
-    LIMIT 8
-")->fetchAll();
+    // ==================== UPCOMING DEADLINES ====================
+    $upcomingDeadlines = $db->query("
+        SELECT
+            t.*,
+            p.project_name,
+            p.client_name,
+            u.full_name as assigned_name,
+            DATEDIFF(t.due_date, CURDATE()) as days_until_due
+        FROM tasks t
+        JOIN projects p ON t.project_id = p.id
+        LEFT JOIN users u ON t.assigned_to = u.id
+        WHERE t.due_date >= CURDATE()
+          AND t.status NOT IN ('completed', 'cancelled')
+        ORDER BY t.due_date ASC
+        LIMIT 8
+    ")->fetchAll(PDO::FETCH_ASSOC);
 
-// ==================== RECENT ACTIVITY FEED ====================
-$recentActivity = $db->query("
-    (SELECT
-        'task_completed' as activity_type,
-        t.task_name as title,
-        p.project_name as subtitle,
-        u.full_name as user_name,
-        t.completed_date as activity_time
-    FROM tasks t
-    JOIN projects p ON t.project_id = p.id
-    LEFT JOIN users u ON t.assigned_to = u.id
-    WHERE t.completed_date IS NOT NULL
-    ORDER BY t.completed_date DESC
-    LIMIT 5)
+    // ==================== RECENT ACTIVITY FEED ====================
+    $recentActivity = $db->query("
+        (SELECT
+            'task_completed' as activity_type,
+            t.task_name as title,
+            p.project_name as subtitle,
+            u.full_name as user_name,
+            t.completed_date as activity_time
+        FROM tasks t
+        JOIN projects p ON t.project_id = p.id
+        LEFT JOIN users u ON t.assigned_to = u.id
+        WHERE t.completed_date IS NOT NULL
+        ORDER BY t.completed_date DESC
+        LIMIT 5)
 
-    UNION ALL
+        UNION ALL
 
-    (SELECT
-        'project_created' as activity_type,
-        p.project_name as title,
-        p.client_name as subtitle,
-        u.full_name as user_name,
-        p.created_at as activity_time
-    FROM projects p
-    LEFT JOIN users u ON p.created_by = u.id
-    ORDER BY p.created_at DESC
-    LIMIT 5)
+        (SELECT
+            'project_created' as activity_type,
+            p.project_name as title,
+            p.client_name as subtitle,
+            u.full_name as user_name,
+            p.created_at as activity_time
+        FROM projects p
+        LEFT JOIN users u ON p.created_by = u.id
+        ORDER BY p.created_at DESC
+        LIMIT 5)
 
-    ORDER BY activity_time DESC
-    LIMIT 10
-")->fetchAll();
+        ORDER BY activity_time DESC
+        LIMIT 10
+    ")->fetchAll(PDO::FETCH_ASSOC);
+
+} catch (PDOException $e) {
+    die("Database Error: " . $e->getMessage() . "<br>File: " . $e->getFile() . "<br>Line: " . $e->getLine());
+} catch (Exception $e) {
+    die("Error: " . $e->getMessage() . "<br>File: " . $e->getFile() . "<br>Line: " . $e->getLine());
+}
 
 ?>
 <!DOCTYPE html>
