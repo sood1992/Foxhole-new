@@ -4,11 +4,22 @@
  * Access this at: https://neofoxmedia.com/foxhole/tests/v1/manager/debug-session.php
  */
 
-// Start session first
-session_start();
+// Enable error reporting
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
-// Output headers
+// Output headers BEFORE session_start to catch any errors
 header('Content-Type: text/html; charset=utf-8');
+
+// Try to start session and catch any errors
+$sessionError = null;
+try {
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
+} catch (Exception $e) {
+    $sessionError = $e->getMessage();
+}
 ?>
 <!DOCTYPE html>
 <html>
@@ -27,6 +38,15 @@ header('Content-Type: text/html; charset=utf-8');
 <body>
     <h1>🔍 Session & Redirect Debug Information</h1>
 
+    <?php if ($sessionError): ?>
+    <div class="section" style="border-color: red; background: #fff5f5;">
+        <h2 style="color: red;">⚠️ SESSION ERROR DETECTED!</h2>
+        <p class="error">Session failed to start. This is likely causing the redirect loop!</p>
+        <p><strong>Error:</strong> <?php echo htmlspecialchars($sessionError); ?></p>
+        <p class="info">Check the permissions test below for the fix.</p>
+    </div>
+    <?php endif; ?>
+
     <div class="section">
         <h2>1. Session Status</h2>
         <?php if (session_status() === PHP_SESSION_ACTIVE): ?>
@@ -34,6 +54,7 @@ header('Content-Type: text/html; charset=utf-8');
             <p>Session ID: <?php echo session_id(); ?></p>
         <?php else: ?>
             <p class="error">✗ Session is NOT active</p>
+            <p>Status Code: <?php echo session_status(); ?> (0=disabled, 1=none, 2=active)</p>
         <?php endif; ?>
     </div>
 
