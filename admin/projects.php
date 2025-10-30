@@ -214,6 +214,9 @@ $managers = $db->query("SELECT id, full_name FROM users WHERE role IN ('admin', 
                                 ?>
                             </p>
                         </div>
+                        <button id="bulkDeleteProjectsBtn" class="btn btn-danger btn-sm" style="display: none;">
+                            <i class="fas fa-trash"></i> Delete Selected (<span id="selectedProjectCount">0</span>)
+                        </button>
                     </div>
                     <div class="card-body" style="padding: 0;">
                         <?php if (empty($projects)): ?>
@@ -226,6 +229,9 @@ $managers = $db->query("SELECT id, full_name FROM users WHERE role IN ('admin', 
                                 <table class="data-table">
                                     <thead>
                                         <tr>
+                                            <th style="width: 40px;">
+                                                <input type="checkbox" id="selectAllProjects" style="cursor: pointer;">
+                                            </th>
                                             <th class="sortable">Project Name</th>
                                             <th class="sortable">Client</th>
                                             <th class="sortable">Manager</th>
@@ -244,6 +250,9 @@ $managers = $db->query("SELECT id, full_name FROM users WHERE role IN ('admin', 
                                         $isOverdue = isOverdue($project['due_date'], $project['status']);
                                         ?>
                                         <tr>
+                                            <td>
+                                                <input type="checkbox" class="project-checkbox" value="<?php echo $project['id']; ?>" style="cursor: pointer;">
+                                            </td>
                                             <td>
                                                 <strong style="color: var(--heading-color);"><?php echo e($project['project_name']); ?></strong>
                                             </td>
@@ -373,6 +382,54 @@ $managers = $db->query("SELECT id, full_name FROM users WHERE role IN ('admin', 
             });
         });
 
+        // Bulk delete functionality for projects
+        const selectAllProjectsCheckbox = document.getElementById('selectAllProjects');
+        const projectCheckboxes = document.querySelectorAll('.project-checkbox');
+        const bulkDeleteProjectsBtn = document.getElementById('bulkDeleteProjectsBtn');
+        const selectedProjectCountSpan = document.getElementById('selectedProjectCount');
+
+        if (selectAllProjectsCheckbox && projectCheckboxes.length > 0) {
+            // Select/Deselect All Projects
+            selectAllProjectsCheckbox.addEventListener('change', function() {
+                projectCheckboxes.forEach(checkbox => {
+                    checkbox.checked = this.checked;
+                });
+                updateBulkDeleteProjectsButton();
+            });
+
+            // Update bulk delete button visibility and count
+            projectCheckboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    updateBulkDeleteProjectsButton();
+
+                    // Update select all checkbox state
+                    const allChecked = Array.from(projectCheckboxes).every(cb => cb.checked);
+                    const noneChecked = Array.from(projectCheckboxes).every(cb => !cb.checked);
+                    selectAllProjectsCheckbox.checked = allChecked;
+                    selectAllProjectsCheckbox.indeterminate = !allChecked && !noneChecked;
+                });
+            });
+
+            // Bulk delete button click
+            bulkDeleteProjectsBtn.addEventListener('click', function() {
+                const checkedBoxes = document.querySelectorAll('.project-checkbox:checked');
+                document.getElementById('deleteProjectCount').textContent = checkedBoxes.length;
+                document.getElementById('bulkDeleteProjectsModal').style.display = 'flex';
+            });
+        }
+
+        function updateBulkDeleteProjectsButton() {
+            const checkedBoxes = document.querySelectorAll('.project-checkbox:checked');
+            const count = checkedBoxes.length;
+
+            if (count > 0) {
+                bulkDeleteProjectsBtn.style.display = 'inline-flex';
+                selectedProjectCountSpan.textContent = count;
+            } else {
+                bulkDeleteProjectsBtn.style.display = 'none';
+            }
+        }
+
         // Auto-hide alerts after 5 seconds
         const alerts = document.querySelectorAll('.alert');
         alerts.forEach(alert => {
@@ -382,6 +439,72 @@ $managers = $db->query("SELECT id, full_name FROM users WHERE role IN ('admin', 
             }, 5000);
         });
     });
+
+    function closeBulkDeleteProjectsModal() {
+        document.getElementById('bulkDeleteProjectsModal').style.display = 'none';
+    }
+
+    function confirmBulkDeleteProjects() {
+        const checkedBoxes = document.querySelectorAll('.project-checkbox:checked');
+        const projectIds = Array.from(checkedBoxes).map(cb => cb.value);
+
+        if (projectIds.length === 0) {
+            closeBulkDeleteProjectsModal();
+            return;
+        }
+
+        // Show loading state
+        const deleteBtn = event.target.closest('button');
+        deleteBtn.disabled = true;
+        deleteBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Deleting...';
+
+        // Send delete request
+        fetch('../api/bulk-delete-projects.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ project_ids: projectIds })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Reload page to show updated list
+                window.location.href = 'projects.php?deleted=' + data.deleted_count;
+            } else {
+                alert('Error: ' + (data.message || 'Failed to delete projects'));
+                deleteBtn.disabled = false;
+                deleteBtn.innerHTML = '<i class="fas fa-trash"></i> Delete Projects';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while deleting projects');
+            deleteBtn.disabled = false;
+            deleteBtn.innerHTML = '<i class="fas fa-trash"></i> Delete Projects';
+        });
+    }
     </script>
+
+    <!-- Bulk Delete Projects Modal -->
+    <div id="bulkDeleteProjectsModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 10000; align-items: center; justify-content: center;">
+        <div class="card" style="max-width: 500px; margin: 20px;">
+            <div class="card-header">
+                <h3 style="margin: 0; color: var(--danger);"><i class="fas fa-exclamation-triangle"></i> Confirm Bulk Delete</h3>
+            </div>
+            <div class="card-body">
+                <p>Are you sure you want to delete <strong id="deleteProjectCount">0</strong> selected project(s)?</p>
+                <p style="color: var(--danger); font-size: 13px; margin-top: 10px;">
+                    <i class="fas fa-info-circle"></i> Warning: This will also delete all tasks, time logs, and related data for these projects. This action cannot be undone.
+                </p>
+            </div>
+            <div class="card-footer" style="display: flex; gap: 10px; justify-content: flex-end;">
+                <button onclick="closeBulkDeleteProjectsModal()" class="btn btn-outline">Cancel</button>
+                <button onclick="confirmBulkDeleteProjects()" class="btn btn-danger">
+                    <i class="fas fa-trash"></i> Delete Projects
+                </button>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

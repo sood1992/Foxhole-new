@@ -175,6 +175,9 @@ $teamMembers = $db->query($query)->fetchAll();
                                 <input type="text" id="searchInput" placeholder="Search team members..."
                                        class="form-control" style="padding-left: 36px; width: 250px;">
                             </div>
+                            <button id="bulkDeleteBtn" class="btn btn-danger btn-sm" style="display: none;">
+                                <i class="fas fa-trash"></i> Delete Selected (<span id="selectedCount">0</span>)
+                            </button>
                             <a href="users.php?action=add" class="btn btn-primary btn-sm">
                                 <i class="fas fa-plus"></i> Add Member
                             </a>
@@ -185,6 +188,9 @@ $teamMembers = $db->query($query)->fetchAll();
                             <table class="data-table" id="teamTable">
                                 <thead>
                                     <tr>
+                                        <th style="width: 40px;">
+                                            <input type="checkbox" id="selectAll" style="cursor: pointer;">
+                                        </th>
                                         <th class="sortable">Name</th>
                                         <th class="sortable">Email</th>
                                         <th>Role</th>
@@ -201,6 +207,9 @@ $teamMembers = $db->query($query)->fetchAll();
                                 <tbody>
                                     <?php foreach ($teamMembers as $member): ?>
                                     <tr>
+                                        <td>
+                                            <input type="checkbox" class="user-checkbox" value="<?php echo $member['id']; ?>" style="cursor: pointer;">
+                                        </td>
                                         <td>
                                             <div style="display: flex; align-items: center; gap: 12px;">
                                                 <div style="width: 36px; height: 36px; border-radius: 50%;
@@ -271,6 +280,27 @@ $teamMembers = $db->query($query)->fetchAll();
         </div>
     </div>
 
+    <!-- Bulk Delete Confirmation Modal -->
+    <div id="bulkDeleteModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 10000; align-items: center; justify-content: center;">
+        <div class="card" style="max-width: 500px; margin: 20px;">
+            <div class="card-header">
+                <h3 style="margin: 0; color: var(--danger);"><i class="fas fa-exclamation-triangle"></i> Confirm Bulk Delete</h3>
+            </div>
+            <div class="card-body">
+                <p>Are you sure you want to delete <strong id="deleteCount">0</strong> selected user(s)?</p>
+                <p style="color: var(--danger); font-size: 13px; margin-top: 10px;">
+                    <i class="fas fa-info-circle"></i> Warning: This action cannot be undone. All associated data will be permanently deleted.
+                </p>
+            </div>
+            <div class="card-footer" style="display: flex; gap: 10px; justify-content: flex-end;">
+                <button onclick="closeBulkDeleteModal()" class="btn btn-outline">Cancel</button>
+                <button onclick="confirmBulkDelete()" class="btn btn-danger">
+                    <i class="fas fa-trash"></i> Delete Users
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Search functionality
@@ -285,6 +315,52 @@ $teamMembers = $db->query($query)->fetchAll();
             });
         });
 
+        // Bulk delete functionality
+        const selectAllCheckbox = document.getElementById('selectAll');
+        const userCheckboxes = document.querySelectorAll('.user-checkbox');
+        const bulkDeleteBtn = document.getElementById('bulkDeleteBtn');
+        const selectedCountSpan = document.getElementById('selectedCount');
+
+        // Select/Deselect All
+        selectAllCheckbox.addEventListener('change', function() {
+            userCheckboxes.forEach(checkbox => {
+                checkbox.checked = this.checked;
+            });
+            updateBulkDeleteButton();
+        });
+
+        // Update bulk delete button visibility and count
+        userCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                updateBulkDeleteButton();
+
+                // Update select all checkbox state
+                const allChecked = Array.from(userCheckboxes).every(cb => cb.checked);
+                const noneChecked = Array.from(userCheckboxes).every(cb => !cb.checked);
+                selectAllCheckbox.checked = allChecked;
+                selectAllCheckbox.indeterminate = !allChecked && !noneChecked;
+            });
+        });
+
+        function updateBulkDeleteButton() {
+            const checkedBoxes = document.querySelectorAll('.user-checkbox:checked');
+            const count = checkedBoxes.length;
+
+            if (count > 0) {
+                bulkDeleteBtn.style.display = 'inline-flex';
+                selectedCountSpan.textContent = count;
+            } else {
+                bulkDeleteBtn.style.display = 'none';
+            }
+        }
+
+        // Bulk delete button click
+        bulkDeleteBtn.addEventListener('click', function() {
+            const checkedBoxes = document.querySelectorAll('.user-checkbox:checked');
+            document.getElementById('deleteCount').textContent = checkedBoxes.length;
+            document.getElementById('bulkDeleteModal').style.display = 'flex';
+        });
+
         // Auto-hide alerts after 5 seconds
         const alerts = document.querySelectorAll('.alert');
         alerts.forEach(alert => {
@@ -294,6 +370,51 @@ $teamMembers = $db->query($query)->fetchAll();
             }, 5000);
         });
     });
+
+    function closeBulkDeleteModal() {
+        document.getElementById('bulkDeleteModal').style.display = 'none';
+    }
+
+    function confirmBulkDelete() {
+        const checkedBoxes = document.querySelectorAll('.user-checkbox:checked');
+        const userIds = Array.from(checkedBoxes).map(cb => cb.value);
+
+        if (userIds.length === 0) {
+            closeBulkDeleteModal();
+            return;
+        }
+
+        // Show loading state
+        const deleteBtn = event.target.closest('button');
+        deleteBtn.disabled = true;
+        deleteBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Deleting...';
+
+        // Send delete request
+        fetch('../api/bulk-delete-users.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ user_ids: userIds })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Reload page to show updated list
+                window.location.href = 'team.php?deleted=' + data.deleted_count;
+            } else {
+                alert('Error: ' + (data.message || 'Failed to delete users'));
+                deleteBtn.disabled = false;
+                deleteBtn.innerHTML = '<i class="fas fa-trash"></i> Delete Users';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while deleting users');
+            deleteBtn.disabled = false;
+            deleteBtn.innerHTML = '<i class="fas fa-trash"></i> Delete Users';
+        });
+    }
     </script>
 </body>
 </html>
