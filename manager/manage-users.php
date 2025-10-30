@@ -5,8 +5,28 @@ ob_start();
 require_once '../config/config.php';
 require_once '../includes/functions.php';
 
-if (!isLoggedIn() || !hasRole('manager')) {
+// Check if user is logged in
+if (!isLoggedIn()) {
     redirect('../login.php');
+    exit;
+}
+
+// Check if user has manager role - if not, redirect to their correct dashboard
+if (!hasRole('manager')) {
+    switch ($_SESSION['role']) {
+        case 'admin':
+            redirect('../admin/index.php');
+            break;
+        case 'employee':
+            redirect('../employee/index.php');
+            break;
+        default:
+            // Unknown role - clear session and redirect to login
+            session_destroy();
+            redirect('../login.php');
+            break;
+    }
+    exit;
 }
 
 $db = getDBConnection();

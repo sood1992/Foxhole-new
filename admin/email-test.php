@@ -5,8 +5,28 @@ require_once '../config/config.php';
 require_once '../includes/functions.php';
 require_once '../includes/email-functions.php';
 
-if (!isLoggedIn() || !hasRole('admin')) {
+// Check if user is logged in
+if (!isLoggedIn()) {
     redirect('../login.php');
+    exit;
+}
+
+// Check if user has admin role - if not, redirect to their correct dashboard
+if (!hasRole('admin')) {
+    switch ($_SESSION['role']) {
+        case 'manager':
+            redirect('../manager/index.php');
+            break;
+        case 'employee':
+            redirect('../employee/index.php');
+            break;
+        default:
+            // Unknown role - clear session and redirect to login
+            session_destroy();
+            redirect('../login.php');
+            break;
+    }
+    exit;
 }
 
 $db = getDBConnection();
