@@ -289,6 +289,12 @@ $budgetPercentage = $project['budget'] > 0 ? round(($budgetUsed / $project['budg
                 </div>
                 <?php endif; ?>
 
+                <!-- Client Feedback Widget -->
+                <?php include '../includes/client-feedback-widget.php'; ?>
+
+                <!-- Budget Dashboard Widget -->
+                <?php include '../includes/budget-dashboard-widget.php'; ?>
+
                 <!-- All Tasks -->
                 <div class="card">
                     <div class="card-header">

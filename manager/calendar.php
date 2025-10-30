@@ -19,6 +19,7 @@ $currentUser = getCurrentUser();
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.css">
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js"></script>
+    <script src="../assets/js/calendar-events.js"></script>
     <style>
     .calendar-container {
         background: white;
@@ -146,11 +147,16 @@ $currentUser = getCurrentUser();
 
             <div class="content-wrapper">
                 <!-- Page Title -->
-                <div style="margin-bottom: 30px;">
-                    <h1 style="margin-bottom: 8px;">Calendar</h1>
-                    <p style="color: var(--text-secondary); font-size: 14px; margin: 0;">
-                        View and manage your tasks and deadlines
-                    </p>
+                <div style="margin-bottom: 30px; display: flex; justify-content: space-between; align-items: start;">
+                    <div>
+                        <h1 style="margin-bottom: 8px;">Calendar</h1>
+                        <p style="color: var(--text-secondary); font-size: 14px; margin: 0;">
+                            View and manage tasks, shoots, edits, and reviews
+                        </p>
+                    </div>
+                    <button class="btn btn-primary" onclick="openAddEventModal()">
+                        <i class="fas fa-plus"></i> Add Event
+                    </button>
                 </div>
 
                 <!-- Tab Navigation -->
@@ -171,24 +177,32 @@ $currentUser = getCurrentUser();
 
                 <div class="calendar-legend">
                     <div class="legend-item">
+                        <div class="legend-color" style="background: #FF6B6B;"></div>
+                        <span>🎥 Shoot</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #4ECDC4;"></div>
+                        <span>✂️ Edit Session</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #FFE66D;"></div>
+                        <span>👁️ Client Review</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #95E1D3;"></div>
+                        <span>👥 Meeting</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #F38181;"></div>
+                        <span>⏰ Deadline</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #AA96DA;"></div>
+                        <span>📦 Delivery</span>
+                    </div>
+                    <div class="legend-item">
                         <div class="legend-color" style="background: #3b82f6;"></div>
-                        <span>Tasks (Default)</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-color" style="background: #f59e0b;"></div>
-                        <span>High Priority</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-color" style="background: #ef4444;"></div>
-                        <span>Urgent</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-color" style="background: #10b981;"></div>
-                        <span>Completed</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-color" style="background: #8b5cf6;"></div>
-                        <span>Milestones</span>
+                        <span>📋 Tasks</span>
                     </div>
                 </div>
 
@@ -237,15 +251,22 @@ $currentUser = getCurrentUser();
                 right: '' // Remove toolbar buttons, use tabs instead
             },
             events: function(info, successCallback, failureCallback) {
-                fetch(`../api/calendar.php?start=${info.startStr}&end=${info.endStr}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        successCallback(data);
-                    })
-                    .catch(error => {
-                        console.error('Error loading events:', error);
-                        failureCallback(error);
-                    });
+                // Load both task events and calendar events
+                Promise.all([
+                    fetch(`../api/calendar.php?start=${info.startStr}&end=${info.endStr}`).then(r => r.json()),
+                    fetch(`../api/calendar-events.php?start=${info.startStr}&end=${info.endStr}`).then(r => r.json())
+                ])
+                .then(([tasksData, eventsData]) => {
+                    const allEvents = [
+                        ...(Array.isArray(tasksData) ? tasksData : []),
+                        ...(eventsData.success && eventsData.events ? eventsData.events : [])
+                    ];
+                    successCallback(allEvents);
+                })
+                .catch(error => {
+                    console.error('Error loading events:', error);
+                    failureCallback(error);
+                });
             },
             eventClick: function(info) {
                 showEventDetails(info.event);
@@ -267,6 +288,13 @@ $currentUser = getCurrentUser();
         });
 
         calendarInstance.render();
+
+        // Initialize calendar events enhancement
+        if (typeof initializeCalendarEvents === 'function') {
+            initializeCalendarEvents(calendarInstance, {
+                userRole: '<?php echo $_SESSION['role']; ?>'
+            });
+        }
 
         // Update active tab indicator
         function updateActiveTab(viewType) {

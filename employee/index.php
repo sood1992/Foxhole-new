@@ -179,6 +179,21 @@ $weekSummaryData = $weekSummary->fetchAll();
                     </div>
                 </div>
 
+                <!-- My Feedback Widget -->
+                <div class="card" style="margin-bottom: 30px;">
+                    <div class="card-header">
+                        <h3><i class="fas fa-comments"></i> Client Feedback for Me</h3>
+                    </div>
+                    <div class="card-body">
+                        <div id="my-feedback-widget">
+                            <div style="text-align: center; padding: 40px;">
+                                <i class="fas fa-spinner fa-spin" style="font-size: 32px; color: var(--primary);"></i>
+                                <p>Loading feedback...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- My Tasks -->
                 <div class="card">
                     <div class="card-header">
@@ -406,6 +421,89 @@ $weekSummaryData = $weekSummary->fetchAll();
     </div>
 
     <script>
+        // Load my feedback
+        document.addEventListener('DOMContentLoaded', function() {
+            loadMyFeedback();
+        });
+
+        function loadMyFeedback() {
+            fetch('../api/client-feedback.php')
+                .then(r => r.json())
+                .then(data => {
+                    if (data.success && data.feedbacks && data.feedbacks.length > 0) {
+                        displayMyFeedback(data.feedbacks);
+                    } else {
+                        document.getElementById('my-feedback-widget').innerHTML = `
+                            <div style="text-align: center; padding: 40px; color: var(--text-secondary);">
+                                <i class="fas fa-check-circle" style="font-size: 48px; margin-bottom: 16px; opacity: 0.3;"></i>
+                                <h4>No Pending Feedback</h4>
+                                <p>You have no feedback assigned to you at the moment.</p>
+                            </div>
+                        `;
+                    }
+                })
+                .catch(err => {
+                    console.error('Error loading feedback:', err);
+                    document.getElementById('my-feedback-widget').innerHTML = `
+                        <div style="text-align: center; padding: 40px; color: var(--danger);">
+                            <i class="fas fa-exclamation-triangle" style="font-size: 48px; margin-bottom: 16px;"></i>
+                            <p>Error loading feedback. Please refresh the page.</p>
+                        </div>
+                    `;
+                });
+        }
+
+        function displayMyFeedback(feedbacks) {
+            const container = document.getElementById('my-feedback-widget');
+            container.innerHTML = feedbacks.map(f => {
+                const priorityClass = {
+                    'low': 'primary',
+                    'medium': 'warning',
+                    'high': 'warning',
+                    'urgent': 'danger'
+                }[f.priority] || 'primary';
+
+                const statusClass = {
+                    'pending': 'status-todo',
+                    'in_progress': 'status-progress',
+                    'completed': 'status-completed'
+                }[f.status] || 'status-todo';
+
+                return `
+                    <div style="padding: 16px; background: var(--bg-secondary); border-radius: 8px; margin-bottom: 12px; border-left: 3px solid var(--${priorityClass === 'danger' ? 'danger' : 'warning'});">
+                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
+                            <div style="font-weight: 600; font-size: 16px; color: var(--heading-color);">
+                                ${escapeHtml(f.feedback_title)}
+                            </div>
+                            <div style="display: flex; gap: 8px;">
+                                <span class="badge badge-${priorityClass}">${f.priority}</span>
+                                <span class="badge ${statusClass}">${f.status.replace('_', ' ')}</span>
+                            </div>
+                        </div>
+                        <div style="font-size: 13px; color: var(--text-secondary); margin-bottom: 8px;">
+                            📁 ${escapeHtml(f.project_name)}
+                            ${f.due_date ? ' • 📅 Due: ' + new Date(f.due_date).toLocaleDateString() : ''}
+                        </div>
+                        <div style="font-size: 14px; color: var(--text-primary); margin-bottom: 12px; line-height: 1.5;">
+                            ${escapeHtml(f.feedback_text.substring(0, 200))}${f.feedback_text.length > 200 ? '...' : ''}
+                        </div>
+                        <div style="display: flex; gap: 12px;">
+                            <a href="../admin/project-detail.php?id=${f.project_id}#feedback-${f.id}" class="btn btn-primary btn-sm">
+                                <i class="fas fa-reply"></i> View & Respond
+                            </a>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
         // Timer functions
         <?php if ($activeTimeLog): ?>
         let startTime = <?php echo $startTime; ?>;
