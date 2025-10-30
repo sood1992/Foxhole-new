@@ -84,7 +84,6 @@ try {
             u.full_name,
             u.email,
             u.role,
-            u.profile_image,
             (SELECT COUNT(*) FROM tasks WHERE assigned_to = u.id AND status != 'completed') as active_tasks,
             (SELECT COUNT(*) FROM tasks WHERE assigned_to = u.id AND status = 'in_progress') as in_progress_tasks,
             (SELECT COUNT(*) FROM tasks WHERE assigned_to = u.id AND status = 'completed' AND MONTH(completed_date) = MONTH(CURRENT_DATE())) as completed_this_month,
