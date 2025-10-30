@@ -52,9 +52,9 @@
   --spacing-xxl: 48px;
 
   /* Layout */
-  --sidebar-width: 390px;
+  --sidebar-width: 320px;
   --sidebar-collapsed: 80px;
-  --sidebar-sub-width: 210px;
+  --sidebar-sub-width: 180px;
   --header-height: 60px;
   --container-padding: 30px;
 
@@ -201,7 +201,7 @@ a:hover {
 
 /* Main Panel (Icons + Text) */
 .sidebar-main-panel {
-  width: 180px;
+  width: 140px;
   background: var(--sidebar-bg);
   border-right: 1px solid rgba(255,255,255,0.05);
   display: flex;
