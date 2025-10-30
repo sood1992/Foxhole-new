@@ -40,6 +40,18 @@ $current_page = basename($_SERVER['PHP_SELF']);
                data-menu="analytics" title="Analytics">
                 <i class="fas fa-chart-line"></i>
             </a>
+            <a href="../admin/reports.php" class="main-menu-item <?php echo ($current_page == 'reports.php') ? 'active' : ''; ?>"
+               data-menu="reports" title="Reports">
+                <i class="fas fa-file-alt"></i>
+            </a>
+            <a href="../admin/calendar.php" class="main-menu-item <?php echo ($current_page == 'calendar.php') ? 'active' : ''; ?>"
+               data-menu="calendar" title="Calendar">
+                <i class="fas fa-calendar"></i>
+            </a>
+            <a href="../admin/chat.php" class="main-menu-item <?php echo ($current_page == 'chat.php') ? 'active' : ''; ?>"
+               data-menu="chat" title="Chat">
+                <i class="fas fa-comments"></i>
+            </a>
             <a href="../admin/email-config.php" class="main-menu-item <?php echo (in_array($current_page, ['email-config.php', 'email-test.php'])) ? 'active' : ''; ?>"
                data-menu="settings" title="Settings">
                 <i class="fas fa-cog"></i>
@@ -124,7 +136,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
         <!-- Analytics Section -->
         <div class="menu-section" data-menu="analytics">
-            <div class="menu-title">Analytics & Reports</div>
+            <div class="menu-title">Analytics</div>
             <a href="../admin/analytics.php" class="menu-item <?php echo ($current_page == 'analytics.php') ? 'active' : ''; ?>">
                 <i class="fas fa-chart-pie"></i> Overview
             </a>
@@ -133,6 +145,54 @@ $current_page = basename($_SERVER['PHP_SELF']);
             </a>
             <a href="../admin/budget.php" class="menu-item <?php echo ($current_page == 'budget.php') ? 'active' : ''; ?>">
                 <i class="fas fa-rupee-sign"></i> Budget Tracking
+            </a>
+        </div>
+
+        <!-- Reports Section -->
+        <div class="menu-section" data-menu="reports">
+            <div class="menu-title">Reports</div>
+            <a href="../admin/reports.php" class="menu-item <?php echo ($current_page == 'reports.php') ? 'active' : ''; ?>">
+                <i class="fas fa-file-alt"></i> All Reports
+            </a>
+            <a href="../admin/reports.php?type=daily" class="menu-item">
+                <i class="fas fa-calendar-day"></i> Daily Reports
+            </a>
+            <a href="../admin/reports.php?type=weekly" class="menu-item">
+                <i class="fas fa-calendar-week"></i> Weekly Reports
+            </a>
+            <a href="../admin/reports.php?type=monthly" class="menu-item">
+                <i class="fas fa-calendar-alt"></i> Monthly Reports
+            </a>
+        </div>
+
+        <!-- Calendar Section -->
+        <div class="menu-section" data-menu="calendar">
+            <div class="menu-title">Calendar</div>
+            <a href="../admin/calendar.php" class="menu-item <?php echo ($current_page == 'calendar.php') ? 'active' : ''; ?>">
+                <i class="fas fa-calendar-alt"></i> View Calendar
+            </a>
+            <a href="../admin/calendar.php?view=day" class="menu-item">
+                <i class="fas fa-calendar-day"></i> Day View
+            </a>
+            <a href="../admin/calendar.php?view=week" class="menu-item">
+                <i class="fas fa-calendar-week"></i> Week View
+            </a>
+            <a href="../admin/calendar.php?view=month" class="menu-item">
+                <i class="fas fa-calendar"></i> Month View
+            </a>
+        </div>
+
+        <!-- Chat Section -->
+        <div class="menu-section" data-menu="chat">
+            <div class="menu-title">Chat & Messages</div>
+            <a href="../admin/chat.php" class="menu-item <?php echo ($current_page == 'chat.php') ? 'active' : ''; ?>">
+                <i class="fas fa-comments"></i> All Messages
+            </a>
+            <a href="../admin/chat.php?type=direct" class="menu-item">
+                <i class="fas fa-comment"></i> Direct Messages
+            </a>
+            <a href="../admin/chat.php?type=group" class="menu-item">
+                <i class="fas fa-users"></i> Group Chats
             </a>
         </div>
 
