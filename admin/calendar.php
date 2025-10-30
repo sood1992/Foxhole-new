@@ -264,8 +264,6 @@ $currentUser = getCurrentUser();
             }
         });
 
-        calendarInstance.render();
-
         // Update active tab indicator
         function updateActiveTab(viewType) {
             const tabLinks = document.querySelectorAll('.tab-link[data-view]');
@@ -276,23 +274,32 @@ $currentUser = getCurrentUser();
             }
         }
 
-        // Tab navigation handlers
+        // Tab navigation handlers - set up before render
         const tabLinks = document.querySelectorAll('.tab-link[data-view]');
         tabLinks.forEach(link => {
             link.addEventListener('click', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
                 const viewName = this.getAttribute('data-view');
-                console.log('Switching to view:', viewName);
+                console.log('Switching to view:', viewName, 'Calendar instance:', calendarInstance);
                 if (calendarInstance) {
-                    calendarInstance.changeView(viewName);
-                    updateActiveTab(viewName);
+                    try {
+                        calendarInstance.changeView(viewName);
+                        updateActiveTab(viewName);
+                        console.log('View changed successfully to:', viewName);
+                    } catch (error) {
+                        console.error('Error changing view:', error);
+                    }
+                } else {
+                    console.error('Calendar instance not initialized');
                 }
             });
         });
 
-        // Set initial active tab
+        // Render calendar and set initial active tab
+        calendarInstance.render();
         updateActiveTab(initialView);
+        console.log('Calendar initialized with view:', initialView);
 
         // Show event details
         window.showEventDetails = function(event) {
