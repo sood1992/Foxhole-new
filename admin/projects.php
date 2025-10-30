@@ -322,6 +322,57 @@ $managers = $db->query("SELECT id, full_name FROM users WHERE role IN ('admin', 
 
     <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // Get the create form and projects list sections
+        const createFormSection = document.querySelectorAll('.card')[0]; // First card is create form
+        const projectsListSection = document.querySelectorAll('.card')[1]; // Second card is projects list
+
+        // Check URL parameters and hash
+        const urlParams = new URLSearchParams(window.location.search);
+        const statusFilter = urlParams.get('status');
+        const hash = window.location.hash;
+
+        // Function to show/hide sections
+        function showSection(section) {
+            if (section === 'create') {
+                createFormSection.style.display = 'block';
+                projectsListSection.style.display = 'none';
+                // Update active tab
+                document.querySelectorAll('.tab-link').forEach(t => t.classList.remove('active'));
+                document.getElementById('createProjectTab').classList.add('active');
+            } else {
+                createFormSection.style.display = 'none';
+                projectsListSection.style.display = 'block';
+            }
+        }
+
+        // Determine which section to show on page load
+        if (hash === '#create') {
+            showSection('create');
+        } else if (statusFilter || urlParams.toString() === '') {
+            // Show projects list if there's a status filter or no parameters (all projects)
+            showSection('list');
+        } else {
+            showSection('list'); // Default to list view
+        }
+
+        // Handle "Create Project" tab click
+        const createProjectTab = document.getElementById('createProjectTab');
+        if (createProjectTab) {
+            createProjectTab.addEventListener('click', function(e) {
+                e.preventDefault();
+                showSection('create');
+                window.history.pushState({}, '', window.location.pathname + '#create');
+            });
+        }
+
+        // Handle other tab clicks (show projects list)
+        document.querySelectorAll('.tab-link[href^="projects.php"]').forEach(tab => {
+            tab.addEventListener('click', function(e) {
+                // Let the default navigation happen, but ensure we show the list
+                setTimeout(() => showSection('list'), 100);
+            });
+        });
+
         // Auto-hide alerts after 5 seconds
         const alerts = document.querySelectorAll('.alert');
         alerts.forEach(alert => {
@@ -330,23 +381,6 @@ $managers = $db->query("SELECT id, full_name FROM users WHERE role IN ('admin', 
                 setTimeout(() => alert.remove(), 300);
             }, 5000);
         });
-
-        // Handle "Create Project" tab click
-        const createProjectTab = document.getElementById('createProjectTab');
-        if (createProjectTab) {
-            createProjectTab.addEventListener('click', function(e) {
-                e.preventDefault();
-                const createForm = document.querySelector('.card');
-                if (createForm) {
-                    createForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    // Highlight the form briefly
-                    createForm.style.boxShadow = '0 0 0 3px var(--primary)';
-                    setTimeout(() => {
-                        createForm.style.boxShadow = '';
-                    }, 2000);
-                }
-            });
-        }
     });
     </script>
 </body>
