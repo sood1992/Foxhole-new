@@ -46,7 +46,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 <i class="fas fa-chart-line"></i>
                 <span>Analytics</span>
             </a>
-            <a href="../admin/email-config.php" class="main-menu-item <?php echo (in_array($current_page, ['email-config.php', 'email-test.php'])) ? 'active' : ''; ?>"
+            <a href="../admin/email-config.php" class="main-menu-item <?php echo (in_array($current_page, ['email-config.php', 'email-test.php', 'activity-log.php'])) ? 'active' : ''; ?>"
                data-menu="settings" title="Settings">
                 <i class="fas fa-cog"></i>
                 <span>Settings</span>
@@ -149,6 +149,9 @@ $current_page = basename($_SERVER['PHP_SELF']);
         <!-- Settings Section -->
         <div class="menu-section" data-menu="settings">
             <div class="menu-title">Settings</div>
+            <a href="../admin/activity-log.php" class="menu-item <?php echo ($current_page == 'activity-log.php') ? 'active' : ''; ?>">
+                <i class="fas fa-history"></i> Activity Log
+            </a>
             <a href="../admin/email-config.php" class="menu-item <?php echo ($current_page == 'email-config.php') ? 'active' : ''; ?>">
                 <i class="fas fa-envelope"></i> Email Configuration
             </a>

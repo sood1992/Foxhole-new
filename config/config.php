@@ -52,7 +52,16 @@ function isLoggedIn() {
 
 // Helper function to check user role
 function hasRole($role) {
-    return isset($_SESSION['role']) && $_SESSION['role'] === $role;
+    if (!isset($_SESSION['role'])) {
+        return false;
+    }
+
+    // Support both single role and array of roles
+    if (is_array($role)) {
+        return in_array($_SESSION['role'], $role);
+    }
+
+    return $_SESSION['role'] === $role;
 }
 
 // Helper function to redirect

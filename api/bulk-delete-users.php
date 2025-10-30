@@ -26,12 +26,21 @@ try {
     $currentUser = getCurrentUser();
 
     // Get JSON input
-    $input = json_decode(file_get_contents('php://input'), true);
+    $rawInput = file_get_contents('php://input');
+    $input = json_decode($rawInput, true);
     $userIds = $input['user_ids'] ?? [];
 
     // Validate input
     if (empty($userIds) || !is_array($userIds)) {
-        echo json_encode(['success' => false, 'message' => 'No users selected']);
+        echo json_encode([
+            'success' => false,
+            'message' => 'No users selected',
+            'debug' => [
+                'raw_input' => $rawInput,
+                'parsed_input' => $input,
+                'user_ids' => $userIds
+            ]
+        ]);
         exit;
     }
 
@@ -131,7 +140,12 @@ try {
         echo json_encode([
             'success' => false,
             'message' => 'No users were deleted',
-            'errors' => $errors
+            'errors' => $errors,
+            'debug' => [
+                'user_ids_count' => count($userIds),
+                'deleted_count' => $deletedCount,
+                'current_user_id' => $currentUserId
+            ]
         ]);
     }
 
