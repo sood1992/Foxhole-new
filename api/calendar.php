@@ -19,6 +19,7 @@ try {
         $start = $_GET['start'] ?? null;
         $end = $_GET['end'] ?? null;
         $type = $_GET['type'] ?? 'all'; // all, tasks, milestones
+        $userId = $_GET['user_id'] ?? null; // Filter by user ID
 
         $events = [];
 
@@ -31,6 +32,7 @@ try {
                     t.due_date as date,
                     t.status,
                     t.priority,
+                    t.assigned_to,
                     p.project_name,
                     u.full_name as assigned_to_name
                 FROM tasks t
@@ -39,16 +41,22 @@ try {
                 WHERE t.due_date IS NOT NULL
             ";
 
+            $params = [];
+
             if ($start && $end) {
                 $taskSql .= " AND t.due_date BETWEEN ? AND ?";
+                $params[] = $start;
+                $params[] = $end;
+            }
+
+            // Filter by user if specified
+            if ($userId) {
+                $taskSql .= " AND t.assigned_to = ?";
+                $params[] = $userId;
             }
 
             $stmt = $db->prepare($taskSql);
-            if ($start && $end) {
-                $stmt->execute([$start, $end]);
-            } else {
-                $stmt->execute();
-            }
+            $stmt->execute($params);
 
             $tasks = $stmt->fetchAll();
 

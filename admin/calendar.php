@@ -8,6 +8,14 @@ if (!isLoggedIn()) {
 
 $db = getDBConnection();
 $currentUser = getCurrentUser();
+
+// Get all team members for filtering
+$teamMembers = $db->query("
+    SELECT id, full_name, role
+    FROM users
+    WHERE is_active = 1
+    ORDER BY role DESC, full_name ASC
+")->fetchAll();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -143,8 +151,29 @@ $currentUser = getCurrentUser();
             <?php include '../includes/v3-header.php'; ?>
 
             <div class="content-wrapper">
-                <div class="page-header">
-                    <h1><i class="fas fa-calendar-alt"></i> Calendar</h1>
+                <!-- Page Header with Filters -->
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <div>
+                        <h1 style="margin: 0;"><i class="fas fa-calendar-alt"></i> Team Calendar</h1>
+                        <p style="color: var(--text-secondary); font-size: 14px; margin: 4px 0 0 0;">
+                            View all team tasks, milestones, and deadlines
+                        </p>
+                    </div>
+                    <div style="display: flex; gap: 12px; align-items: center;">
+                        <select id="teamMemberFilter" class="form-control" style="width: 200px;">
+                            <option value="all">All Team Members</option>
+                            <?php foreach ($teamMembers as $member): ?>
+                                <option value="<?php echo $member['id']; ?>">
+                                    <?php echo e($member['full_name']); ?> (<?php echo ucfirst($member['role']); ?>)
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                        <select id="viewTypeFilter" class="form-control" style="width: 150px;">
+                            <option value="all">All Items</option>
+                            <option value="tasks">Tasks Only</option>
+                            <option value="milestones">Milestones Only</option>
+                        </select>
+                    </div>
                 </div>
 
                 <div class="calendar-legend">
@@ -212,9 +241,26 @@ $currentUser = getCurrentUser();
                 right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
             },
             events: function(info, successCallback, failureCallback) {
-                fetch(`../api/calendar.php?start=${info.startStr}&end=${info.endStr}`)
+                const teamFilter = document.getElementById('teamMemberFilter').value;
+                const typeFilter = document.getElementById('viewTypeFilter').value;
+                let url = `../api/calendar.php?start=${info.startStr}&end=${info.endStr}`;
+
+                if (teamFilter !== 'all') {
+                    url += `&user_id=${teamFilter}`;
+                }
+                if (typeFilter !== 'all') {
+                    url += `&type=${typeFilter}`;
+                }
+
+                fetch(url)
                     .then(response => response.json())
                     .then(data => {
+                        // Enhance event titles with team member names for better visibility
+                        data.forEach(event => {
+                            if (event.extendedProps && event.extendedProps.assignedTo) {
+                                event.title = `${event.title} (${event.extendedProps.assignedTo})`;
+                            }
+                        });
                         successCallback(data);
                     })
                     .catch(error => {
@@ -238,6 +284,15 @@ $currentUser = getCurrentUser();
         });
 
         calendar.render();
+
+        // Add filter change listeners
+        document.getElementById('teamMemberFilter').addEventListener('change', function() {
+            calendar.refetchEvents();
+        });
+
+        document.getElementById('viewTypeFilter').addEventListener('change', function() {
+            calendar.refetchEvents();
+        });
 
         // Show event details
         window.showEventDetails = function(event) {
