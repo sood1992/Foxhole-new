@@ -88,6 +88,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     }
                 }
 
+                // Log activity
+                logActivity(
+                    'create',
+                    'project',
+                    $projectId,
+                    "Created project: $project_name",
+                    [
+                        'client_name' => $client_name,
+                        'priority' => $priority,
+                        'assigned_users_count' => !empty($assigned_users) ? count($assigned_users) : 0
+                    ]
+                );
+
                 ob_end_clean();
                 $_SESSION['success_message'] = 'Project created successfully' . (!empty($assigned_users) ? ' with ' . count($assigned_users) . ' team members assigned!' : '!');
                 header("Location: projects.php");

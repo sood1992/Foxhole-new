@@ -97,6 +97,19 @@ try {
             $deleteStmt = $db->prepare("DELETE FROM users WHERE id = ?");
             $deleteStmt->execute([$userId]);
 
+            // 8. Log the activity
+            logActivity(
+                'delete',
+                'user',
+                $userId,
+                "Deleted user: {$user['username']} ({$user['role']})",
+                [
+                    'username' => $user['username'],
+                    'role' => $user['role'],
+                    'bulk_delete' => true
+                ]
+            );
+
             $deletedCount++;
 
         } catch (Exception $e) {

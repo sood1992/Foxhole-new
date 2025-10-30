@@ -54,6 +54,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $result = $insertStmt->execute([$username, $email, $hashedPassword, $full_name, $role, $job_title, $is_active]);
 
                     if ($result) {
+                        $newUserId = $db->lastInsertId();
+
+                        // Log activity
+                        logActivity(
+                            'create',
+                            'user',
+                            $newUserId,
+                            "Created user: $username ($role)",
+                            [
+                                'username' => $username,
+                                'full_name' => $full_name,
+                                'role' => $role,
+                                'email' => $email
+                            ]
+                        );
+
                         // Clear output buffer
                         ob_end_clean();
                         // Set success message in session and redirect
@@ -104,6 +120,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             ");
 
                             if ($updateStmt->execute([$username, $email, $hashedPassword, $full_name, $role, $job_title, $is_active, $userId])) {
+                                // Log activity
+                                logActivity(
+                                    'update',
+                                    'user',
+                                    $userId,
+                                    "Updated user: $username (password changed)",
+                                    [
+                                        'username' => $username,
+                                        'role' => $role,
+                                        'password_changed' => true
+                                    ]
+                                );
+
                                 ob_end_clean();
                                 $_SESSION['success_message'] = 'User updated successfully!';
                                 header("Location: team.php");
@@ -122,6 +151,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         ");
 
                         if ($updateStmt->execute([$username, $email, $full_name, $role, $job_title, $is_active, $userId])) {
+                            // Log activity
+                            logActivity(
+                                'update',
+                                'user',
+                                $userId,
+                                "Updated user: $username",
+                                [
+                                    'username' => $username,
+                                    'role' => $role
+                                ]
+                            );
+
                             ob_end_clean();
                             $_SESSION['success_message'] = 'User updated successfully!';
                             header("Location: team.php");
@@ -139,6 +180,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             } else {
                 $deleteStmt = $db->prepare("UPDATE users SET is_active = 0 WHERE id = ?");
                 if ($deleteStmt->execute([$userId])) {
+                    // Get user info for logging
+                    $userInfo = $db->prepare("SELECT username FROM users WHERE id = ?");
+                    $userInfo->execute([$userId]);
+                    $userRow = $userInfo->fetch(PDO::FETCH_ASSOC);
+                    $username = $userRow['username'] ?? 'Unknown';
+
+                    // Log activity
+                    logActivity(
+                        'deactivate',
+                        'user',
+                        $userId,
+                        "Deactivated user: $username",
+                        ['username' => $username]
+                    );
+
                     ob_end_clean();
                     $_SESSION['success_message'] = 'User deactivated successfully!';
                     header("Location: team.php");

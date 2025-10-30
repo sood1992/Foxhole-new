@@ -114,6 +114,17 @@ try {
             $deleteStmt = $db->prepare("DELETE FROM projects WHERE id = ?");
             $deleteStmt->execute([$projectId]);
 
+            // 10. Log the activity
+            logActivity(
+                'delete',
+                'project',
+                $projectId,
+                "Deleted project: {$project['project_name']}",
+                [
+                    'bulk_delete' => true
+                ]
+            );
+
             $deletedCount++;
 
         } catch (Exception $e) {

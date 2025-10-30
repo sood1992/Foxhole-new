@@ -196,4 +196,52 @@ function notifyMention($userId, $mentionedByName, $entityType, $entityId) {
         $entityId
     );
 }
+
+/**
+ * Log user activity for audit trail
+ *
+ * @param string $actionType - Type of action (create, update, delete, etc.)
+ * @param string $entityType - Type of entity (task, project, user, etc.)
+ * @param int $entityId - ID of the entity
+ * @param string $description - Human-readable description of the action
+ * @param array|null $metadata - Additional data to store as JSON
+ * @param int|null $userId - User who performed the action (defaults to current user)
+ * @return bool - Success status
+ */
+function logActivity($actionType, $entityType, $entityId, $description, $metadata = null, $userId = null) {
+    try {
+        $db = getDBConnection();
+
+        // Get current user if not specified
+        if ($userId === null) {
+            $currentUser = getCurrentUser();
+            $userId = $currentUser['id'] ?? null;
+        }
+
+        // Skip if no user (shouldn't happen in normal flow)
+        if ($userId === null) {
+            return false;
+        }
+
+        $stmt = $db->prepare("
+            INSERT INTO activity_log (user_id, action_type, entity_type, entity_id, description, metadata, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, NOW())
+        ");
+
+        $metadataJson = $metadata ? json_encode($metadata) : null;
+
+        return $stmt->execute([
+            $userId,
+            $actionType,
+            $entityType,
+            $entityId,
+            $description,
+            $metadataJson
+        ]);
+    } catch (Exception $e) {
+        // Log error but don't fail the main operation
+        error_log("Failed to log activity: " . $e->getMessage());
+        return false;
+    }
+}
 ?>

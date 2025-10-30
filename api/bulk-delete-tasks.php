@@ -89,6 +89,18 @@ try {
             $deleteStmt = $db->prepare("DELETE FROM tasks WHERE id = ?");
             $deleteStmt->execute([$taskId]);
 
+            // 6. Log the activity
+            logActivity(
+                'delete',
+                'task',
+                $taskId,
+                "Deleted task: {$task['task_name']}",
+                [
+                    'project_id' => $task['project_id'],
+                    'bulk_delete' => true
+                ]
+            );
+
             $deletedCount++;
 
         } catch (Exception $e) {

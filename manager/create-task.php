@@ -99,6 +99,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $depStmt->execute([$taskId, $depends_on, $dependency_type]);
                 }
 
+                // Log activity
+                logActivity(
+                    'create',
+                    'task',
+                    $taskId,
+                    "Created task: $task_name",
+                    [
+                        'project_id' => $project_id,
+                        'assigned_to' => $assigned_to,
+                        'priority' => $priority
+                    ]
+                );
+
                 ob_end_clean();
                 $_SESSION['success_message'] = 'Task created successfully' . ($depends_on > 0 ? ' with dependency!' : '!');
                 header("Location: tasks.php");
