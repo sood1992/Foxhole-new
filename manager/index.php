@@ -1,4 +1,8 @@
 <?php
+/**
+ * Manager Dashboard - Foxhole V3
+ * VERSION: 2.0 - Fixed redirect loop (2025-10-30)
+ */
 require_once '../config/config.php';
 require_once '../includes/functions.php';
 
