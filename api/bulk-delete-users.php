@@ -4,14 +4,40 @@
  * Admin only - Delete multiple users at once
  */
 
+// Enable error reporting for debugging
+error_reporting(E_ALL);
+ini_set('display_errors', 0); // Don't display errors, we'll return them as JSON
+ini_set('log_errors', 1);
+
 header('Content-Type: application/json');
 require_once '../config/config.php';
 require_once '../includes/functions.php';
 
 // Check authentication and authorization
-if (!isLoggedIn() || !hasRole('admin')) {
+if (!isLoggedIn()) {
+    http_response_code(401);
+    echo json_encode([
+        'success' => false,
+        'message' => 'Not logged in',
+        'debug' => [
+            'session_id' => session_id(),
+            'session_user_id' => $_SESSION['user_id'] ?? null,
+            'session_role' => $_SESSION['role'] ?? null
+        ]
+    ]);
+    exit;
+}
+
+if (!hasRole('admin')) {
     http_response_code(403);
-    echo json_encode(['success' => false, 'message' => 'Unauthorized access']);
+    echo json_encode([
+        'success' => false,
+        'message' => 'Unauthorized access - Admin role required',
+        'debug' => [
+            'your_role' => $_SESSION['role'] ?? null,
+            'has_admin_role' => hasRole('admin')
+        ]
+    ]);
     exit;
 }
 
@@ -60,7 +86,8 @@ try {
     foreach ($userIds as $userId) {
         // Validate user ID
         if (!is_numeric($userId)) {
-            $errors[] = "Invalid user ID: $userId";
+            $errors[] = "Invalid user ID: $userId (not numeric)";
+            error_log("Bulk delete: Invalid user ID - $userId");
             continue;
         }
 
@@ -70,9 +97,12 @@ try {
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if (!$user) {
-            $errors[] = "User ID $userId not found";
+            $errors[] = "User ID $userId not found in database";
+            error_log("Bulk delete: User $userId not found");
             continue;
         }
+
+        error_log("Bulk delete: Processing user {$user['username']} (ID: $userId)");
 
         // Prevent deleting admin users (optional safety measure)
         // Uncomment this if you want to prevent deleting other admins
