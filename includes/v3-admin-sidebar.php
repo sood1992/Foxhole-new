@@ -19,30 +19,37 @@ $current_page = basename($_SERVER['PHP_SELF']);
             <a href="../admin/index.php" class="main-menu-item <?php echo ($current_page == 'index.php') ? 'active' : ''; ?>"
                data-menu="dashboard" title="Dashboard">
                 <i class="fas fa-home"></i>
+                <span>Dashboard</span>
             </a>
             <a href="../admin/projects.php" class="main-menu-item <?php echo (in_array($current_page, ['projects.php', 'create-project.php'])) ? 'active' : ''; ?>"
                data-menu="projects" title="Projects">
                 <i class="fas fa-folder"></i>
+                <span>Projects</span>
             </a>
             <a href="../admin/team.php" class="main-menu-item <?php echo (in_array($current_page, ['team.php', 'users.php'])) ? 'active' : ''; ?>"
                data-menu="team" title="Team">
                 <i class="fas fa-users"></i>
+                <span>Team</span>
             </a>
             <a href="../admin/bulk-operations.php" class="main-menu-item <?php echo (in_array($current_page, ['bulk-operations.php', 'bulk-import.php'])) ? 'active' : ''; ?>"
                data-menu="bulk" title="Bulk Operations">
                 <i class="fas fa-layer-group"></i>
+                <span>Bulk Ops</span>
             </a>
             <a href="../admin/gamification.php" class="main-menu-item <?php echo ($current_page == 'gamification.php') ? 'active' : ''; ?>"
                data-menu="gamification" title="Gamification">
                 <i class="fas fa-trophy"></i>
+                <span>Gamification</span>
             </a>
             <a href="../admin/analytics.php" class="main-menu-item <?php echo (in_array($current_page, ['analytics.php', 'advanced-analytics.php'])) ? 'active' : ''; ?>"
                data-menu="analytics" title="Analytics">
                 <i class="fas fa-chart-line"></i>
+                <span>Analytics</span>
             </a>
             <a href="../admin/email-config.php" class="main-menu-item <?php echo (in_array($current_page, ['email-config.php', 'email-test.php'])) ? 'active' : ''; ?>"
                data-menu="settings" title="Settings">
                 <i class="fas fa-cog"></i>
+                <span>Settings</span>
             </a>
         </div>
     </div>

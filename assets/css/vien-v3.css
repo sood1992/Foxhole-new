@@ -199,9 +199,9 @@ a:hover {
   transition: all 300ms var(--transition-timing);
 }
 
-/* Main Panel (Icons) */
+/* Main Panel (Icons + Text) */
 .sidebar-main-panel {
-  width: 60px;
+  width: 180px;
   background: var(--sidebar-bg);
   border-right: 1px solid rgba(255,255,255,0.05);
   display: flex;
@@ -214,13 +214,12 @@ a:hover {
   align-items: center;
   justify-content: center;
   border-bottom: 1px solid rgba(255,255,255,0.05);
-  padding: 6px;
+  padding: 12px;
   overflow: hidden;
 }
 
 .sidebar-logo img {
   max-height: 40px;
-  max-width: 48px;
   width: auto;
   height: auto;
   object-fit: contain;
@@ -230,17 +229,23 @@ a:hover {
 .main-menu {
   flex: 1;
   overflow-y: auto;
+  padding: 8px 0;
 }
 
 .main-menu-item {
-  height: 50px;
+  height: 48px;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
+  padding: 0 16px;
   color: var(--text-secondary);
   cursor: pointer;
   transition: all var(--transition-speed) var(--transition-timing);
   position: relative;
+  gap: 12px;
+  text-decoration: none;
+  margin: 2px 8px;
+  border-radius: 8px;
 }
 
 .main-menu-item:hover {
@@ -251,11 +256,19 @@ a:hover {
 .main-menu-item.active {
   background: linear-gradient(135deg, #145388 0%, #1990ff 100%);
   color: #ffffff;
-  box-shadow: inset 3px 0 0 #1990ff;
+  box-shadow: 0 2px 8px rgba(25, 144, 255, 0.3);
 }
 
 .main-menu-item i {
-  font-size: 20px;
+  font-size: 18px;
+  width: 20px;
+  text-align: center;
+}
+
+.main-menu-item span {
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
 }
 
 /* Sub Panel (Menu Items) */

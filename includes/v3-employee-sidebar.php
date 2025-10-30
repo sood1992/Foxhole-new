@@ -19,26 +19,32 @@ $current_page = basename($_SERVER['PHP_SELF']);
             <a href="../employee/index.php" class="main-menu-item <?php echo ($current_page == 'index.php') ? 'active' : ''; ?>"
                data-menu="dashboard" title="Dashboard">
                 <i class="fas fa-home"></i>
+                <span>Dashboard</span>
             </a>
             <a href="../employee/tasks.php" class="main-menu-item <?php echo (in_array($current_page, ['tasks.php', 'create-task.php'])) ? 'active' : ''; ?>"
                data-menu="tasks" title="My Tasks">
                 <i class="fas fa-tasks"></i>
+                <span>My Tasks</span>
             </a>
             <a href="../employee/time-logs.php" class="main-menu-item <?php echo ($current_page == 'time-logs.php') ? 'active' : ''; ?>"
                data-menu="time" title="Time Logs">
                 <i class="fas fa-clock"></i>
+                <span>Time Logs</span>
             </a>
             <a href="../employee/my-stats.php" class="main-menu-item <?php echo ($current_page == 'my-stats.php') ? 'active' : ''; ?>"
                data-menu="stats" title="My Stats">
                 <i class="fas fa-chart-bar"></i>
+                <span>My Stats</span>
             </a>
             <a href="../employee/calendar.php" class="main-menu-item <?php echo ($current_page == 'calendar.php') ? 'active' : ''; ?>"
                data-menu="calendar" title="Calendar">
                 <i class="fas fa-calendar"></i>
+                <span>Calendar</span>
             </a>
             <a href="../employee/chat.php" class="main-menu-item <?php echo ($current_page == 'chat.php') ? 'active' : ''; ?>"
                data-menu="chat" title="Team Chat">
                 <i class="fas fa-comments"></i>
+                <span>Chat</span>
             </a>
         </div>
     </div>
