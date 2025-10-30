@@ -67,63 +67,122 @@ try {
 
         try {
             // Delete all related data in proper order to maintain referential integrity
+            // Use try-catch for each operation to handle missing tables gracefully
 
             // 1. Get all task IDs for this project
-            $taskIdsStmt = $db->prepare("SELECT id FROM tasks WHERE project_id = ?");
-            $taskIdsStmt->execute([$projectId]);
-            $taskIds = $taskIdsStmt->fetchAll(PDO::FETCH_COLUMN);
+            $taskIds = [];
+            try {
+                $taskIdsStmt = $db->prepare("SELECT id FROM tasks WHERE project_id = ?");
+                $taskIdsStmt->execute([$projectId]);
+                $taskIds = $taskIdsStmt->fetchAll(PDO::FETCH_COLUMN);
+            } catch (PDOException $e) {
+                error_log("Skipping task ID fetch: " . $e->getMessage());
+            }
 
             if (!empty($taskIds)) {
                 $placeholders = str_repeat('?,', count($taskIds) - 1) . '?';
 
                 // 2. Delete time logs for these tasks
-                $db->prepare("DELETE FROM time_logs WHERE task_id IN ($placeholders)")->execute($taskIds);
+                try {
+                    $db->prepare("DELETE FROM time_logs WHERE task_id IN ($placeholders)")->execute($taskIds);
+                } catch (PDOException $e) {
+                    error_log("Skipping time_logs deletion: " . $e->getMessage());
+                }
 
-                // 3. Delete task comments
-                $db->prepare("DELETE FROM comments WHERE task_id IN ($placeholders)")->execute($taskIds);
+                // 3. Delete task comments (if table exists)
+                try {
+                    $db->prepare("DELETE FROM comments WHERE task_id IN ($placeholders)")->execute($taskIds);
+                } catch (PDOException $e) {
+                    error_log("Skipping comments deletion: " . $e->getMessage());
+                }
 
-                // 4. Delete task attachments
-                $db->prepare("DELETE FROM task_attachments WHERE task_id IN ($placeholders)")->execute($taskIds);
+                // 4. Delete task attachments (if table exists)
+                try {
+                    $db->prepare("DELETE FROM task_attachments WHERE task_id IN ($placeholders)")->execute($taskIds);
+                } catch (PDOException $e) {
+                    error_log("Skipping task_attachments deletion: " . $e->getMessage());
+                }
             }
 
             // 5. Delete all tasks for this project
-            $db->prepare("DELETE FROM tasks WHERE project_id = ?")->execute([$projectId]);
-
-            // 6. Delete project-related data
-            $db->prepare("DELETE FROM project_budgets WHERE project_id = ?")->execute([$projectId]);
-            $db->prepare("DELETE FROM project_expenses WHERE project_id = ?")->execute([$projectId]);
-            $db->prepare("DELETE FROM project_deliverables WHERE project_id = ?")->execute([$projectId]);
-            $db->prepare("DELETE FROM calendar_events WHERE project_id = ?")->execute([$projectId]);
-
-            // 7. Delete client feedback for this project
-            $feedbackStmt = $db->prepare("SELECT id FROM client_feedback WHERE project_id = ?");
-            $feedbackStmt->execute([$projectId]);
-            $feedbackIds = $feedbackStmt->fetchAll(PDO::FETCH_COLUMN);
-
-            if (!empty($feedbackIds)) {
-                $placeholders = str_repeat('?,', count($feedbackIds) - 1) . '?';
-                $db->prepare("DELETE FROM feedback_responses WHERE feedback_id IN ($placeholders)")->execute($feedbackIds);
+            try {
+                $db->prepare("DELETE FROM tasks WHERE project_id = ?")->execute([$projectId]);
+            } catch (PDOException $e) {
+                error_log("Skipping tasks deletion: " . $e->getMessage());
             }
 
-            $db->prepare("DELETE FROM client_feedback WHERE project_id = ?")->execute([$projectId]);
+            // 6. Delete project-related data (if tables exist)
+            try {
+                $db->prepare("DELETE FROM project_budgets WHERE project_id = ?")->execute([$projectId]);
+            } catch (PDOException $e) {
+                error_log("Skipping project_budgets deletion: " . $e->getMessage());
+            }
 
-            // 8. Delete notifications related to this project
-            $db->prepare("DELETE FROM notifications WHERE project_id = ?")->execute([$projectId]);
+            try {
+                $db->prepare("DELETE FROM project_expenses WHERE project_id = ?")->execute([$projectId]);
+            } catch (PDOException $e) {
+                error_log("Skipping project_expenses deletion: " . $e->getMessage());
+            }
+
+            try {
+                $db->prepare("DELETE FROM project_deliverables WHERE project_id = ?")->execute([$projectId]);
+            } catch (PDOException $e) {
+                error_log("Skipping project_deliverables deletion: " . $e->getMessage());
+            }
+
+            try {
+                $db->prepare("DELETE FROM calendar_events WHERE project_id = ?")->execute([$projectId]);
+            } catch (PDOException $e) {
+                error_log("Skipping calendar_events deletion: " . $e->getMessage());
+            }
+
+            // 7. Delete client feedback for this project (if table exists)
+            try {
+                $feedbackStmt = $db->prepare("SELECT id FROM client_feedback WHERE project_id = ?");
+                $feedbackStmt->execute([$projectId]);
+                $feedbackIds = $feedbackStmt->fetchAll(PDO::FETCH_COLUMN);
+
+                if (!empty($feedbackIds)) {
+                    $placeholders = str_repeat('?,', count($feedbackIds) - 1) . '?';
+                    try {
+                        $db->prepare("DELETE FROM feedback_responses WHERE feedback_id IN ($placeholders)")->execute($feedbackIds);
+                    } catch (PDOException $e) {
+                        error_log("Skipping feedback_responses deletion: " . $e->getMessage());
+                    }
+                }
+
+                $db->prepare("DELETE FROM client_feedback WHERE project_id = ?")->execute([$projectId]);
+            } catch (PDOException $e) {
+                error_log("Skipping client_feedback deletion: " . $e->getMessage());
+            }
+
+            // 8. Delete notifications related to this project (check if column exists)
+            try {
+                $db->prepare("DELETE FROM notifications WHERE project_id = ?")->execute([$projectId]);
+            } catch (PDOException $e) {
+                error_log("Skipping notifications deletion (project_id column may not exist): " . $e->getMessage());
+            }
 
             // 9. Finally, delete the project itself
             $deleteStmt = $db->prepare("DELETE FROM projects WHERE id = ?");
             $deleteStmt->execute([$projectId]);
 
-            // 10. Log the activity
-            logActivity(
-                'delete',
-                'project',
-                $projectId,
-                "Deleted project: {$project['project_name']}",
-                [
-                    'bulk_delete' => true
-                ]
-            );
+            // 10. Log the activity (if function exists and table exists)
+            try {
+                if (function_exists('logActivity')) {
+                    logActivity(
+                        'delete',
+                        'project',
+                        $projectId,
+                        "Deleted project: {$project['project_name']}",
+                        [
+                            'bulk_delete' => true
+                        ]
+                    );
+                }
+            } catch (Exception $e) {
+                error_log("Skipping activity log: " . $e->getMessage());
+            }
 
             $deletedCount++;
 

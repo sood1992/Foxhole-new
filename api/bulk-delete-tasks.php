@@ -72,34 +72,57 @@ try {
 
         try {
             // Delete all related data in proper order
+            // Use try-catch for each operation to handle missing tables gracefully
 
             // 1. Delete time logs for this task
-            $db->prepare("DELETE FROM time_logs WHERE task_id = ?")->execute([$taskId]);
+            try {
+                $db->prepare("DELETE FROM time_logs WHERE task_id = ?")->execute([$taskId]);
+            } catch (PDOException $e) {
+                error_log("Skipping time_logs deletion: " . $e->getMessage());
+            }
 
-            // 2. Delete task comments
-            $db->prepare("DELETE FROM comments WHERE task_id = ?")->execute([$taskId]);
+            // 2. Delete task comments (if table exists)
+            try {
+                $db->prepare("DELETE FROM comments WHERE task_id = ?")->execute([$taskId]);
+            } catch (PDOException $e) {
+                error_log("Skipping comments deletion: " . $e->getMessage());
+            }
 
-            // 3. Delete task attachments
-            $db->prepare("DELETE FROM task_attachments WHERE task_id = ?")->execute([$taskId]);
+            // 3. Delete task attachments (if table exists)
+            try {
+                $db->prepare("DELETE FROM task_attachments WHERE task_id = ?")->execute([$taskId]);
+            } catch (PDOException $e) {
+                error_log("Skipping task_attachments deletion: " . $e->getMessage());
+            }
 
-            // 4. Delete notifications related to this task
-            $db->prepare("DELETE FROM notifications WHERE task_id = ?")->execute([$taskId]);
+            // 4. Delete notifications related to this task (if table/column exists)
+            try {
+                $db->prepare("DELETE FROM notifications WHERE task_id = ?")->execute([$taskId]);
+            } catch (PDOException $e) {
+                error_log("Skipping notifications deletion: " . $e->getMessage());
+            }
 
             // 5. Finally, delete the task itself
             $deleteStmt = $db->prepare("DELETE FROM tasks WHERE id = ?");
             $deleteStmt->execute([$taskId]);
 
-            // 6. Log the activity
-            logActivity(
-                'delete',
-                'task',
-                $taskId,
-                "Deleted task: {$task['task_name']}",
-                [
-                    'project_id' => $task['project_id'],
-                    'bulk_delete' => true
-                ]
-            );
+            // 6. Log the activity (if function exists and table exists)
+            try {
+                if (function_exists('logActivity')) {
+                    logActivity(
+                        'delete',
+                        'task',
+                        $taskId,
+                        "Deleted task: {$task['task_name']}",
+                        [
+                            'project_id' => $task['project_id'],
+                            'bulk_delete' => true
+                        ]
+                    );
+                }
+            } catch (Exception $e) {
+                error_log("Skipping activity log: " . $e->getMessage());
+            }
 
             $deletedCount++;
 

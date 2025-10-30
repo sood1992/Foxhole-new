@@ -113,41 +113,72 @@ try {
 
         try {
             // Delete related data first to maintain referential integrity
+            // Use try-catch for each operation to handle missing tables gracefully
 
             // 1. Delete time logs
-            $db->prepare("DELETE FROM time_logs WHERE user_id = ?")->execute([$userId]);
+            try {
+                $db->prepare("DELETE FROM time_logs WHERE user_id = ?")->execute([$userId]);
+            } catch (PDOException $e) {
+                error_log("Skipping time_logs deletion: " . $e->getMessage());
+            }
 
             // 2. Update tasks to unassign this user (set assigned_to to NULL)
-            $db->prepare("UPDATE tasks SET assigned_to = NULL WHERE assigned_to = ?")->execute([$userId]);
+            try {
+                $db->prepare("UPDATE tasks SET assigned_to = NULL WHERE assigned_to = ?")->execute([$userId]);
+            } catch (PDOException $e) {
+                error_log("Skipping tasks update: " . $e->getMessage());
+            }
 
             // 3. Update projects to unassign this manager (set assigned_manager to NULL)
-            $db->prepare("UPDATE projects SET assigned_manager = NULL WHERE assigned_manager = ?")->execute([$userId]);
+            try {
+                $db->prepare("UPDATE projects SET assigned_manager = NULL WHERE assigned_manager = ?")->execute([$userId]);
+            } catch (PDOException $e) {
+                error_log("Skipping projects update: " . $e->getMessage());
+            }
 
-            // 4. Delete notifications for this user
-            $db->prepare("DELETE FROM notifications WHERE user_id = ?")->execute([$userId]);
+            // 4. Delete notifications for this user (if table/column exists)
+            try {
+                $db->prepare("DELETE FROM notifications WHERE user_id = ?")->execute([$userId]);
+            } catch (PDOException $e) {
+                error_log("Skipping notifications deletion: " . $e->getMessage());
+            }
 
-            // 5. Delete activity logs for this user
-            $db->prepare("DELETE FROM activity_log WHERE user_id = ?")->execute([$userId]);
+            // 5. Delete activity logs for this user (if table exists)
+            try {
+                $db->prepare("DELETE FROM activity_log WHERE user_id = ?")->execute([$userId]);
+            } catch (PDOException $e) {
+                error_log("Skipping activity_log deletion: " . $e->getMessage());
+            }
 
-            // 6. Delete client feedback assigned to this user
-            $db->prepare("UPDATE client_feedback SET assigned_to = NULL WHERE assigned_to = ?")->execute([$userId]);
+            // 6. Delete client feedback assigned to this user (if table exists)
+            try {
+                $db->prepare("UPDATE client_feedback SET assigned_to = NULL WHERE assigned_to = ?")->execute([$userId]);
+            } catch (PDOException $e) {
+                error_log("Skipping client_feedback update: " . $e->getMessage());
+            }
 
             // 7. Finally, delete the user
             $deleteStmt = $db->prepare("DELETE FROM users WHERE id = ?");
             $deleteStmt->execute([$userId]);
 
-            // 8. Log the activity
-            logActivity(
-                'delete',
-                'user',
-                $userId,
-                "Deleted user: {$user['username']} ({$user['role']})",
-                [
-                    'username' => $user['username'],
-                    'role' => $user['role'],
-                    'bulk_delete' => true
-                ]
-            );
+            // 8. Log the activity (if function exists and table exists)
+            try {
+                if (function_exists('logActivity')) {
+                    logActivity(
+                        'delete',
+                        'user',
+                        $userId,
+                        "Deleted user: {$user['username']} ({$user['role']})",
+                        [
+                            'username' => $user['username'],
+                            'role' => $user['role'],
+                            'bulk_delete' => true
+                        ]
+                    );
+                }
+            } catch (Exception $e) {
+                error_log("Skipping activity log: " . $e->getMessage());
+            }
 
             $deletedCount++;
 
