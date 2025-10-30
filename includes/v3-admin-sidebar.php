@@ -59,6 +59,9 @@ $current_page = basename($_SERVER['PHP_SELF']);
         <!-- Dashboard Section -->
         <div class="menu-section" data-menu="dashboard">
             <div class="menu-title">Dashboard</div>
+            <a href="../admin/master-dashboard.php" class="menu-item <?php echo ($current_page == 'master-dashboard.php') ? 'active' : ''; ?>">
+                <i class="fas fa-chart-line"></i> Master Dashboard
+            </a>
             <a href="../admin/index.php" class="menu-item <?php echo ($current_page == 'index.php') ? 'active' : ''; ?>">
                 <i class="fas fa-tachometer-alt"></i> Overview
             </a>
