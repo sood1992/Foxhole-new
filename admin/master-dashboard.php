@@ -295,7 +295,7 @@ try {
     // Calculate team utilization (40 hours = 100% capacity)
     $stmt = $db->query("
         SELECT
-            COUNT(DISTINCT u.id) as total_team,
+            COUNT(*) as total_team,
             SUM(CASE WHEN weekly_hours >= 40 THEN 1 ELSE 0 END) as overloaded,
             SUM(CASE WHEN weekly_hours < 30 THEN 1 ELSE 0 END) as available,
             AVG(weekly_hours) as avg_hours
