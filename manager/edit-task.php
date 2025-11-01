@@ -27,27 +27,36 @@ $taskStmt = $db->prepare("
 $taskStmt->execute([$taskId]);
 $task = $taskStmt->fetch();
 
-// Check if task exists and manager owns the project
+// Check if task exists
 if (!$task) {
     $_SESSION['error_message'] = 'Task not found.';
     header("Location: tasks.php");
     exit();
 }
 
-if ($task['assigned_manager'] != $currentUser['id']) {
+// Check if current user is one of the assigned managers or the primary manager
+$isAssignedManager = $db->prepare("
+    SELECT COUNT(*) FROM project_managers
+    WHERE project_id = ? AND manager_id = ?
+");
+$isAssignedManager->execute([$task['project_id'], $currentUser['id']]);
+$canEdit = $isAssignedManager->fetchColumn() > 0;
+
+if (!$canEdit && $task['assigned_manager'] != $currentUser['id']) {
     $_SESSION['error_message'] = 'You do not have permission to edit this task.';
     header("Location: tasks.php");
     exit();
 }
 
-// Get PM's projects
+// Get PM's projects (including multi-manager assignments)
 $myProjects = $db->prepare("
-    SELECT id, project_name, client_name
-    FROM projects
-    WHERE assigned_manager = ? AND status IN ('planning', 'in_progress', 'review')
-    ORDER BY project_name
+    SELECT DISTINCT p.id, p.project_name, p.client_name
+    FROM projects p
+    LEFT JOIN project_managers pm ON p.id = pm.project_id
+    WHERE (p.assigned_manager = ? OR pm.manager_id = ?) AND p.status IN ('planning', 'in_progress', 'review')
+    ORDER BY p.project_name
 ");
-$myProjects->execute([$currentUser['id']]);
+$myProjects->execute([$currentUser['id'], $currentUser['id']]);
 $projects = $myProjects->fetchAll();
 
 // Get employees for assignment

@@ -33,7 +33,15 @@ if (!$project) {
     exit();
 }
 
-if ($project['assigned_manager'] != $currentUser['id']) {
+// Check if current user is one of the assigned managers
+$isAssignedManager = $db->prepare("
+    SELECT COUNT(*) FROM project_managers
+    WHERE project_id = ? AND manager_id = ?
+");
+$isAssignedManager->execute([$projectId, $currentUser['id']]);
+$canEdit = $isAssignedManager->fetchColumn() > 0;
+
+if (!$canEdit && $project['assigned_manager'] != $currentUser['id']) {
     $_SESSION['error_message'] = 'You do not have permission to edit this project.';
     header("Location: projects.php");
     exit();
@@ -47,6 +55,14 @@ $employees = $db->query("
     ORDER BY full_name
 ")->fetchAll();
 
+// Get all managers for project manager assignment
+$managers = $db->query("
+    SELECT id, full_name, job_title, email
+    FROM users
+    WHERE role IN ('manager', 'admin') AND is_active = 1
+    ORDER BY full_name
+")->fetchAll();
+
 // Get currently assigned users (those with tasks in this project)
 $assignedUsersStmt = $db->prepare("
     SELECT DISTINCT assigned_to
@@ -55,6 +71,15 @@ $assignedUsersStmt = $db->prepare("
 ");
 $assignedUsersStmt->execute([$projectId]);
 $assignedUsers = $assignedUsersStmt->fetchAll(PDO::FETCH_COLUMN);
+
+// Get currently assigned managers
+$assignedManagersStmt = $db->prepare("
+    SELECT manager_id
+    FROM project_managers
+    WHERE project_id = ?
+");
+$assignedManagersStmt->execute([$projectId]);
+$assignedManagers = $assignedManagersStmt->fetchAll(PDO::FETCH_COLUMN);
 
 // Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -68,6 +93,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $due_date = $_POST['due_date'] ?? null;
         $estimated_hours = floatval($_POST['estimated_hours'] ?? 0);
         $assigned_users_new = $_POST['assigned_users'] ?? [];
+        $assigned_managers_new = $_POST['assigned_managers'] ?? [];
 
         // Validation
         if (empty($project_name)) {
@@ -101,6 +127,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ]);
 
             if ($result) {
+                // Handle project manager changes
+                $managersToAdd = array_diff($assigned_managers_new, $assignedManagers);
+                $managersToRemove = array_diff($assignedManagers, $assigned_managers_new);
+
+                // Add new managers
+                foreach ($managersToAdd as $managerId) {
+                    $addManagerStmt = $db->prepare("
+                        INSERT INTO project_managers (project_id, manager_id, assigned_by)
+                        VALUES (?, ?, ?)
+                        ON DUPLICATE KEY UPDATE project_id = project_id
+                    ");
+                    $addManagerStmt->execute([$projectId, $managerId, $currentUser['id']]);
+                }
+
+                // Remove managers
+                foreach ($managersToRemove as $managerId) {
+                    $removeManagerStmt = $db->prepare("
+                        DELETE FROM project_managers
+                        WHERE project_id = ? AND manager_id = ?
+                    ");
+                    $removeManagerStmt->execute([$projectId, $managerId]);
+                }
+
                 // Handle team member changes
                 // Find users to add (in new list but not in old list)
                 $usersToAdd = array_diff($assigned_users_new, $assignedUsers);
@@ -301,6 +350,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     <input type="number" id="estimated_hours" name="estimated_hours" class="form-control"
                                            step="0.5" min="0" placeholder="e.g., 40"
                                            value="<?php echo $project['estimated_hours'] ?? ''; ?>">
+                                </div>
+                            </div>
+
+                            <!-- Project Managers Assignment -->
+                            <div class="form-group">
+                                <label>Assign Project Managers (Multi-Select)</label>
+                                <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 12px;">
+                                    Select one or more managers who will have access to manage this project.
+                                </p>
+                                <div class="user-select-grid">
+                                    <?php foreach ($managers as $manager): ?>
+                                        <label class="user-checkbox">
+                                            <input type="checkbox" name="assigned_managers[]" value="<?php echo $manager['id']; ?>"
+                                                <?php echo in_array($manager['id'], $assignedManagers) ? 'checked' : ''; ?>>
+                                            <div class="user-info">
+                                                <div class="user-name"><?php echo e($manager['full_name']); ?></div>
+                                                <div class="user-title"><?php echo e($manager['job_title'] ?? 'Manager'); ?></div>
+                                            </div>
+                                        </label>
+                                    <?php endforeach; ?>
                                 </div>
                             </div>
 

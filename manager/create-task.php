@@ -14,14 +14,15 @@ $currentUser = getCurrentUser();
 $error = '';
 $success = '';
 
-// Get PM's projects
+// Get PM's projects (including multi-manager assignments)
 $myProjects = $db->prepare("
-    SELECT id, project_name, client_name
-    FROM projects
-    WHERE assigned_manager = ? AND status IN ('planning', 'in_progress', 'review')
-    ORDER BY project_name
+    SELECT DISTINCT p.id, p.project_name, p.client_name
+    FROM projects p
+    LEFT JOIN project_managers pm ON p.id = pm.project_id
+    WHERE (p.assigned_manager = ? OR pm.manager_id = ?) AND p.status IN ('planning', 'in_progress', 'review')
+    ORDER BY p.project_name
 ");
-$myProjects->execute([$currentUser['id']]);
+$myProjects->execute([$currentUser['id'], $currentUser['id']]);
 $projects = $myProjects->fetchAll();
 
 // Get employees for assignment

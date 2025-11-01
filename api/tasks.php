@@ -65,9 +65,9 @@ try {
             exit;
         }
 
-        // Check if user is manager and owns the project
+        // Check if user is manager and owns the project (or is one of the assigned managers)
         $checkStmt = $db->prepare("
-            SELECT p.assigned_manager
+            SELECT p.id as project_id, p.assigned_manager
             FROM tasks t
             JOIN projects p ON t.project_id = p.id
             WHERE t.id = ?
@@ -81,7 +81,15 @@ try {
             exit;
         }
 
-        if ($task['assigned_manager'] != $currentUser['id'] && !hasRole('admin')) {
+        // Check if user is one of the assigned managers
+        $isAssignedManager = $db->prepare("
+            SELECT COUNT(*) FROM project_managers
+            WHERE project_id = ? AND manager_id = ?
+        ");
+        $isAssignedManager->execute([$task['project_id'], $currentUser['id']]);
+        $canEdit = $isAssignedManager->fetchColumn() > 0;
+
+        if (!$canEdit && $task['assigned_manager'] != $currentUser['id'] && !hasRole('admin')) {
             http_response_code(403);
             echo json_encode(['success' => false, 'message' => 'You do not have permission to update this task']);
             exit;

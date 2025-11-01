@@ -9,20 +9,21 @@ if (!isLoggedIn() || !hasRole('manager')) {
 $db = getDBConnection();
 $currentUser = getCurrentUser();
 
-// Get all tasks for manager's projects
+// Get all tasks for manager's projects (including multi-manager assignments)
 $stmt = $db->prepare("
-    SELECT t.*, p.project_name, u.full_name as assigned_to_name
+    SELECT DISTINCT t.*, p.project_name, u.full_name as assigned_to_name
     FROM tasks t
     JOIN projects p ON t.project_id = p.id
     LEFT JOIN users u ON t.assigned_to = u.id
-    WHERE p.assigned_manager = ?
+    LEFT JOIN project_managers pm ON p.id = pm.project_id
+    WHERE p.assigned_manager = ? OR pm.manager_id = ?
     ORDER BY
         FIELD(t.status, 'blocked', 'in_progress', 'review', 'todo', 'completed'),
         t.priority = 'urgent' DESC,
         t.priority = 'high' DESC,
         t.due_date ASC
 ");
-$stmt->execute([$currentUser['id']]);
+$stmt->execute([$currentUser['id'], $currentUser['id']]);
 $tasks = $stmt->fetchAll();
 
 // Get all employees for assignment dropdowns

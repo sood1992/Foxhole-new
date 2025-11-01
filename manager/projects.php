@@ -9,18 +9,19 @@ if (!isLoggedIn() || !hasRole('manager')) {
 $db = getDBConnection();
 $currentUser = getCurrentUser();
 
-// Get manager's projects
+// Get manager's projects (including multi-manager assignments)
 $stmt = $db->prepare("
-    SELECT p.*,
+    SELECT DISTINCT p.*,
            (SELECT COUNT(*) FROM tasks WHERE project_id = p.id) as task_count,
            (SELECT COUNT(*) FROM tasks WHERE project_id = p.id AND status = 'completed') as completed_tasks
     FROM projects p
-    WHERE p.assigned_manager = ?
+    LEFT JOIN project_managers pm ON p.id = pm.project_id
+    WHERE p.assigned_manager = ? OR pm.manager_id = ?
     ORDER BY
         FIELD(p.status, 'in_progress', 'review', 'planning', 'on_hold', 'completed'),
         p.due_date ASC
 ");
-$stmt->execute([$currentUser['id']]);
+$stmt->execute([$currentUser['id'], $currentUser['id']]);
 $projects = $stmt->fetchAll();
 
 ?>

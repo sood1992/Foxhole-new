@@ -22,6 +22,14 @@ $employees = $db->query("
     ORDER BY full_name
 ")->fetchAll();
 
+// Get all managers for project manager assignment
+$managers = $db->query("
+    SELECT id, full_name, job_title, email
+    FROM users
+    WHERE role IN ('manager', 'admin') AND is_active = 1
+    ORDER BY full_name
+")->fetchAll();
+
 // Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
@@ -34,6 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $due_date = $_POST['due_date'] ?? null;
         $estimated_hours = floatval($_POST['estimated_hours'] ?? 0);
         $assigned_users = $_POST['assigned_users'] ?? [];
+        $assigned_managers = $_POST['assigned_managers'] ?? [];
 
         // Validation
         if (empty($project_name)) {
@@ -62,6 +71,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             if ($result) {
                 $projectId = $db->lastInsertId();
+
+                // Assign project managers
+                if (!empty($assigned_managers)) {
+                    foreach ($assigned_managers as $managerId) {
+                        $managerStmt = $db->prepare("
+                            INSERT INTO project_managers (project_id, manager_id, assigned_by)
+                            VALUES (?, ?, ?)
+                            ON DUPLICATE KEY UPDATE project_id = project_id
+                        ");
+                        $managerStmt->execute([$projectId, $managerId, $currentUser['id']]);
+                    }
+                } else {
+                    // If no managers selected, assign current user as manager
+                    $managerStmt = $db->prepare("
+                        INSERT INTO project_managers (project_id, manager_id, assigned_by)
+                        VALUES (?, ?, ?)
+                    ");
+                    $managerStmt->execute([$projectId, $currentUser['id'], $currentUser['id']]);
+                }
 
                 // Create initial tasks for assigned users if any selected
                 if (!empty($assigned_users)) {
@@ -255,6 +283,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     <label for="estimated_hours">Estimated Hours</label>
                                     <input type="number" id="estimated_hours" name="estimated_hours" class="form-control"
                                            step="0.5" min="0" placeholder="e.g., 40">
+                                </div>
+                            </div>
+
+                            <!-- Project Managers Assignment -->
+                            <div class="form-group">
+                                <label>Assign Project Managers (Multi-Select)</label>
+                                <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 12px;">
+                                    Select one or more managers who will have access to manage this project. If none selected, you will be assigned as the default manager.
+                                </p>
+                                <div class="user-select-grid">
+                                    <?php foreach ($managers as $manager): ?>
+                                        <label class="user-checkbox">
+                                            <input type="checkbox" name="assigned_managers[]" value="<?php echo $manager['id']; ?>"
+                                                <?php echo $manager['id'] == $currentUser['id'] ? 'checked' : ''; ?>>
+                                            <div class="user-info">
+                                                <div class="user-name"><?php echo e($manager['full_name']); ?></div>
+                                                <div class="user-title"><?php echo e($manager['job_title'] ?? 'Manager'); ?></div>
+                                            </div>
+                                        </label>
+                                    <?php endforeach; ?>
                                 </div>
                             </div>
 
