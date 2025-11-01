@@ -25,6 +25,14 @@ $stmt = $db->prepare("
 $stmt->execute([$currentUser['id']]);
 $tasks = $stmt->fetchAll();
 
+// Get all employees for assignment dropdowns
+$employees = $db->query("
+    SELECT id, full_name, job_title
+    FROM users
+    WHERE role IN ('employee', 'manager') AND is_active = 1
+    ORDER BY full_name
+")->fetchAll();
+
 // Group by status
 $tasksByStatus = [
     'todo' => [],
@@ -134,11 +142,37 @@ foreach ($tasks as $task) {
                                             <?php endif; ?>
                                         </td>
                                         <td><?php echo e($task['project_name']); ?></td>
-                                        <td><?php echo e($task['assigned_to_name'] ?? 'Unassigned'); ?></td>
                                         <td>
-                                            <span class="badge <?php echo getPriorityClass($task['priority']); ?>">
-                                                <?php echo ucfirst($task['priority']); ?>
-                                            </span>
+                                            <select class="form-control quick-update"
+                                                    data-task-id="<?php echo $task['id']; ?>"
+                                                    data-field="assigned_to"
+                                                    style="min-width: 150px;">
+                                                <?php foreach ($employees as $employee): ?>
+                                                    <option value="<?php echo $employee['id']; ?>"
+                                                            <?php echo $task['assigned_to'] == $employee['id'] ? 'selected' : ''; ?>>
+                                                        <?php echo e($employee['full_name']); ?>
+                                                    </option>
+                                                <?php endforeach; ?>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <select class="form-control quick-update"
+                                                    data-task-id="<?php echo $task['id']; ?>"
+                                                    data-field="priority"
+                                                    style="min-width: 120px;">
+                                                <option value="low" <?php echo $task['priority'] == 'low' ? 'selected' : ''; ?>>
+                                                    Low
+                                                </option>
+                                                <option value="medium" <?php echo $task['priority'] == 'medium' ? 'selected' : ''; ?>>
+                                                    Medium
+                                                </option>
+                                                <option value="high" <?php echo $task['priority'] == 'high' ? 'selected' : ''; ?>>
+                                                    High
+                                                </option>
+                                                <option value="urgent" <?php echo $task['priority'] == 'urgent' ? 'selected' : ''; ?>>
+                                                    Urgent
+                                                </option>
+                                            </select>
                                         </td>
                                         <td>
                                             <span class="badge <?php echo getStatusClass($task['status']); ?>">
@@ -172,5 +206,129 @@ foreach ($tasks as $task) {
     </div>
 
     <script src="../assets/js/theme.js"></script>
+    <script>
+        // Quick update functionality for inline editing
+        document.addEventListener('DOMContentLoaded', function() {
+            const quickUpdateSelects = document.querySelectorAll('.quick-update');
+
+            quickUpdateSelects.forEach(select => {
+                select.addEventListener('change', async function() {
+                    const taskId = this.dataset.taskId;
+                    const field = this.dataset.field;
+                    const value = this.value;
+                    const originalValue = this.dataset.originalValue || this.value;
+
+                    // Store original value for rollback
+                    if (!this.dataset.originalValue) {
+                        this.dataset.originalValue = originalValue;
+                    }
+
+                    // Disable the select while updating
+                    this.disabled = true;
+                    this.style.opacity = '0.6';
+
+                    try {
+                        const response = await fetch('../api/tasks.php', {
+                            method: 'PATCH',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                task_id: taskId,
+                                field: field,
+                                value: value
+                            })
+                        });
+
+                        const data = await response.json();
+
+                        if (data.success) {
+                            // Update the original value
+                            this.dataset.originalValue = value;
+
+                            // Show success feedback
+                            this.style.borderColor = '#10b981';
+                            setTimeout(() => {
+                                this.style.borderColor = '';
+                            }, 1000);
+
+                            // Show toast notification
+                            showToast('success', data.message || 'Updated successfully');
+                        } else {
+                            // Rollback to original value
+                            this.value = this.dataset.originalValue;
+                            showToast('error', data.message || 'Update failed');
+                        }
+                    } catch (error) {
+                        console.error('Error updating task:', error);
+                        // Rollback to original value
+                        this.value = this.dataset.originalValue;
+                        showToast('error', 'Failed to update. Please try again.');
+                    } finally {
+                        // Re-enable the select
+                        this.disabled = false;
+                        this.style.opacity = '1';
+                    }
+                });
+            });
+        });
+
+        // Simple toast notification function
+        function showToast(type, message) {
+            const toast = document.createElement('div');
+            toast.className = `alert alert-${type === 'success' ? 'success' : 'error'}`;
+            toast.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                z-index: 9999;
+                min-width: 250px;
+                animation: slideIn 0.3s ease-out;
+            `;
+            toast.textContent = message;
+
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.animation = 'slideOut 0.3s ease-out';
+                setTimeout(() => {
+                    document.body.removeChild(toast);
+                }, 300);
+            }, 3000);
+        }
+
+        // Add animation styles
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from {
+                    transform: translateX(400px);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+            @keyframes slideOut {
+                from {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+                to {
+                    transform: translateX(400px);
+                    opacity: 0;
+                }
+            }
+            .quick-update {
+                cursor: pointer;
+                transition: border-color 0.3s ease;
+            }
+            .quick-update:hover {
+                border-color: #667eea;
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
 </body>
 </html>
