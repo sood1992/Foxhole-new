@@ -119,6 +119,7 @@ foreach ($tasks as $task) {
                                         <th>Priority</th>
                                         <th>Status</th>
                                         <th>Due Date</th>
+                                        <th>Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -153,6 +154,11 @@ foreach ($tasks as $task) {
                                             <?php else: ?>
                                                 <span style="color: var(--text-tertiary);">No due date</span>
                                             <?php endif; ?>
+                                        </td>
+                                        <td>
+                                            <a href="edit-task.php?id=<?php echo $task['id']; ?>" class="btn btn-primary btn-sm">
+                                                <i class="fas fa-edit"></i> Edit
+                                            </a>
                                         </td>
                                     </tr>
                                     <?php endforeach; ?>

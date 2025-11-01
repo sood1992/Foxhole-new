@@ -102,8 +102,11 @@ $projects = $stmt->fetchAll();
                                             <?php endif; ?>
                                         </td>
                                         <td>
-                                            <a href="../admin/project-detail.php?id=<?php echo $project['id']; ?>" class="btn btn-primary btn-sm">
-                                                View Details
+                                            <a href="edit-project.php?id=<?php echo $project['id']; ?>" class="btn btn-primary btn-sm">
+                                                <i class="fas fa-edit"></i> Edit
+                                            </a>
+                                            <a href="../admin/project-detail.php?id=<?php echo $project['id']; ?>" class="btn btn-secondary btn-sm">
+                                                <i class="fas fa-eye"></i> View
                                             </a>
                                         </td>
                                     </tr>
