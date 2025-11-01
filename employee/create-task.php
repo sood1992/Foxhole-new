@@ -204,9 +204,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             </div>
 
                             <div class="form-group">
-                                <label for="due_date">Due Date</label>
-                                <input type="date" id="due_date" name="due_date"
-                                       min="<?php echo date('Y-m-d'); ?>"
+                                <label for="due_date">Due Date & Time</label>
+                                <input type="datetime-local" id="due_date" name="due_date"
+                                       min="<?php echo date('Y-m-d\TH:i'); ?>"
                                        class="form-control">
                                 <small style="color: var(--text-secondary); font-size: 12px;">Optional - Set a deadline for this task</small>
                             </div>

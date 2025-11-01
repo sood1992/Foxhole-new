@@ -242,12 +242,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 </div>
                             </div>
 
-                            <!-- Due Date and Estimated Hours -->
+                            <!-- Due Date/Time and Estimated Hours -->
                             <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
                                 <div class="form-group">
-                                    <label for="due_date">Due Date</label>
-                                    <input type="date" id="due_date" name="due_date" class="form-control"
-                                           min="<?php echo date('Y-m-d'); ?>">
+                                    <label for="due_date">Due Date & Time</label>
+                                    <input type="datetime-local" id="due_date" name="due_date" class="form-control"
+                                           min="<?php echo date('Y-m-d\TH:i'); ?>">
                                 </div>
 
                                 <div class="form-group">

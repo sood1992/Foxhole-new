@@ -250,18 +250,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 </div>
                             </div>
 
-                            <!-- Dates -->
+                            <!-- Dates and Times -->
                             <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px;">
                                 <div class="form-group">
-                                    <label for="start_date">Start Date</label>
-                                    <input type="date" id="start_date" name="start_date" class="form-control"
-                                           value="<?php echo date('Y-m-d'); ?>">
+                                    <label for="start_date">Start Date & Time</label>
+                                    <input type="datetime-local" id="start_date" name="start_date" class="form-control"
+                                           value="<?php echo date('Y-m-d\TH:i'); ?>">
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="due_date">Due Date</label>
-                                    <input type="date" id="due_date" name="due_date" class="form-control"
-                                           min="<?php echo date('Y-m-d'); ?>">
+                                    <label for="due_date">Due Date & Time</label>
+                                    <input type="datetime-local" id="due_date" name="due_date" class="form-control"
+                                           min="<?php echo date('Y-m-d\TH:i'); ?>">
                                 </div>
 
                                 <div class="form-group">

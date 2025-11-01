@@ -148,12 +148,12 @@ $managers = $db->query("SELECT id, full_name FROM users WHERE role IN ('admin', 
                                 <input type="number" name="budget" class="form-control" step="0.01" placeholder="0.00">
                             </div>
                             <div class="form-group">
-                                <label>Start Date <span class="required">*</span></label>
-                                <input type="date" name="start_date" class="form-control" value="<?php echo date('Y-m-d'); ?>" required>
+                                <label>Start Date & Time <span class="required">*</span></label>
+                                <input type="datetime-local" name="start_date" class="form-control" value="<?php echo date('Y-m-d\TH:i'); ?>" required>
                             </div>
                             <div class="form-group">
-                                <label>Due Date <span class="required">*</span></label>
-                                <input type="date" name="due_date" class="form-control" value="<?php echo date('Y-m-d', strtotime('+30 days')); ?>" required>
+                                <label>Due Date & Time <span class="required">*</span></label>
+                                <input type="datetime-local" name="due_date" class="form-control" value="<?php echo date('Y-m-d\TH:i', strtotime('+30 days')); ?>" required>
                             </div>
                             <div class="form-group">
                                 <label>Status</label>
