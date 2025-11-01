@@ -1,0 +1,38 @@
+# PHP Session Files
+sessions/
+
+# Environment Configuration
+.env
+.env.local
+
+# IDE and Editor Files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+.DS_Store
+Thumbs.db
+
+# Temporary Files
+*.tmp
+*.temp
+*.log
+*.swp
+*.swo
+*~
+
+# Uploaded Files (optional - uncomment if needed)
+# uploads/
+
+# Cache
+cache/
+*.cache
+
+# Composer
+vendor/
+composer.lock
+
+# Node modules (if using npm/yarn)
+node_modules/
+package-lock.json
+yarn.lock
