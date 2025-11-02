@@ -19,30 +19,32 @@ $current_page = basename($_SERVER['PHP_SELF']);
             <a href="../employee/index.php" class="main-menu-item <?php echo ($current_page == 'index.php') ? 'active' : ''; ?>"
                data-menu="dashboard" title="Dashboard">
                 <i class="fas fa-home"></i>
-            </a>
-            <a href="../employee/daily-plan.php" class="main-menu-item <?php echo ($current_page == 'daily-plan.php') ? 'active' : ''; ?>"
-               data-menu="plan" title="Daily Plan">
-                <i class="fas fa-calendar-day"></i>
+                <span>Dashboard</span>
             </a>
             <a href="../employee/tasks.php" class="main-menu-item <?php echo (in_array($current_page, ['tasks.php', 'create-task.php'])) ? 'active' : ''; ?>"
                data-menu="tasks" title="My Tasks">
                 <i class="fas fa-tasks"></i>
+                <span>My Tasks</span>
             </a>
             <a href="../employee/time-logs.php" class="main-menu-item <?php echo ($current_page == 'time-logs.php') ? 'active' : ''; ?>"
                data-menu="time" title="Time Logs">
                 <i class="fas fa-clock"></i>
+                <span>Time Logs</span>
             </a>
             <a href="../employee/my-stats.php" class="main-menu-item <?php echo ($current_page == 'my-stats.php') ? 'active' : ''; ?>"
                data-menu="stats" title="My Stats">
                 <i class="fas fa-chart-bar"></i>
+                <span>My Stats</span>
             </a>
             <a href="../employee/calendar.php" class="main-menu-item <?php echo ($current_page == 'calendar.php') ? 'active' : ''; ?>"
                data-menu="calendar" title="Calendar">
                 <i class="fas fa-calendar"></i>
+                <span>Calendar</span>
             </a>
             <a href="../employee/chat.php" class="main-menu-item <?php echo ($current_page == 'chat.php') ? 'active' : ''; ?>"
                data-menu="chat" title="Team Chat">
                 <i class="fas fa-comments"></i>
+                <span>Chat</span>
             </a>
         </div>
     </div>
@@ -55,31 +57,17 @@ $current_page = basename($_SERVER['PHP_SELF']);
             <a href="../employee/index.php" class="menu-item <?php echo ($current_page == 'index.php') ? 'active' : ''; ?>">
                 <i class="fas fa-tachometer-alt"></i> Overview
             </a>
+            <a href="../employee/daily-plan.php" class="menu-item <?php echo ($current_page == 'daily-plan.php') ? 'active' : ''; ?>">
+                <i class="fas fa-calendar-day"></i> Daily Plan
+            </a>
+            <a href="../employee/reviews.php?type=weekly" class="menu-item <?php echo ($current_page == 'reviews.php') ? 'active' : ''; ?>">
+                <i class="fas fa-pen-to-square"></i> Weekly Review
+            </a>
             <a href="../employee/index.php#tasks" class="menu-item">
                 <i class="fas fa-list"></i> My Tasks
             </a>
             <a href="../employee/index.php#activity" class="menu-item">
                 <i class="fas fa-clock"></i> Recent Activity
-            </a>
-        </div>
-
-        <!-- Daily Plan Section -->
-        <div class="menu-section" data-menu="plan">
-            <div class="menu-title">Daily Plan</div>
-            <a href="../employee/daily-plan.php" class="menu-item <?php echo ($current_page == 'daily-plan.php') ? 'active' : ''; ?>">
-                <i class="fas fa-calendar-day"></i> Today's Plan
-            </a>
-            <a href="../employee/daily-plan.php?view=tomorrow" class="menu-item">
-                <i class="fas fa-calendar-plus"></i> Plan Tomorrow
-            </a>
-            <a href="../employee/daily-plan.php?view=week" class="menu-item">
-                <i class="fas fa-calendar-week"></i> Week View
-            </a>
-            <a href="../employee/reviews.php?type=weekly" class="menu-item <?php echo ($current_page == 'reviews.php') ? 'active' : ''; ?>">
-                <i class="fas fa-pen-to-square"></i> Weekly Review
-            </a>
-            <a href="../employee/reviews.php?type=monthly" class="menu-item">
-                <i class="fas fa-calendar-check"></i> Monthly Review
             </a>
         </div>
 
@@ -136,7 +124,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 <i class="fas fa-chart-bar"></i> Time Analytics
             </a>
             <a href="../employee/rewards.php" class="menu-item <?php echo ($current_page == 'rewards.php') ? 'active' : ''; ?>">
-                <i class="fas fa-gift"></i> Rewards & Achievements
+                <i class="fas fa-gift"></i> Rewards
             </a>
             <a href="../employee/my-stats.php#achievements" class="menu-item">
                 <i class="fas fa-trophy"></i> Achievements
@@ -184,30 +172,18 @@ $current_page = basename($_SERVER['PHP_SELF']);
 document.addEventListener('DOMContentLoaded', function() {
     // Get active menu from main panel
     const activeMainItem = document.querySelector('.main-menu-item.active');
-
-    // Hide all menu sections first
-    document.querySelectorAll('.menu-section').forEach(section => {
-        section.style.display = 'none';
-    });
-
     if (activeMainItem) {
         const activeMenu = activeMainItem.dataset.menu;
+
+        // Hide all menu sections
+        document.querySelectorAll('.menu-section').forEach(section => {
+            section.style.display = 'none';
+        });
 
         // Show active menu section
         const activeSection = document.querySelector(`.menu-section[data-menu="${activeMenu}"]`);
         if (activeSection) {
             activeSection.style.display = 'block';
-        }
-    } else {
-        // If no active menu, show dashboard by default
-        const dashboardSection = document.querySelector('.menu-section[data-menu="dashboard"]');
-        if (dashboardSection) {
-            dashboardSection.style.display = 'block';
-        }
-        // Also activate dashboard icon
-        const dashboardItem = document.querySelector('.main-menu-item[data-menu="dashboard"]');
-        if (dashboardItem) {
-            dashboardItem.classList.add('active');
         }
     }
 
