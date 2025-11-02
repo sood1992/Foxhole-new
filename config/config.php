@@ -52,7 +52,46 @@ function isLoggedIn() {
 
 // Helper function to check user role
 function hasRole($role) {
+    // If active_role is set (multi-role system), check that
+    if (isset($_SESSION['active_role'])) {
+        return $_SESSION['active_role'] === $role;
+    }
+    // Fallback to primary role
     return isset($_SESSION['role']) && $_SESSION['role'] === $role;
+}
+
+// Helper function to get user roles
+function getUserRoles($userId = null) {
+    if ($userId === null && !isLoggedIn()) {
+        return [];
+    }
+
+    $userId = $userId ?? $_SESSION['user_id'];
+    $db = getDBConnection();
+    $stmt = $db->prepare("SELECT role FROM user_roles WHERE user_id = ? ORDER BY is_primary DESC");
+    $stmt->execute([$userId]);
+    return $stmt->fetchAll(PDO::FETCH_COLUMN);
+}
+
+// Helper function to check if user has any of the given roles
+function hasAnyRole($roles) {
+    $userRoles = getUserRoles();
+    return !empty(array_intersect($roles, $userRoles));
+}
+
+// Helper function to switch active role
+function switchRole($role) {
+    $userRoles = getUserRoles();
+    if (in_array($role, $userRoles)) {
+        $_SESSION['active_role'] = $role;
+        return true;
+    }
+    return false;
+}
+
+// Helper function to get active role
+function getActiveRole() {
+    return $_SESSION['active_role'] ?? $_SESSION['role'] ?? null;
 }
 
 // Helper function to redirect

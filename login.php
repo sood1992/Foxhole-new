@@ -48,12 +48,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['full_name'] = $user['full_name'];
                 $_SESSION['role'] = $user['role'];
 
+                // Get all user roles for multi-role support
+                $rolesStmt = $db->prepare("SELECT role, is_primary FROM user_roles WHERE user_id = ? ORDER BY is_primary DESC");
+                $rolesStmt->execute([$user['id']]);
+                $userRoles = $rolesStmt->fetchAll();
+
+                // If user has roles in user_roles table, use those
+                if (!empty($userRoles)) {
+                    $primaryRole = $userRoles[0]['role'];
+                    $_SESSION['role'] = $primaryRole;
+                    $_SESSION['active_role'] = $primaryRole;
+                    $_SESSION['all_roles'] = array_column($userRoles, 'role');
+                } else {
+                    // Fallback to users table role
+                    $_SESSION['active_role'] = $user['role'];
+                    $_SESSION['all_roles'] = [$user['role']];
+                }
+
                 // Update last login
                 $updateStmt = $db->prepare("UPDATE users SET last_login = NOW() WHERE id = ?");
                 $updateStmt->execute([$user['id']]);
 
-                // Redirect based on role
-                switch ($user['role']) {
+                // Redirect based on active role
+                $activeRole = $_SESSION['active_role'];
+                switch ($activeRole) {
                     case 'admin':
                         redirect('admin/index.php');
                         break;

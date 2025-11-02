@@ -20,6 +20,10 @@ $current_page = basename($_SERVER['PHP_SELF']);
                data-menu="dashboard" title="Dashboard">
                 <i class="fas fa-home"></i>
             </a>
+            <a href="../employee/daily-plan.php" class="main-menu-item <?php echo ($current_page == 'daily-plan.php') ? 'active' : ''; ?>"
+               data-menu="plan" title="Daily Plan">
+                <i class="fas fa-calendar-day"></i>
+            </a>
             <a href="../employee/tasks.php" class="main-menu-item <?php echo (in_array($current_page, ['tasks.php', 'create-task.php'])) ? 'active' : ''; ?>"
                data-menu="tasks" title="My Tasks">
                 <i class="fas fa-tasks"></i>
@@ -56,6 +60,20 @@ $current_page = basename($_SERVER['PHP_SELF']);
             </a>
             <a href="../employee/index.php#activity" class="menu-item">
                 <i class="fas fa-clock"></i> Recent Activity
+            </a>
+        </div>
+
+        <!-- Daily Plan Section -->
+        <div class="menu-section" data-menu="plan">
+            <div class="menu-title">Daily Plan</div>
+            <a href="../employee/daily-plan.php" class="menu-item <?php echo ($current_page == 'daily-plan.php') ? 'active' : ''; ?>">
+                <i class="fas fa-calendar-day"></i> Today's Plan
+            </a>
+            <a href="../employee/daily-plan.php?view=tomorrow" class="menu-item">
+                <i class="fas fa-calendar-plus"></i> Plan Tomorrow
+            </a>
+            <a href="../employee/daily-plan.php?view=week" class="menu-item">
+                <i class="fas fa-calendar-week"></i> Week View
             </a>
         </div>
 

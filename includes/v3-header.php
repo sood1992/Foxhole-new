@@ -61,6 +61,42 @@ $userAvatar = !empty($currentUser['avatar']) ? $currentUser['avatar'] : '../asse
         </div>
     </div>
     <div style="padding: 8px 0;">
+        <?php
+        // Show role switcher if user has multiple roles
+        $allRoles = $_SESSION['all_roles'] ?? [];
+        $activeRole = getActiveRole();
+        if (count($allRoles) > 1):
+        ?>
+        <div style="padding: 10px 15px; border-bottom: 1px solid var(--border-light); margin-bottom: 5px;">
+            <div style="font-size: 11px; color: var(--text-secondary); text-transform: uppercase; font-weight: 600; margin-bottom: 8px;">
+                Switch Role
+            </div>
+            <?php foreach ($allRoles as $role): ?>
+                <?php
+                $roleIcons = [
+                    'admin' => 'fa-user-shield',
+                    'manager' => 'fa-user-tie',
+                    'employee' => 'fa-user'
+                ];
+                $roleColors = [
+                    'admin' => '#667eea',
+                    'manager' => '#17b06b',
+                    'employee' => '#f8b739'
+                ];
+                $isActive = $role === $activeRole;
+                ?>
+                <a href="#" onclick="switchRole('<?php echo $role; ?>'); return false;"
+                   style="display: block; padding: 8px 10px; color: var(--text-primary); text-decoration: none; transition: all 0.2s; border-radius: 6px; margin-bottom: 4px; <?php echo $isActive ? 'background: var(--light); font-weight: 600;' : ''; ?>">
+                    <i class="fas <?php echo $roleIcons[$role]; ?>" style="width: 20px; color: <?php echo $roleColors[$role]; ?>;"></i>
+                    <?php echo ucfirst($role); ?>
+                    <?php if ($isActive): ?>
+                        <i class="fas fa-check" style="float: right; color: var(--success); font-size: 12px;"></i>
+                    <?php endif; ?>
+                </a>
+            <?php endforeach; ?>
+        </div>
+        <?php endif; ?>
+
         <a href="profile.php" style="display: block; padding: 10px 15px; color: var(--text-primary); text-decoration: none; transition: all 0.2s;">
             <i class="fas fa-user" style="width: 20px;"></i> My Profile
         </a>
@@ -89,6 +125,28 @@ document.addEventListener('click', function(event) {
         dropdown.style.display = 'none';
     }
 });
+
+// Role switcher function
+async function switchRole(newRole) {
+    try {
+        const response = await fetch('../api/switch-role.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ role: newRole })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            window.location.href = data.redirect_url;
+        } else {
+            alert(data.message || 'Failed to switch role');
+        }
+    } catch (error) {
+        console.error('Role switch error:', error);
+        alert('Failed to switch role. Please try again.');
+    }
+}
 
 // Global search functionality
 document.getElementById('globalSearch')?.addEventListener('input', function(e) {
