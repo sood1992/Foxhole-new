@@ -126,6 +126,9 @@ $current_page = basename($_SERVER['PHP_SELF']);
             <a href="../employee/my-stats.php" class="menu-item <?php echo ($current_page == 'my-stats.php') ? 'active' : ''; ?>">
                 <i class="fas fa-chart-line"></i> My Statistics
             </a>
+            <a href="../employee/time-analytics.php" class="menu-item <?php echo ($current_page == 'time-analytics.php') ? 'active' : ''; ?>">
+                <i class="fas fa-chart-bar"></i> Time Analytics
+            </a>
             <a href="../employee/my-stats.php#achievements" class="menu-item">
                 <i class="fas fa-trophy"></i> Achievements
             </a>
