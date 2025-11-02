@@ -227,14 +227,16 @@ a:hover {
 }
 
 .main-menu-item {
-  height: 50px;
+  height: 60px;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   color: var(--text-secondary);
   cursor: pointer;
   transition: all var(--transition-speed) var(--transition-timing);
   position: relative;
+  padding: 8px 4px;
 }
 
 .main-menu-item:hover {
@@ -249,11 +251,15 @@ a:hover {
 }
 
 .main-menu-item i {
-  font-size: 20px;
+  font-size: 18px;
 }
 
 .main-menu-item span {
-  display: none;
+  font-size: 10px;
+  display: block;
+  margin-top: 4px;
+  text-align: center;
+  line-height: 1;
 }
 
 /* Sub Panel (Menu Items) */
