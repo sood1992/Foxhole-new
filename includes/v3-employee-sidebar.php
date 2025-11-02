@@ -16,12 +16,12 @@ $current_page = basename($_SERVER['PHP_SELF']);
         </div>
 
         <div class="main-menu">
-            <a href="../employee/index.php" class="main-menu-item <?php echo ($current_page == 'index.php') ? 'active' : ''; ?>"
+            <a href="../employee/index.php" class="main-menu-item <?php echo (in_array($current_page, ['index.php', 'daily-plan.php', 'reviews.php'])) ? 'active' : ''; ?>"
                data-menu="dashboard" title="Dashboard">
                 <i class="fas fa-home"></i>
                 <span>Dashboard</span>
             </a>
-            <a href="../employee/tasks.php" class="main-menu-item <?php echo (in_array($current_page, ['tasks.php', 'create-task.php'])) ? 'active' : ''; ?>"
+            <a href="../employee/tasks.php" class="main-menu-item <?php echo (in_array($current_page, ['tasks.php', 'create-task.php', 'task-templates.php'])) ? 'active' : ''; ?>"
                data-menu="tasks" title="My Tasks">
                 <i class="fas fa-tasks"></i>
                 <span>My Tasks</span>
@@ -31,7 +31,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 <i class="fas fa-clock"></i>
                 <span>Time Logs</span>
             </a>
-            <a href="../employee/my-stats.php" class="main-menu-item <?php echo ($current_page == 'my-stats.php') ? 'active' : ''; ?>"
+            <a href="../employee/my-stats.php" class="main-menu-item <?php echo (in_array($current_page, ['my-stats.php', 'time-analytics.php', 'rewards.php'])) ? 'active' : ''; ?>"
                data-menu="stats" title="My Stats">
                 <i class="fas fa-chart-bar"></i>
                 <span>My Stats</span>
