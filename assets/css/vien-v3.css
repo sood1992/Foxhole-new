@@ -252,6 +252,10 @@ a:hover {
   font-size: 20px;
 }
 
+.main-menu-item span {
+  display: none;
+}
+
 /* Sub Panel (Menu Items) */
 .sidebar-sub-panel {
   flex: 1;
@@ -1129,6 +1133,47 @@ select.form-control {
 .badge-dark {
   background: var(--dark);
   color: #ffffff;
+}
+
+/* Status Badges */
+.status-todo {
+  background: rgba(108, 117, 125, 0.1);
+  color: #6c757d;
+}
+
+.status-progress {
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+}
+
+.status-review {
+  background: rgba(245, 158, 11, 0.1);
+  color: #f59e0b;
+}
+
+.status-completed {
+  background: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+}
+
+.status-blocked {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
+.status-hold {
+  background: rgba(156, 163, 175, 0.1);
+  color: #9ca3af;
+}
+
+.status-planning {
+  background: rgba(139, 92, 246, 0.1);
+  color: #8b5cf6;
+}
+
+.status-default {
+  background: rgba(156, 163, 175, 0.1);
+  color: #6b7280;
 }
 
 /* ============================================

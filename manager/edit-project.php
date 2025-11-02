@@ -257,12 +257,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </style>
 </head>
 <body>
-    <?php include '../includes/v3-manager-sidebar.php'; ?>
-
     <div class="app-container">
-        <?php include '../includes/v3-header.php'; ?>
+        <?php include '../includes/v3-manager-sidebar.php'; ?>
 
         <div class="main-content">
+            <?php include '../includes/v3-header.php'; ?>
             <div class="content-wrapper">
                 <div class="page-header">
                     <div>

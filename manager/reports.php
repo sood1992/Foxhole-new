@@ -65,12 +65,11 @@ $teamReports = $stmt->fetchAll();
     <?php include '../includes/quick-actions-assets.php'; ?>
 </head>
 <body>
-    <?php include '../includes/v3-manager-sidebar.php'; ?>
-
     <div class="app-container">
-        <?php include '../includes/v3-header.php'; ?>
+        <?php include '../includes/v3-manager-sidebar.php'; ?>
 
         <div class="main-content">
+            <?php include '../includes/v3-header.php'; ?>
             <div class="content-wrapper">
                 <!-- Page Header -->
                 <div class="page-header">

@@ -156,12 +156,11 @@ $pageTitle = $action === 'add' ? 'Add User' : ($action === 'edit' ? 'Edit User' 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <?php include '../includes/v3-manager-sidebar.php'; ?>
-
     <div class="app-container">
-        <?php include '../includes/v3-header.php'; ?>
+        <?php include '../includes/v3-manager-sidebar.php'; ?>
 
         <div class="main-content">
+            <?php include '../includes/v3-header.php'; ?>
             <div class="content-wrapper">
                 <?php if ($action === 'list'): ?>
                     <!-- User List View -->
