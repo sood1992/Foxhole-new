@@ -4,6 +4,7 @@ ob_start();
 
 require_once '../config/config.php';
 require_once '../includes/functions.php';
+require_once '../includes/task-hooks.php';
 
 if (!isLoggedIn() || !hasRole('manager')) {
     redirect('../login.php');
@@ -109,6 +110,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } elseif ($assigned_to === 0) {
             $error = 'Please assign the task to someone.';
         } else {
+            // Store old status for gamification hook
+            $oldStatus = $task['status'];
+            $oldAssignedTo = $task['assigned_to'];
+
             // Update task
             $updateStmt = $db->prepare("
                 UPDATE tasks SET
@@ -137,6 +142,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ]);
 
             if ($result) {
+                // Trigger gamification hook if status changed
+                if ($status !== $oldStatus) {
+                    hookTaskStatusUpdate($taskId, $oldStatus, $status, $assigned_to);
+                }
                 // Update dependency
                 // First, delete existing dependency
                 $db->prepare("DELETE FROM task_dependencies WHERE task_id = ?")->execute([$taskId]);

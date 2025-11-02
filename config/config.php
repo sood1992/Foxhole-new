@@ -68,9 +68,23 @@ function getUserRoles($userId = null) {
 
     $userId = $userId ?? $_SESSION['user_id'];
     $db = getDBConnection();
-    $stmt = $db->prepare("SELECT role FROM user_roles WHERE user_id = ? ORDER BY is_primary DESC");
-    $stmt->execute([$userId]);
-    return $stmt->fetchAll(PDO::FETCH_COLUMN);
+
+    try {
+        $stmt = $db->prepare("SELECT role FROM user_roles WHERE user_id = ? ORDER BY is_primary DESC");
+        $stmt->execute([$userId]);
+        $roles = $stmt->fetchAll(PDO::FETCH_COLUMN);
+
+        // If no roles found in user_roles table, fallback to session role
+        if (empty($roles) && isset($_SESSION['role'])) {
+            return [$_SESSION['role']];
+        }
+
+        return $roles;
+    } catch (Exception $e) {
+        // Table doesn't exist yet or database error - fallback to session role
+        error_log("getUserRoles error: " . $e->getMessage());
+        return isset($_SESSION['role']) ? [$_SESSION['role']] : [];
+    }
 }
 
 // Helper function to check if user has any of the given roles
