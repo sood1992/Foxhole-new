@@ -56,9 +56,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $assigned_to = intval($_POST['assigned_to'] ?? 0);
         $priority = $_POST['priority'] ?? 'medium';
         $due_date = $_POST['due_date'] ?? null;
+        $due_time = $_POST['due_time'] ?? null;
         $estimated_hours = floatval($_POST['estimated_hours'] ?? 0);
         $depends_on = intval($_POST['depends_on'] ?? 0);
         $dependency_type = $_POST['dependency_type'] ?? 'finish_to_start';
+
+        // Combine date and time into datetime
+        $due_datetime = null;
+        if (!empty($due_date)) {
+            $due_datetime = $due_date;
+            if (!empty($due_time)) {
+                $due_datetime .= ' ' . $due_time . ':00';
+            } else {
+                $due_datetime .= ' 23:59:59'; // Default to end of day if no time specified
+            }
+        }
 
         // Validation
         if (empty($task_name)) {
@@ -84,7 +96,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $assigned_to,
                 $priority,
                 $estimated_hours > 0 ? $estimated_hours : null,
-                !empty($due_date) ? $due_date : null,
+                $due_datetime,
                 $currentUser['id']
             ]);
 
@@ -230,12 +242,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 </div>
                             </div>
 
-                            <!-- Due Date and Estimated Hours -->
-                            <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                                <div class="form-group">
-                                    <label for="due_date">Due Date</label>
-                                    <input type="date" id="due_date" name="due_date" class="form-control"
-                                           min="<?php echo date('Y-m-d'); ?>">
+                            <!-- Due Date/Time and Estimated Hours -->
+                            <div class="form-row" style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px;">
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                                    <div class="form-group">
+                                        <label for="due_date">Due Date</label>
+                                        <input type="date" id="due_date" name="due_date" class="form-control"
+                                               min="<?php echo date('Y-m-d'); ?>">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="due_time">Due Time</label>
+                                        <input type="time" id="due_time" name="due_time" class="form-control"
+                                               placeholder="HH:MM">
+                                        <small style="color: var(--text-secondary); font-size: 11px; display: block; margin-top: 2px;">
+                                            Optional - defaults to 11:59 PM
+                                        </small>
+                                    </div>
                                 </div>
 
                                 <div class="form-group">

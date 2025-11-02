@@ -40,9 +40,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $priority = $_POST['priority'] ?? 'medium';
         $start_date = $_POST['start_date'] ?? null;
         $due_date = $_POST['due_date'] ?? null;
+        $due_time = $_POST['due_time'] ?? null;
         $estimated_hours = floatval($_POST['estimated_hours'] ?? 0);
         $assigned_users = $_POST['assigned_users'] ?? [];
         $assigned_managers = $_POST['assigned_managers'] ?? [];
+
+        // Combine date and time into datetime for due date
+        $due_datetime = null;
+        if (!empty($due_date)) {
+            $due_datetime = $due_date;
+            if (!empty($due_time)) {
+                $due_datetime .= ' ' . $due_time . ':00';
+            } else {
+                $due_datetime .= ' 23:59:59'; // Default to end of day
+            }
+        }
 
         // Validation
         if (empty($project_name)) {
@@ -63,7 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $status,
                 $priority,
                 !empty($start_date) ? $start_date : null,
-                !empty($due_date) ? $due_date : null,
+                $due_datetime,
                 $estimated_hours > 0 ? $estimated_hours : null,
                 $currentUser['id'], // Assign PM as manager
                 $currentUser['id']
@@ -272,10 +284,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                            value="<?php echo date('Y-m-d'); ?>">
                                 </div>
 
-                                <div class="form-group">
-                                    <label for="due_date">Due Date</label>
-                                    <input type="date" id="due_date" name="due_date" class="form-control"
-                                           min="<?php echo date('Y-m-d'); ?>">
+                                <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                                    <div class="form-group">
+                                        <label for="due_date">Due Date</label>
+                                        <input type="date" id="due_date" name="due_date" class="form-control"
+                                               min="<?php echo date('Y-m-d'); ?>">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="due_time">Due Time</label>
+                                        <input type="time" id="due_time" name="due_time" class="form-control"
+                                               placeholder="HH:MM">
+                                        <small style="color: var(--text-secondary); font-size: 11px;">Defaults to 11:59 PM</small>
+                                    </div>
                                 </div>
 
                                 <div class="form-group">
