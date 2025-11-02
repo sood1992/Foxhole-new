@@ -187,48 +187,56 @@ $weekSummaryData = $weekSummary->fetchAll();
                 </div>
 
                 <!-- Stats Grid -->
-                <div class="stats-grid">
-                    <div class="dashboard-card">
-                        <div class="card-icon gradient-blue">
-                            <i class="fas fa-tasks"></i>
-                        </div>
-                        <div class="card-content">
-                            <div class="card-label">My Tasks</div>
-                            <div class="card-value"><?php echo $stats['my_tasks']; ?></div>
-                            <div class="card-change">Active</div>
-                        </div>
-                    </div>
-
-                    <div class="dashboard-card">
-                        <div class="card-icon gradient-green">
-                            <i class="fas fa-check-circle"></i>
-                        </div>
-                        <div class="card-content">
-                            <div class="card-label">Completed</div>
-                            <div class="card-value"><?php echo $stats['completed_week']; ?></div>
-                            <div class="card-change">This Week</div>
+                <div class="row">
+                    <div class="col-lg-3 col-md-6">
+                        <div class="dashboard-card">
+                            <div class="card-icon gradient-blue">
+                                <i class="fas fa-tasks"></i>
+                            </div>
+                            <div class="card-content">
+                                <div class="card-label">My Tasks</div>
+                                <div class="card-value"><?php echo $stats['my_tasks']; ?></div>
+                                <div class="card-change">Active</div>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="dashboard-card">
-                        <div class="card-icon gradient-orange">
-                            <i class="fas fa-clock"></i>
-                        </div>
-                        <div class="card-content">
-                            <div class="card-label">Hours Logged</div>
-                            <div class="card-value"><?php echo $stats['hours_week']; ?></div>
-                            <div class="card-change">This Week</div>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="dashboard-card">
+                            <div class="card-icon gradient-green">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="card-content">
+                                <div class="card-label">Completed</div>
+                                <div class="card-value"><?php echo $stats['completed_week']; ?></div>
+                                <div class="card-change">This Week</div>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="dashboard-card">
-                        <div class="card-icon gradient-purple">
-                            <i class="fas fa-folder"></i>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="dashboard-card">
+                            <div class="card-icon gradient-orange">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="card-content">
+                                <div class="card-label">Hours Logged</div>
+                                <div class="card-value"><?php echo $stats['hours_week']; ?></div>
+                                <div class="card-change">This Week</div>
+                            </div>
                         </div>
-                        <div class="card-content">
-                            <div class="card-label">Projects</div>
-                            <div class="card-value"><?php echo $stats['projects']; ?></div>
-                            <div class="card-change">Involved</div>
+                    </div>
+
+                    <div class="col-lg-3 col-md-6">
+                        <div class="dashboard-card">
+                            <div class="card-icon gradient-purple">
+                                <i class="fas fa-folder"></i>
+                            </div>
+                            <div class="card-content">
+                                <div class="card-label">Projects</div>
+                                <div class="card-value"><?php echo $stats['projects']; ?></div>
+                                <div class="card-change">Involved</div>
+                            </div>
                         </div>
                     </div>
                 </div>
