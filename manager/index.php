@@ -106,7 +106,7 @@ $teamData = $teamActivity->fetchAll();
                 </div>
 
                 <!-- Stats Grid -->
-                <div class="row" style="margin-bottom: 30px;">
+                <div id="stats" class="row" style="margin-bottom: 30px;">
                     <div class="col-lg-3 col-md-6">
                         <div class="dashboard-card">
                             <div class="card-icon primary">
@@ -146,7 +146,7 @@ $teamData = $teamActivity->fetchAll();
                 </div>
 
                 <!-- Team Activity Today -->
-                <div class="card" style="margin-bottom: 30px;">
+                <div id="activity" class="card" style="margin-bottom: 30px;">
                     <div class="card-header">
                         <div>
                             <h3 style="margin: 0;">Team Activity Today</h3>
