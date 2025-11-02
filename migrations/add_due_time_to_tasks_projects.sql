@@ -14,6 +14,7 @@ ALTER TABLE projects
 MODIFY COLUMN due_date DATETIME NULL DEFAULT NULL
 COMMENT 'Project deadline date and time';
 
--- Add index for due date queries (if not exists)
-CREATE INDEX IF NOT EXISTS idx_tasks_due_date ON tasks(due_date);
-CREATE INDEX IF NOT EXISTS idx_projects_due_date ON projects(due_date);
+-- Add indexes for due date queries
+-- Note: If these indexes already exist, you'll get an error - that's okay, just skip this part
+CREATE INDEX idx_tasks_due_date ON tasks(due_date);
+CREATE INDEX idx_projects_due_date ON projects(due_date);
