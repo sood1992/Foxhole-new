@@ -86,6 +86,9 @@ $current_page = basename($_SERVER['PHP_SELF']);
             <a href="../employee/create-task.php" class="menu-item <?php echo ($current_page == 'create-task.php') ? 'active' : ''; ?>">
                 <i class="fas fa-plus"></i> Create Task
             </a>
+            <a href="../employee/task-templates.php" class="menu-item <?php echo ($current_page == 'task-templates.php') ? 'active' : ''; ?>">
+                <i class="fas fa-layer-group"></i> Task Templates
+            </a>
             <a href="../employee/tasks.php?status=todo" class="menu-item">
                 <i class="fas fa-circle"></i> To Do
             </a>
