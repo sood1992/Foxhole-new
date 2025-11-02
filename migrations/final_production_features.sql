@@ -141,6 +141,21 @@ CREATE TABLE IF NOT EXISTS reviews (
     INDEX idx_period (review_period)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- Add task dependencies table
+CREATE TABLE IF NOT EXISTS task_dependencies (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    task_id INT NOT NULL,
+    depends_on_task_id INT NOT NULL,
+    dependency_type ENUM('finish_to_start', 'start_to_start', 'finish_to_finish') DEFAULT 'finish_to_start',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (task_id) REFERENCES tasks(id) ON DELETE CASCADE,
+    FOREIGN KEY (depends_on_task_id) REFERENCES tasks(id) ON DELETE CASCADE,
+    UNIQUE KEY unique_dependency (task_id, depends_on_task_id),
+    INDEX idx_task (task_id),
+    INDEX idx_depends_on (depends_on_task_id),
+    CHECK (task_id != depends_on_task_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 -- Initialize user points for existing users
 INSERT INTO user_points (user_id, points, total_tasks_completed)
 SELECT u.id,
