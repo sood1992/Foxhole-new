@@ -26,7 +26,7 @@ if (!defined('SITE_TAGLINE')) {
     define('SITE_TAGLINE', 'Your productivity command center');
 }
 if (!defined('SITE_URL')) {
-    define('SITE_URL', 'https://neofoxmedia.com/foxhole/tests/v1');
+    define('SITE_URL', 'http://neofox.live');
 }
 
 // Currency Configuration

@@ -151,18 +151,30 @@ $current_page = basename($_SERVER['PHP_SELF']);
 document.addEventListener('DOMContentLoaded', function() {
     // Get active menu from main panel
     const activeMainItem = document.querySelector('.main-menu-item.active');
+
+    // Hide all menu sections first
+    document.querySelectorAll('.menu-section').forEach(section => {
+        section.style.display = 'none';
+    });
+
     if (activeMainItem) {
         const activeMenu = activeMainItem.dataset.menu;
-
-        // Hide all menu sections
-        document.querySelectorAll('.menu-section').forEach(section => {
-            section.style.display = 'none';
-        });
 
         // Show active menu section
         const activeSection = document.querySelector(`.menu-section[data-menu="${activeMenu}"]`);
         if (activeSection) {
             activeSection.style.display = 'block';
+        }
+    } else {
+        // If no active menu, show dashboard by default
+        const dashboardSection = document.querySelector('.menu-section[data-menu="dashboard"]');
+        if (dashboardSection) {
+            dashboardSection.style.display = 'block';
+        }
+        // Also activate dashboard icon
+        const dashboardItem = document.querySelector('.main-menu-item[data-menu="dashboard"]');
+        if (dashboardItem) {
+            dashboardItem.classList.add('active');
         }
     }
 
