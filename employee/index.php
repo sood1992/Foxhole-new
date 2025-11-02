@@ -1,6 +1,7 @@
 <?php
 require_once '../config/config.php';
 require_once '../includes/functions.php';
+require_once '../includes/gamification-functions.php';
 
 if (!isLoggedIn() || !hasRole('employee')) {
     redirect('../login.php');
@@ -8,6 +9,11 @@ if (!isLoggedIn() || !hasRole('employee')) {
 
 $db = getDBConnection();
 $currentUser = getCurrentUser();
+
+// Get gamification stats
+$gamificationStats = getUserGamificationStats($currentUser['id']);
+$pointsToNextLevel = (($gamificationStats['level']) * 100) - $gamificationStats['points'];
+$levelProgress = ($gamificationStats['points'] % 100);
 
 // Check if user has active time tracking
 $activeTimeLog = getActiveTimeLog($currentUser['id']);
@@ -131,6 +137,54 @@ $weekSummaryData = $weekSummary->fetchAll();
                     </div>
                 </div>
                 <?php endif; ?>
+
+                <!-- Gamification Widget -->
+                <div class="dashboard-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; margin-bottom: 30px;">
+                    <div style="padding: 30px;">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 30px;">
+                            <div>
+                                <div style="font-size: 14px; opacity: 0.9; margin-bottom: 8px;">Level</div>
+                                <div style="font-size: 42px; font-weight: 700; line-height: 1;">
+                                    <?php echo $gamificationStats['level']; ?>
+                                </div>
+                            </div>
+                            <div>
+                                <div style="font-size: 14px; opacity: 0.9; margin-bottom: 8px;">Points</div>
+                                <div style="font-size: 42px; font-weight: 700; line-height: 1;">
+                                    <?php echo number_format($gamificationStats['points']); ?>
+                                </div>
+                                <div style="font-size: 12px; opacity: 0.7; margin-top: 5px;">
+                                    <?php echo $pointsToNextLevel; ?> to Level <?php echo $gamificationStats['level'] + 1; ?>
+                                </div>
+                            </div>
+                            <div>
+                                <div style="font-size: 14px; opacity: 0.9; margin-bottom: 8px;">🔥 Current Streak</div>
+                                <div style="font-size: 42px; font-weight: 700; line-height: 1;">
+                                    <?php echo $gamificationStats['current_streak']; ?>
+                                </div>
+                                <div style="font-size: 12px; opacity: 0.7; margin-top: 5px;">days</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 14px; opacity: 0.9; margin-bottom: 8px;">Total Tasks</div>
+                                <div style="font-size: 42px; font-weight: 700; line-height: 1;">
+                                    <?php echo $gamificationStats['total_tasks_completed']; ?>
+                                </div>
+                                <div style="font-size: 12px; opacity: 0.7; margin-top: 5px;">completed</div>
+                            </div>
+                        </div>
+
+                        <!-- Level Progress Bar -->
+                        <div style="margin-top: 20px;">
+                            <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 5px; opacity: 0.9;">
+                                <span>Level <?php echo $gamificationStats['level']; ?></span>
+                                <span>Level <?php echo $gamificationStats['level'] + 1; ?></span>
+                            </div>
+                            <div style="height: 10px; background: rgba(255,255,255,0.2); border-radius: 5px; overflow: hidden;">
+                                <div style="height: 100%; background: white; width: <?php echo $levelProgress; ?>%; transition: width 0.5s ease;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
                 <!-- Stats Grid -->
                 <div class="stats-grid">
