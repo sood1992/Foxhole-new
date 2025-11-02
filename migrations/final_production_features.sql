@@ -157,9 +157,9 @@ CREATE TABLE IF NOT EXISTS task_dependencies (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Initialize user points for existing users
-INSERT INTO user_points (user_id, points, total_tasks_completed)
+INSERT IGNORE INTO user_points (user_id, points, total_tasks_completed)
 SELECT u.id,
-       COALESCE((SELECT COUNT(*) * 10 FROM tasks WHERE assigned_to = u.id AND status = 'completed'), 0),
-       COALESCE((SELECT COUNT(*) FROM tasks WHERE assigned_to = u.id AND status = 'completed'), 0)
+       COALESCE((SELECT COUNT(*) * 10 FROM tasks WHERE assigned_to = u.id AND status = 'completed'), 0) as points,
+       COALESCE((SELECT COUNT(*) FROM tasks WHERE assigned_to = u.id AND status = 'completed'), 0) as total_tasks
 FROM users u
-ON DUPLICATE KEY UPDATE user_id = user_id;
+WHERE NOT EXISTS (SELECT 1 FROM user_points WHERE user_points.user_id = u.id);
