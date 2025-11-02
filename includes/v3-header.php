@@ -29,7 +29,7 @@ $userAvatar = !empty($currentUser['avatar']) ? $currentUser['avatar'] : '../asse
         </button>
 
         <!-- Messages -->
-        <button class="icon-button" onclick="window.location.href='messages.php'" title="Messages">
+        <button class="icon-button" onclick="window.location.href='chat.php'" title="Messages">
             <i class="fas fa-envelope"></i>
         </button>
 
