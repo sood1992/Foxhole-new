@@ -75,6 +75,12 @@ $current_page = basename($_SERVER['PHP_SELF']);
             <a href="../employee/daily-plan.php?view=week" class="menu-item">
                 <i class="fas fa-calendar-week"></i> Week View
             </a>
+            <a href="../employee/reviews.php?type=weekly" class="menu-item <?php echo ($current_page == 'reviews.php') ? 'active' : ''; ?>">
+                <i class="fas fa-pen-to-square"></i> Weekly Review
+            </a>
+            <a href="../employee/reviews.php?type=monthly" class="menu-item">
+                <i class="fas fa-calendar-check"></i> Monthly Review
+            </a>
         </div>
 
         <!-- Tasks Section -->

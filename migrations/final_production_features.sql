@@ -121,6 +121,26 @@ CREATE TABLE IF NOT EXISTS pomodoro_sessions (
     INDEX idx_task (task_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- Add weekly/monthly reviews table
+CREATE TABLE IF NOT EXISTS reviews (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    review_type ENUM('weekly', 'monthly') NOT NULL,
+    review_period VARCHAR(20) NOT NULL, -- e.g., '2024-W01' or '2024-01'
+    accomplishments TEXT,
+    challenges TEXT,
+    lessons_learned TEXT,
+    goals_next_period TEXT,
+    mood ENUM('great', 'good', 'okay', 'challenging', 'difficult') DEFAULT 'good',
+    productivity_rating INT DEFAULT 5, -- 1-10 scale
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    UNIQUE KEY unique_user_review (user_id, review_type, review_period),
+    INDEX idx_user (user_id),
+    INDEX idx_period (review_period)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 -- Initialize user points for existing users
 INSERT INTO user_points (user_id, points, total_tasks_completed)
 SELECT u.id,
