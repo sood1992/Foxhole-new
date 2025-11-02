@@ -148,45 +148,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="auth-links">
                 <a href="forgot-password.php">Forgot your password?</a>
             </div>
-
-            <!-- Demo Accounts Section -->
-            <div class="social-login">
-                <p style="text-align: center; font-size: 12px; color: var(--text-secondary); margin-bottom: 15px; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;">
-                    Demo Credentials
-                </p>
-                <div style="display: flex; flex-direction: column; gap: 10px;">
-                    <div style="padding: 12px; background: var(--light); border-radius: var(--radius-md); border: 1px solid var(--border-color);">
-                        <div style="display: flex; justify-content: space-between; align-items: center; font-size: 13px;">
-                            <span style="font-weight: 600; color: var(--heading-color);">
-                                <i class="fas fa-user-shield" style="color: #667eea;"></i> Admin
-                            </span>
-                            <span style="color: var(--text-secondary); font-family: 'Courier New', monospace;">
-                                admin / admin123
-                            </span>
-                        </div>
-                    </div>
-                    <div style="padding: 12px; background: var(--light); border-radius: var(--radius-md); border: 1px solid var(--border-color);">
-                        <div style="display: flex; justify-content: space-between; align-items: center; font-size: 13px;">
-                            <span style="font-weight: 600; color: var(--heading-color);">
-                                <i class="fas fa-user-tie" style="color: #17b06b;"></i> Manager
-                            </span>
-                            <span style="color: var(--text-secondary); font-family: 'Courier New', monospace;">
-                                john_manager / admin123
-                            </span>
-                        </div>
-                    </div>
-                    <div style="padding: 12px; background: var(--light); border-radius: var(--radius-md); border: 1px solid var(--border-color);">
-                        <div style="display: flex; justify-content: space-between; align-items: center; font-size: 13px;">
-                            <span style="font-weight: 600; color: var(--heading-color);">
-                                <i class="fas fa-user" style="color: #f8b739;"></i> Employee
-                            </span>
-                            <span style="color: var(--text-secondary); font-family: 'Courier New', monospace;">
-                                sarah_employee / admin123
-                            </span>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
 
         <!-- Version Badge -->
