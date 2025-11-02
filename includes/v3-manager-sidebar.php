@@ -19,30 +19,37 @@ $current_page = basename($_SERVER['PHP_SELF']);
             <a href="../manager/index.php" class="main-menu-item <?php echo ($current_page == 'index.php') ? 'active' : ''; ?>"
                data-menu="dashboard" title="Dashboard">
                 <i class="fas fa-home"></i>
+                <span>Dashboard</span>
             </a>
             <a href="../manager/projects.php" class="main-menu-item <?php echo (in_array($current_page, ['projects.php', 'create-project.php'])) ? 'active' : ''; ?>"
                data-menu="projects" title="Projects">
                 <i class="fas fa-folder"></i>
+                <span>Projects</span>
             </a>
             <a href="../manager/tasks.php" class="main-menu-item <?php echo (in_array($current_page, ['tasks.php', 'create-task.php'])) ? 'active' : ''; ?>"
                data-menu="tasks" title="Tasks">
                 <i class="fas fa-tasks"></i>
+                <span>Tasks</span>
             </a>
             <a href="../manager/team.php" class="main-menu-item <?php echo (in_array($current_page, ['team.php', 'manage-users.php'])) ? 'active' : ''; ?>"
                data-menu="team" title="Team">
                 <i class="fas fa-users"></i>
+                <span>Team</span>
             </a>
             <a href="../manager/reports.php" class="main-menu-item <?php echo ($current_page == 'reports.php') ? 'active' : ''; ?>"
                data-menu="reports" title="Reports">
                 <i class="fas fa-chart-bar"></i>
+                <span>Reports</span>
             </a>
             <a href="../manager/calendar.php" class="main-menu-item <?php echo ($current_page == 'calendar.php') ? 'active' : ''; ?>"
                data-menu="calendar" title="Calendar">
                 <i class="fas fa-calendar"></i>
+                <span>Calendar</span>
             </a>
             <a href="../manager/chat.php" class="main-menu-item <?php echo ($current_page == 'chat.php') ? 'active' : ''; ?>"
                data-menu="chat" title="Chat">
                 <i class="fas fa-comments"></i>
+                <span>Chat</span>
             </a>
         </div>
     </div>

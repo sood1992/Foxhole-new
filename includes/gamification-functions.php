@@ -116,19 +116,37 @@ function awardBadge($userId, $badgeType, $badgeName, $description) {
 function getUserGamificationStats($userId) {
     $db = getDBConnection();
 
-    $stmt = $db->prepare("
-        SELECT points, level, current_streak, longest_streak, total_tasks_completed
-        FROM user_points
-        WHERE user_id = ?
-    ");
-    $stmt->execute([$userId]);
-    $stats = $stmt->fetch();
+    try {
+        $stmt = $db->prepare("
+            SELECT points, level, current_streak, longest_streak, total_tasks_completed
+            FROM user_points
+            WHERE user_id = ?
+        ");
+        $stmt->execute([$userId]);
+        $stats = $stmt->fetch();
 
-    if (!$stats) {
-        // Initialize if doesn't exist
-        $init = $db->prepare("INSERT INTO user_points (user_id) VALUES (?)");
-        $init->execute([$userId]);
+        if (!$stats) {
+            // Initialize if doesn't exist
+            try {
+                $init = $db->prepare("INSERT INTO user_points (user_id) VALUES (?)");
+                $init->execute([$userId]);
+            } catch (Exception $e) {
+                // Table might not exist yet
+            }
 
+            return [
+                'points' => 0,
+                'level' => 1,
+                'current_streak' => 0,
+                'longest_streak' => 0,
+                'total_tasks_completed' => 0
+            ];
+        }
+
+        return $stats;
+    } catch (Exception $e) {
+        // Table doesn't exist yet - return defaults
+        error_log("Gamification table not found: " . $e->getMessage());
         return [
             'points' => 0,
             'level' => 1,
@@ -137,23 +155,27 @@ function getUserGamificationStats($userId) {
             'total_tasks_completed' => 0
         ];
     }
-
-    return $stats;
 }
 
 // Get user's badges
 function getUserBadges($userId) {
     $db = getDBConnection();
 
-    $stmt = $db->prepare("
-        SELECT badge_type, badge_name, badge_description, earned_at
-        FROM user_badges
-        WHERE user_id = ?
-        ORDER BY earned_at DESC
-    ");
-    $stmt->execute([$userId]);
+    try {
+        $stmt = $db->prepare("
+            SELECT badge_type, badge_name, badge_description, earned_at
+            FROM user_badges
+            WHERE user_id = ?
+            ORDER BY earned_at DESC
+        ");
+        $stmt->execute([$userId]);
 
-    return $stmt->fetchAll();
+        return $stmt->fetchAll();
+    } catch (Exception $e) {
+        // Table doesn't exist yet
+        error_log("Badges table not found: " . $e->getMessage());
+        return [];
+    }
 }
 
 // Get leaderboard
