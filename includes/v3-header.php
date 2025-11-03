@@ -98,9 +98,11 @@ document.getElementById('globalSearch')?.addEventListener('input', function(e) {
 });
 
 // Notifications toggle
+// NOTE: Notifications are fully implemented via notifications-dropdown.php component
+// Include that component on pages where notifications are needed
 function toggleNotifications() {
-    // Implement notifications panel
-    alert('Notifications feature - coming soon!');
+    // This function is a placeholder - actual notifications use notifications-dropdown.php
+    console.log('Notifications: Use notifications-dropdown.php component instead');
 }
 
 // Hover styles for dropdown items
