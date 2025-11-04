@@ -216,7 +216,11 @@ $activeTaskIds = array_column($stmt->fetchAll(), 'task_id');
                                 <div class="task-item <?php echo $isOverdue ? 'overdue' : ''; ?>">
                                     <div class="task-item-header">
                                         <div style="flex: 1;">
-                                            <div class="task-item-title"><?php echo e($task['task_name']); ?></div>
+                                            <div class="task-item-title">
+                                                <a href="task-detail.php?id=<?php echo $task['id']; ?>" style="color: inherit; text-decoration: none;">
+                                                    <?php echo e($task['task_name']); ?>
+                                                </a>
+                                            </div>
                                             <div class="task-item-meta">
                                                 <span>📁 <?php echo e($task['project_name']); ?></span>
                                                 <?php if ($task['client_name']): ?>
@@ -231,6 +235,9 @@ $activeTaskIds = array_column($stmt->fetchAll(), 'task_id');
                                             </div>
                                         </div>
                                         <div class="task-item-actions">
+                                            <a href="task-detail.php?id=<?php echo $task['id']; ?>" class="btn btn-secondary btn-sm">
+                                                <i class="fas fa-eye"></i> View
+                                            </a>
                                             <?php if ($task['status'] !== 'completed'): ?>
                                                 <?php if (!$isTaskActive): ?>
                                                     <button onclick="startTimer(<?php echo $task['id']; ?>, <?php echo $task['project_id']; ?>)"
