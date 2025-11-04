@@ -36,9 +36,13 @@ $current_page = basename($_SERVER['PHP_SELF']);
                data-menu="gamification" title="Gamification">
                 <i class="fas fa-trophy"></i>
             </a>
-            <a href="../admin/analytics.php" class="main-menu-item <?php echo (in_array($current_page, ['analytics.php', 'advanced-analytics.php'])) ? 'active' : ''; ?>"
+            <a href="../admin/analytics.php" class="main-menu-item <?php echo (in_array($current_page, ['analytics.php', 'advanced-analytics.php', 'profit-loss.php'])) ? 'active' : ''; ?>"
                data-menu="analytics" title="Analytics">
                 <i class="fas fa-chart-line"></i>
+            </a>
+            <a href="../admin/calendar.php" class="main-menu-item <?php echo ($current_page == 'calendar.php') ? 'active' : ''; ?>"
+               data-menu="calendar" title="Calendar">
+                <i class="fas fa-calendar"></i>
             </a>
             <a href="../admin/email-config.php" class="main-menu-item <?php echo (in_array($current_page, ['email-config.php', 'email-test.php'])) ? 'active' : ''; ?>"
                data-menu="settings" title="Settings">
@@ -131,8 +135,28 @@ $current_page = basename($_SERVER['PHP_SELF']);
             <a href="../admin/advanced-analytics.php" class="menu-item <?php echo ($current_page == 'advanced-analytics.php') ? 'active' : ''; ?>">
                 <i class="fas fa-chart-line"></i> Advanced Analytics
             </a>
+            <a href="../admin/profit-loss.php" class="menu-item <?php echo ($current_page == 'profit-loss.php') ? 'active' : ''; ?>">
+                <i class="fas fa-money-bill-trend-up"></i> Profit & Loss
+            </a>
             <a href="../admin/budget.php" class="menu-item <?php echo ($current_page == 'budget.php') ? 'active' : ''; ?>">
                 <i class="fas fa-rupee-sign"></i> Budget Tracking
+            </a>
+        </div>
+
+        <!-- Calendar Section -->
+        <div class="menu-section" data-menu="calendar">
+            <div class="menu-title">Calendar</div>
+            <a href="../admin/calendar.php" class="menu-item <?php echo ($current_page == 'calendar.php') ? 'active' : ''; ?>">
+                <i class="fas fa-calendar-alt"></i> Full Calendar
+            </a>
+            <a href="../admin/calendar.php#month" class="menu-item">
+                <i class="fas fa-calendar"></i> Month View
+            </a>
+            <a href="../admin/calendar.php#week" class="menu-item">
+                <i class="fas fa-calendar-week"></i> Week View
+            </a>
+            <a href="../admin/calendar.php#day" class="menu-item">
+                <i class="fas fa-calendar-day"></i> Day View
             </a>
         </div>
 
