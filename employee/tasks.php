@@ -67,8 +67,10 @@ foreach ($tasks as $task) {
     }
 }
 
-// Check active timer
-$activeTimeLog = getActiveTimeLog($currentUser['id']);
+// Get all active task IDs (for multiple simultaneous tasks)
+$stmt = $db->prepare("SELECT DISTINCT task_id FROM time_logs WHERE user_id = ? AND is_active = 1");
+$stmt->execute([$currentUser['id']]);
+$activeTaskIds = array_column($stmt->fetchAll(), 'task_id');
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -141,11 +143,18 @@ $activeTimeLog = getActiveTimeLog($currentUser['id']);
                     </div>
                 </div>
 
-                <!-- Active Timer Alert -->
-                <?php if ($activeTimeLog): ?>
-                <div class="alert alert-info">
-                    ⏱️ Timer is running for task: <strong><?php echo e($activeTimeLog['task_name'] ?? 'Unknown'); ?></strong>
-                    <a href="index.php" style="margin-left: 10px;">Go to Dashboard to stop</a>
+                <!-- Active Tasks Alert -->
+                <?php if (!empty($activeTaskIds)): ?>
+                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 16px 20px; border-radius: 12px; margin-bottom: 24px; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <i class="fas fa-clock" style="font-size: 24px;"></i>
+                        <div style="flex: 1;">
+                            <strong style="font-size: 15px;">Background Tracking Active</strong>
+                            <p style="margin: 4px 0 0; opacity: 0.9; font-size: 13px;">
+                                Currently working on <?php echo count($activeTaskIds); ?> <?php echo count($activeTaskIds) == 1 ? 'task' : 'tasks'; ?>. Time is being tracked automatically in the background.
+                            </p>
+                        </div>
+                    </div>
                 </div>
                 <?php endif; ?>
 
@@ -200,7 +209,8 @@ $activeTimeLog = getActiveTimeLog($currentUser['id']);
                             <div class="task-list">
                                 <?php foreach ($tasks as $task): ?>
                                 <?php
-                                    $canStartTimer = !$activeTimeLog || $activeTimeLog['task_id'] != $task['id'];
+                                    // Check if this specific task is currently being worked on
+                                    $isTaskActive = in_array($task['id'], $activeTaskIds);
                                     $isOverdue = isOverdue($task['due_date'], $task['status']);
                                 ?>
                                 <div class="task-item <?php echo $isOverdue ? 'overdue' : ''; ?>">
@@ -222,13 +232,16 @@ $activeTimeLog = getActiveTimeLog($currentUser['id']);
                                         </div>
                                         <div class="task-item-actions">
                                             <?php if ($task['status'] !== 'completed'): ?>
-                                                <?php if ($canStartTimer): ?>
+                                                <?php if (!$isTaskActive): ?>
                                                     <button onclick="startTimer(<?php echo $task['id']; ?>, <?php echo $task['project_id']; ?>)"
                                                             class="btn btn-success btn-sm">
-                                                        ▶️ Start
+                                                        ▶️ Start Working
                                                     </button>
                                                 <?php else: ?>
-                                                    <span class="badge status-progress">⏱️ Active</span>
+                                                    <button onclick="stopTask(<?php echo $task['id']; ?>)"
+                                                            class="btn btn-warning btn-sm">
+                                                        ⏹ Stop Working
+                                                    </button>
                                                 <?php endif; ?>
                                             <?php endif; ?>
                                         </div>
@@ -289,27 +302,68 @@ $activeTimeLog = getActiveTimeLog($currentUser['id']);
 
     <script src="../assets/js/main.js"></script>
     <script>
+        // Background task tracking functions (no visible timer)
         function startTimer(taskId, projectId) {
-            if (confirm('Start tracking time for this task?')) {
+            fetch('../api/time-tracking.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    action: 'start',
+                    task_id: taskId,
+                    project_id: projectId
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Show success message
+                    const message = document.createElement('div');
+                    message.style.cssText = 'position: fixed; top: 20px; right: 20px; background: #10b981; color: white; padding: 16px 24px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 9999;';
+                    message.innerHTML = '<i class="fas fa-check-circle"></i> Task started - tracking in background';
+                    document.body.appendChild(message);
+                    setTimeout(() => {
+                        message.remove();
+                        window.location.reload();
+                    }, 1500);
+                } else {
+                    alert(data.message || 'Failed to start task');
+                }
+            })
+            .catch(error => {
+                alert('Error starting task');
+                console.error(error);
+            });
+        }
+
+        function stopTask(taskId) {
+            if (confirm('Stop working on this task? Time will be automatically calculated.')) {
+                const notes = prompt('Add notes for this work session (optional):');
+
                 fetch('../api/time-tracking.php', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        action: 'start',
+                        action: 'stop_by_task',
                         task_id: taskId,
-                        project_id: projectId
+                        notes: notes || ''
                     })
                 })
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        window.location.href = 'index.php';
+                        const minutes = data.total_duration_minutes || 0;
+                        const hours = Math.floor(minutes / 60);
+                        const mins = minutes % 60;
+                        const timeStr = hours > 0 ? `${hours}h ${mins}m` : `${mins}m`;
+
+                        alert(`Task stopped! Total time: ${timeStr}`);
+                        window.location.reload();
                     } else {
-                        alert(data.message || 'Failed to start timer');
+                        alert(data.message || 'Failed to stop task');
                     }
                 })
                 .catch(error => {
-                    alert('Error starting timer');
+                    alert('Error stopping task');
                     console.error(error);
                 });
             }

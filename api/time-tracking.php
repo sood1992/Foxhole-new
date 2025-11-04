@@ -28,12 +28,8 @@ try {
                 throw new Exception('Task ID and Project ID are required');
             }
 
-            // Check if user already has an active timer for THIS specific task
-            $stmt = $db->prepare("SELECT id FROM time_logs WHERE user_id = ? AND task_id = ? AND is_active = 1");
-            $stmt->execute([$userId, $taskId]);
-            if ($stmt->fetch()) {
-                throw new Exception('You already have an active timer for this task.');
-            }
+            // Allow multiple simultaneous tasks - no restriction check
+            // Employees can now work on multiple tasks at the same time
 
             // Verify task is assigned to user
             $stmt = $db->prepare("SELECT id FROM tasks WHERE id = ? AND assigned_to = ?");
@@ -42,7 +38,7 @@ try {
                 throw new Exception('Task not found or not assigned to you');
             }
 
-            // Create new time log
+            // Create new time log (allows multiple active timers)
             $stmt = $db->prepare("
                 INSERT INTO time_logs (user_id, task_id, project_id, start_time, is_active)
                 VALUES (?, ?, ?, NOW(), 1)
@@ -54,7 +50,7 @@ try {
 
             echo json_encode([
                 'success' => true,
-                'message' => 'Timer started successfully',
+                'message' => 'Task started - working in background',
                 'log_id' => $db->lastInsertId()
             ]);
             break;
@@ -121,6 +117,76 @@ try {
                 'success' => true,
                 'message' => 'Timer stopped successfully',
                 'duration_minutes' => $durationMinutes
+            ]);
+            break;
+
+        case 'stop_by_task':
+            // Stop all active timers for a specific task
+            $taskId = $input['task_id'] ?? null;
+            $notes = $input['notes'] ?? '';
+
+            if (!$taskId) {
+                throw new Exception('Task ID is required');
+            }
+
+            // Get all active time logs for this task
+            $stmt = $db->prepare("SELECT * FROM time_logs WHERE user_id = ? AND task_id = ? AND is_active = 1");
+            $stmt->execute([$userId, $taskId]);
+            $timeLogs = $stmt->fetchAll();
+
+            if (empty($timeLogs)) {
+                throw new Exception('No active timer found for this task');
+            }
+
+            $totalDuration = 0;
+            foreach ($timeLogs as $timeLog) {
+                // Calculate duration
+                $startTime = strtotime($timeLog['start_time']);
+                $endTime = time();
+                $durationMinutes = round(($endTime - $startTime) / 60);
+                $totalDuration += $durationMinutes;
+
+                // Update time log
+                $stmt = $db->prepare("
+                    UPDATE time_logs
+                    SET end_time = NOW(),
+                        duration_minutes = ?,
+                        notes = ?,
+                        is_active = 0
+                    WHERE id = ?
+                ");
+                $stmt->execute([$durationMinutes, $notes, $timeLog['id']]);
+            }
+
+            // Update task actual hours
+            $stmt = $db->prepare("
+                UPDATE tasks
+                SET actual_hours = (
+                    SELECT SUM(duration_minutes) / 60
+                    FROM time_logs
+                    WHERE task_id = ? AND end_time IS NOT NULL
+                )
+                WHERE id = ?
+            ");
+            $stmt->execute([$taskId, $taskId]);
+
+            // Update project actual hours
+            $projectId = $timeLogs[0]['project_id'];
+            $stmt = $db->prepare("
+                UPDATE projects
+                SET actual_hours = (
+                    SELECT SUM(duration_minutes) / 60
+                    FROM time_logs
+                    WHERE project_id = ? AND end_time IS NOT NULL
+                )
+                WHERE id = ?
+            ");
+            $stmt->execute([$projectId, $projectId]);
+
+            echo json_encode([
+                'success' => true,
+                'message' => 'Task stopped successfully',
+                'total_duration_minutes' => $totalDuration
             ]);
             break;
 

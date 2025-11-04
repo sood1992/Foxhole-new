@@ -32,6 +32,10 @@ $current_page = basename($_SERVER['PHP_SELF']);
                data-menu="stats" title="My Stats">
                 <i class="fas fa-chart-bar"></i>
             </a>
+            <a href="../employee/eisenhower-matrix.php" class="main-menu-item <?php echo ($current_page == 'eisenhower-matrix.php') ? 'active' : ''; ?>"
+               data-menu="productivity" title="Productivity">
+                <i class="fas fa-th"></i>
+            </a>
             <a href="../employee/calendar.php" class="main-menu-item <?php echo ($current_page == 'calendar.php') ? 'active' : ''; ?>"
                data-menu="calendar" title="Calendar">
                 <i class="fas fa-calendar"></i>
@@ -113,6 +117,20 @@ $current_page = basename($_SERVER['PHP_SELF']);
             </a>
             <a href="../employee/my-stats.php#leaderboard" class="menu-item">
                 <i class="fas fa-crown"></i> Leaderboard
+            </a>
+        </div>
+
+        <!-- Productivity Section -->
+        <div class="menu-section" data-menu="productivity">
+            <div class="menu-title">Productivity</div>
+            <a href="../employee/eisenhower-matrix.php" class="menu-item <?php echo ($current_page == 'eisenhower-matrix.php') ? 'active' : ''; ?>">
+                <i class="fas fa-th"></i> Eisenhower Matrix
+            </a>
+            <a href="../employee/tasks.php?filter=urgent" class="menu-item">
+                <i class="fas fa-fire"></i> Urgent Tasks
+            </a>
+            <a href="../employee/tasks.php?filter=today" class="menu-item">
+                <i class="fas fa-calendar-day"></i> Due Today
             </a>
         </div>
 

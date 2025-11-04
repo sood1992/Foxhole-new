@@ -1,6 +1,7 @@
 <?php
 require_once '../config/config.php';
 require_once '../includes/functions.php';
+require_once '../includes/gamification-functions.php';
 
 if (!isLoggedIn() || !hasRole('employee')) {
     redirect('../login.php');
@@ -8,6 +9,58 @@ if (!isLoggedIn() || !hasRole('employee')) {
 
 $db = getDBConnection();
 $currentUser = getCurrentUser();
+
+// Get gamification data
+$stmt = $db->prepare("SELECT * FROM user_points WHERE user_id = ?");
+$stmt->execute([$currentUser['id']]);
+$userPoints = $stmt->fetch();
+
+if (!$userPoints) {
+    // Initialize points for new user
+    $stmt = $db->prepare("
+        INSERT INTO user_points (user_id, total_points, streak_days, last_activity_date)
+        VALUES (?, 0, 0, CURDATE())
+    ");
+    $stmt->execute([$currentUser['id']]);
+
+    $stmt = $db->prepare("SELECT * FROM user_points WHERE user_id = ?");
+    $stmt->execute([$currentUser['id']]);
+    $userPoints = $stmt->fetch();
+}
+
+// Get earned badges
+$stmt = $db->prepare("
+    SELECT b.*, ub.earned_at
+    FROM user_badges ub
+    JOIN badges b ON ub.badge_id = b.id
+    WHERE ub.user_id = ?
+    ORDER BY ub.earned_at DESC
+");
+$stmt->execute([$currentUser['id']]);
+$earnedBadges = $stmt->fetchAll();
+
+// Get leaderboard
+$stmt = $db->prepare("
+    SELECT
+        u.id,
+        u.full_name,
+        up.total_points,
+        up.streak_days,
+        COUNT(DISTINCT ub.badge_id) as badge_count,
+        ROW_NUMBER() OVER (ORDER BY up.total_points DESC) as rank
+    FROM users u
+    LEFT JOIN user_points up ON u.id = up.user_id
+    LEFT JOIN user_badges ub ON u.id = ub.user_id
+    WHERE u.role IN ('employee', 'manager') AND u.is_active = 1
+    GROUP BY u.id
+    ORDER BY up.total_points DESC
+    LIMIT 10
+");
+$stmt->execute();
+$leaderboard = $stmt->fetchAll();
+
+// Calculate productivity score
+$productivityScore = calculateProductivityScore($db, $currentUser['id'], 'week');
 
 // Get stats for different time periods
 $today = date('Y-m-d');
@@ -136,8 +189,55 @@ $trend_data = $productivityTrend->fetchAll();
             <?php include '../includes/v3-header.php'; ?>
 
             <div class="content-wrapper">
+                <!-- Gamification Stats -->
+                <div class="stats-grid" id="achievements">
+                    <div class="dashboard-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                        <div class="card-icon" style="background: rgba(255,255,255,0.2);">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <div class="card-content">
+                            <div class="card-label" style="color: rgba(255,255,255,0.9);">Total Points</div>
+                            <div class="card-value" style="color: white;"><?php echo number_format($userPoints['total_points']); ?></div>
+                            <div class="card-change" style="color: rgba(255,255,255,0.8);">🏆 Keep earning!</div>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white;">
+                        <div class="card-icon" style="background: rgba(255,255,255,0.2);">
+                            <i class="fas fa-fire"></i>
+                        </div>
+                        <div class="card-content">
+                            <div class="card-label" style="color: rgba(255,255,255,0.9);">Current Streak</div>
+                            <div class="card-value" style="color: white;"><?php echo $userPoints['streak_days']; ?> days</div>
+                            <div class="card-change" style="color: rgba(255,255,255,0.8);">🔥 Keep it up!</div>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white;">
+                        <div class="card-icon" style="background: rgba(255,255,255,0.2);">
+                            <i class="fas fa-trophy"></i>
+                        </div>
+                        <div class="card-content">
+                            <div class="card-label" style="color: rgba(255,255,255,0.9);">Badges Earned</div>
+                            <div class="card-value" style="color: white;"><?php echo count($earnedBadges); ?></div>
+                            <div class="card-change" style="color: rgba(255,255,255,0.8);">🎯 Collect more!</div>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-card" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); color: white;">
+                        <div class="card-icon" style="background: rgba(255,255,255,0.2);">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="card-content">
+                            <div class="card-label" style="color: rgba(255,255,255,0.9);">Productivity Score</div>
+                            <div class="card-value" style="color: white;"><?php echo round($productivityScore); ?>/100</div>
+                            <div class="card-change" style="color: rgba(255,255,255,0.8);">📈 This week</div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Time Period Stats -->
-                <h3 style="margin-bottom: 16px; color: var(--text-primary);"><i class="fas fa-clock"></i> Time Tracking</h3>
+                <h3 style="margin: 32px 0 16px; color: var(--text-primary);"><i class="fas fa-clock"></i> Time Tracking</h3>
                 <div class="stats-grid">
                     <div class="dashboard-card">
                         <div class="card-icon gradient-blue">
@@ -265,6 +365,87 @@ $trend_data = $productivityTrend->fetchAll();
                                 </tbody>
                             </table>
                         <?php endif; ?>
+                    </div>
+                </div>
+
+                <!-- Badges Section -->
+                <div class="dashboard-card" style="margin-top: 32px;" id="badges">
+                    <div class="card-header">
+                        <h3><i class="fas fa-award"></i> My Badges (<?php echo count($earnedBadges); ?>)</h3>
+                    </div>
+                    <div class="card-body">
+                        <?php if (empty($earnedBadges)): ?>
+                            <div style="text-align: center; padding: 40px; color: var(--text-secondary);">
+                                <div style="font-size: 48px; margin-bottom: 16px;">🏆</div>
+                                <h3>No badges yet!</h3>
+                                <p>Complete tasks to earn your first badge</p>
+                            </div>
+                        <?php else: ?>
+                            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px;">
+                                <?php foreach ($earnedBadges as $badge): ?>
+                                <div style="background: var(--bg-secondary); border-radius: 12px; padding: 20px; text-align: center; border: 2px solid var(--border-color);">
+                                    <div style="font-size: 48px; margin-bottom: 12px;"><?php echo $badge['icon']; ?></div>
+                                    <h4 style="margin: 0 0 8px; color: var(--text-primary);"><?php echo e($badge['name']); ?></h4>
+                                    <p style="font-size: 13px; color: var(--text-secondary); margin: 0 0 8px;"><?php echo e($badge['description']); ?></p>
+                                    <span class="badge" style="background: linear-gradient(135deg, #667eea, #764ba2); color: white;">
+                                        <?php echo ucfirst($badge['type']); ?>
+                                    </span>
+                                    <div style="font-size: 12px; color: var(--text-secondary); margin-top: 8px;">
+                                        Earned <?php echo timeAgo($badge['earned_at']); ?>
+                                    </div>
+                                </div>
+                                <?php endforeach; ?>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+
+                <!-- Leaderboard Section -->
+                <div class="dashboard-card" style="margin-top: 32px;" id="leaderboard">
+                    <div class="card-header">
+                        <h3><i class="fas fa-crown"></i> Leaderboard - Top Performers</h3>
+                    </div>
+                    <div class="card-body">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 60px;">Rank</th>
+                                    <th>Name</th>
+                                    <th>Points</th>
+                                    <th>Streak</th>
+                                    <th>Badges</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php
+                                $rank = 1;
+                                foreach ($leaderboard as $user):
+                                    $isCurrentUser = ($user['id'] == $currentUser['id']);
+                                    $rowStyle = $isCurrentUser ? 'background: var(--primary-light); font-weight: 600;' : '';
+                                    $medalEmoji = '';
+                                    if ($rank === 1) $medalEmoji = '🥇';
+                                    elseif ($rank === 2) $medalEmoji = '🥈';
+                                    elseif ($rank === 3) $medalEmoji = '🥉';
+                                ?>
+                                <tr style="<?php echo $rowStyle; ?>">
+                                    <td style="text-align: center;">
+                                        <span style="font-size: 20px;"><?php echo $medalEmoji; ?></span>
+                                        <?php if (!$medalEmoji): ?>#<?php echo $rank; ?><?php endif; ?>
+                                    </td>
+                                    <td>
+                                        <strong><?php echo e($user['full_name']); ?></strong>
+                                        <?php if ($isCurrentUser): ?><span style="color: var(--primary); margin-left: 8px;">(You)</span><?php endif; ?>
+                                    </td>
+                                    <td><strong><?php echo number_format($user['total_points'] ?? 0); ?></strong> pts</td>
+                                    <td>🔥 <?php echo $user['streak_days'] ?? 0; ?> days</td>
+                                    <td>🏆 <?php echo $user['badge_count'] ?? 0; ?> badges</td>
+                                </tr>
+                                <?php
+                                $rank++;
+                                endforeach;
+                                ?>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
