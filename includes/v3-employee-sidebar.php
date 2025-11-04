@@ -123,8 +123,29 @@ $current_page = basename($_SERVER['PHP_SELF']);
         <!-- Productivity Section -->
         <div class="menu-section" data-menu="productivity">
             <div class="menu-title">Productivity</div>
+            <a href="../employee/daily-planning.php" class="menu-item <?php echo ($current_page == 'daily-planning.php') ? 'active' : ''; ?>">
+                <i class="fas fa-sun"></i> Daily Planning
+            </a>
+            <a href="../employee/morning-ritual.php" class="menu-item <?php echo ($current_page == 'morning-ritual.php') ? 'active' : ''; ?>">
+                <i class="fas fa-sunrise"></i> Morning Ritual
+            </a>
             <a href="../employee/eisenhower-matrix.php" class="menu-item <?php echo ($current_page == 'eisenhower-matrix.php') ? 'active' : ''; ?>">
                 <i class="fas fa-th"></i> Eisenhower Matrix
+            </a>
+            <a href="../employee/pomodoro.php" class="menu-item <?php echo ($current_page == 'pomodoro.php') ? 'active' : ''; ?>">
+                <i class="fas fa-stopwatch"></i> Pomodoro Timer
+            </a>
+            <a href="../employee/time-boxing.php" class="menu-item <?php echo ($current_page == 'time-boxing.php') ? 'active' : ''; ?>">
+                <i class="fas fa-calendar-check"></i> Time Boxing
+            </a>
+            <a href="../employee/focus-mode.php" class="menu-item <?php echo ($current_page == 'focus-mode.php') ? 'active' : ''; ?>">
+                <i class="fas fa-brain"></i> Focus Mode
+            </a>
+            <a href="../employee/goals.php" class="menu-item <?php echo ($current_page == 'goals.php') ? 'active' : ''; ?>">
+                <i class="fas fa-bullseye"></i> Goals
+            </a>
+            <a href="../employee/weekly-review.php" class="menu-item <?php echo ($current_page == 'weekly-review.php') ? 'active' : ''; ?>">
+                <i class="fas fa-calendar-week"></i> Weekly Review
             </a>
             <a href="../employee/tasks.php?filter=urgent" class="menu-item">
                 <i class="fas fa-fire"></i> Urgent Tasks

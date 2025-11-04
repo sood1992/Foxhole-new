@@ -54,6 +54,28 @@ $comments = $stmt->fetchAll();
 $stmt = $db->prepare("SELECT COUNT(*) as count FROM time_logs WHERE user_id = ? AND task_id = ? AND is_active = 1");
 $stmt->execute([$currentUser['id'], $taskId]);
 $isTracking = $stmt->fetch()['count'] > 0;
+
+// Get task dependencies
+$stmt = $db->prepare("
+    SELECT td.*, t.task_name, t.status, p.project_name
+    FROM task_dependencies td
+    JOIN tasks t ON td.depends_on_task_id = t.id
+    JOIN projects p ON t.project_id = p.id
+    WHERE td.task_id = ?
+");
+$stmt->execute([$taskId]);
+$dependencies = $stmt->fetchAll();
+
+// Get available tasks for adding dependencies (same project, not this task, not already dependent)
+$stmt = $db->prepare("
+    SELECT t.id, t.task_name, t.status
+    FROM tasks t
+    WHERE t.project_id = ?
+    AND t.id != ?
+    AND t.id NOT IN (SELECT depends_on_task_id FROM task_dependencies WHERE task_id = ?)
+");
+$stmt->execute([$task['project_id'], $taskId, $taskId]);
+$availableTasks = $stmt->fetchAll();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -295,6 +317,68 @@ $isTracking = $stmt->fetch()['count'] > 0;
                     </div>
                 </div>
 
+                <!-- Task Dependencies Section -->
+                <div class="comments-section" style="margin-bottom: 24px;">
+                    <h3 style="margin: 0 0 20px; color: var(--text-primary);">
+                        <i class="fas fa-link"></i> Task Dependencies
+                    </h3>
+
+                    <?php if (!empty($dependencies)): ?>
+                    <div style="margin-bottom: 20px;">
+                        <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 12px;">
+                            This task depends on the following tasks:
+                        </p>
+                        <div id="dependenciesList">
+                            <?php foreach ($dependencies as $dep): ?>
+                            <div class="task-meta-item" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding: 12px;">
+                                <div style="flex: 1;">
+                                    <div style="font-weight: 600; color: var(--text-primary);">
+                                        <?php echo e($dep['task_name']); ?>
+                                    </div>
+                                    <div style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">
+                                        <?php echo e($dep['project_name']); ?> •
+                                        <span class="badge <?php echo getStatusClass($dep['status']); ?>" style="font-size: 11px;">
+                                            <?php echo ucfirst(str_replace('_', ' ', $dep['status'])); ?>
+                                        </span>
+                                    </div>
+                                </div>
+                                <button onclick="removeDependency(<?php echo $dep['id']; ?>)" class="btn btn-sm" style="background: #ef4444; color: white; padding: 6px 12px;">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+                    <?php endif; ?>
+
+                    <?php if (!empty($availableTasks)): ?>
+                    <div class="comment-form">
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-primary);">
+                            Add Dependency
+                        </label>
+                        <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 12px;">
+                            Mark this task as dependent on another task. This task should only be started after the dependent task is completed.
+                        </p>
+                        <select id="dependencyTaskId" class="form-control" style="margin-bottom: 12px;">
+                            <option value="">Select a task...</option>
+                            <?php foreach ($availableTasks as $availTask): ?>
+                            <option value="<?php echo $availTask['id']; ?>">
+                                <?php echo e($availTask['task_name']); ?> (<?php echo ucfirst($availTask['status']); ?>)
+                            </option>
+                            <?php endforeach; ?>
+                        </select>
+                        <button onclick="addDependency()" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Add Dependency
+                        </button>
+                    </div>
+                    <?php elseif (empty($dependencies)): ?>
+                    <div style="text-align: center; padding: 20px; color: var(--text-secondary); background: var(--bg-primary); border-radius: 8px;">
+                        <i class="fas fa-link" style="font-size: 32px; opacity: 0.3; margin-bottom: 8px;"></i>
+                        <p>No dependencies for this task. No other tasks in this project available to add as dependencies.</p>
+                    </div>
+                    <?php endif; ?>
+                </div>
+
                 <!-- Comments Section -->
                 <div class="comments-section">
                     <h3 style="margin: 0 0 20px; color: var(--text-primary);">
@@ -532,6 +616,65 @@ $isTracking = $stmt->fetch()['count'] > 0;
             message.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i> ${text}`;
             document.body.appendChild(message);
             setTimeout(() => message.remove(), 3000);
+        }
+
+        // Task dependency functions
+        function addDependency() {
+            const dependsOnTaskId = document.getElementById('dependencyTaskId').value;
+
+            if (!dependsOnTaskId) {
+                alert('Please select a task');
+                return;
+            }
+
+            fetch('../api/productivity.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    action: 'add_task_dependency',
+                    task_id: <?php echo $taskId; ?>,
+                    depends_on_task_id: dependsOnTaskId
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showMessage('Dependency added successfully!', 'success');
+                    setTimeout(() => window.location.reload(), 1000);
+                } else {
+                    alert(data.message || 'Failed to add dependency');
+                }
+            })
+            .catch(error => {
+                alert('Error adding dependency');
+                console.error(error);
+            });
+        }
+
+        function removeDependency(dependencyId) {
+            if (!confirm('Remove this dependency?')) return;
+
+            fetch('../api/productivity.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    action: 'remove_task_dependency',
+                    dependency_id: dependencyId
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showMessage('Dependency removed!', 'success');
+                    setTimeout(() => window.location.reload(), 1000);
+                } else {
+                    alert(data.message || 'Failed to remove dependency');
+                }
+            })
+            .catch(error => {
+                alert('Error removing dependency');
+                console.error(error);
+            });
         }
     </script>
 </body>
