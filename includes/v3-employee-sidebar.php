@@ -32,7 +32,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                data-menu="stats" title="My Stats">
                 <i class="fas fa-chart-bar"></i>
             </a>
-            <a href="../employee/eisenhower-matrix.php" class="main-menu-item <?php echo ($current_page == 'eisenhower-matrix.php') ? 'active' : ''; ?>"
+            <a href="../employee/eisenhower-matrix.php" class="main-menu-item <?php echo (in_array($current_page, ['eisenhower-matrix.php', 'pomodoro.php', 'daily-planning.php', 'goals.php', 'morning-ritual.php', 'time-boxing.php', 'weekly-review.php', 'focus-mode.php'])) ? 'active' : ''; ?>"
                data-menu="productivity" title="Productivity">
                 <i class="fas fa-th"></i>
             </a>
@@ -146,12 +146,6 @@ $current_page = basename($_SERVER['PHP_SELF']);
             </a>
             <a href="../employee/weekly-review.php" class="menu-item <?php echo ($current_page == 'weekly-review.php') ? 'active' : ''; ?>">
                 <i class="fas fa-calendar-week"></i> Weekly Review
-            </a>
-            <a href="../employee/tasks.php?filter=urgent" class="menu-item">
-                <i class="fas fa-fire"></i> Urgent Tasks
-            </a>
-            <a href="../employee/tasks.php?filter=today" class="menu-item">
-                <i class="fas fa-calendar-day"></i> Due Today
             </a>
         </div>
 

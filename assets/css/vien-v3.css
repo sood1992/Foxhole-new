@@ -426,6 +426,13 @@ a:hover {
 /* ============================================
    7. DASHBOARD CARDS
    ============================================ */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
 .dashboard-card {
   background: var(--card-bg);
   border-radius: var(--radius-lg);
