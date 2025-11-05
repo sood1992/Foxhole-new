@@ -16,34 +16,41 @@ $current_page = basename($_SERVER['PHP_SELF']);
         </div>
 
         <div class="main-menu">
-            <a href="../employee/index.php" class="main-menu-item <?php echo ($current_page == 'index.php') ? 'active' : ''; ?>"
+            <div class="main-menu-item <?php echo ($current_page == 'index.php') ? 'active' : ''; ?>"
                data-menu="dashboard" title="Dashboard">
                 <i class="ri-dashboard-line" style="font-size: 20px;"></i>
-            </a>
-            <a href="../employee/tasks.php" class="main-menu-item <?php echo (in_array($current_page, ['tasks.php', 'create-task.php', 'task-detail.php'])) ? 'active' : ''; ?>"
+                <span style="font-size: 10px; margin-top: 4px; display: block;">Dashboard</span>
+            </div>
+            <div class="main-menu-item <?php echo (in_array($current_page, ['tasks.php', 'create-task.php', 'task-detail.php'])) ? 'active' : ''; ?>"
                data-menu="tasks" title="My Tasks">
                 <i class="ri-task-line" style="font-size: 20px;"></i>
-            </a>
-            <a href="../employee/time-logs.php" class="main-menu-item <?php echo ($current_page == 'time-logs.php') ? 'active' : ''; ?>"
+                <span style="font-size: 10px; margin-top: 4px; display: block;">Tasks</span>
+            </div>
+            <div class="main-menu-item <?php echo ($current_page == 'time-logs.php') ? 'active' : ''; ?>"
                data-menu="time" title="Time Logs">
                 <i class="ri-time-line" style="font-size: 20px;"></i>
-            </a>
-            <a href="../employee/my-stats.php" class="main-menu-item <?php echo ($current_page == 'my-stats.php') ? 'active' : ''; ?>"
+                <span style="font-size: 10px; margin-top: 4px; display: block;">Time</span>
+            </div>
+            <div class="main-menu-item <?php echo ($current_page == 'my-stats.php') ? 'active' : ''; ?>"
                data-menu="stats" title="My Stats">
                 <i class="ri-bar-chart-box-line" style="font-size: 20px;"></i>
-            </a>
-            <a href="../employee/eisenhower-matrix.php" class="main-menu-item <?php echo (in_array($current_page, ['eisenhower-matrix.php', 'pomodoro.php', 'daily-planning.php', 'goals.php', 'morning-ritual.php', 'time-boxing.php', 'weekly-review.php', 'focus-mode.php'])) ? 'active' : ''; ?>"
+                <span style="font-size: 10px; margin-top: 4px; display: block;">Stats</span>
+            </div>
+            <div class="main-menu-item <?php echo (in_array($current_page, ['eisenhower-matrix.php', 'pomodoro.php', 'daily-planning.php', 'goals.php', 'morning-ritual.php', 'time-boxing.php', 'weekly-review.php', 'focus-mode.php'])) ? 'active' : ''; ?>"
                data-menu="productivity" title="Productivity">
                 <i class="ri-focus-2-line" style="font-size: 20px;"></i>
-            </a>
-            <a href="../employee/calendar.php" class="main-menu-item <?php echo ($current_page == 'calendar.php') ? 'active' : ''; ?>"
+                <span style="font-size: 10px; margin-top: 4px; display: block;">Tools</span>
+            </div>
+            <div class="main-menu-item <?php echo ($current_page == 'calendar.php') ? 'active' : ''; ?>"
                data-menu="calendar" title="Calendar">
                 <i class="ri-calendar-line" style="font-size: 20px;"></i>
-            </a>
-            <a href="../employee/chat.php" class="main-menu-item <?php echo ($current_page == 'chat.php') ? 'active' : ''; ?>"
+                <span style="font-size: 10px; margin-top: 4px; display: block;">Calendar</span>
+            </div>
+            <div class="main-menu-item <?php echo ($current_page == 'chat.php') ? 'active' : ''; ?>"
                data-menu="chat" title="Team Chat">
                 <i class="ri-chat-3-line" style="font-size: 20px;"></i>
-            </a>
+                <span style="font-size: 10px; margin-top: 4px; display: block;">Chat</span>
+            </div>
         </div>
     </div>
 

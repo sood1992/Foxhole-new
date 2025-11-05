@@ -161,112 +161,6 @@ $activeTaskIds = array_column($stmt->fetchAll(), 'task_id');
                 </div>
                 <?php endif; ?>
 
-                <!-- PRODUCTIVITY TOOLS - INTEGRATED INTO TASKS -->
-                <div class="stats-card" style="margin-bottom: 24px; background: linear-gradient(135deg, #F9FAFB 0%, #FFFFFF 100%);">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                        <div>
-                            <h3 style="margin: 0; color: var(--synto-text-primary); font-size: 18px; font-weight: 600;">
-                                <i class="ri-tools-line" style="color: var(--synto-primary);"></i> Productivity Tools
-                            </h3>
-                            <p style="margin: 4px 0 0; color: var(--synto-text-secondary); font-size: 13px;">
-                                Boost your efficiency with powerful task management tools
-                            </p>
-                        </div>
-                        <button onclick="toggleProductivityTools()" style="background: var(--synto-bg); border: 1px solid var(--synto-border); padding: 8px 12px; border-radius: 8px; cursor: pointer; color: var(--synto-text-secondary); transition: all 0.2s;" id="productivityToggle">
-                            <i class="ri-arrow-down-s-line" id="productivityToggleIcon"></i>
-                        </button>
-                    </div>
-
-                    <div id="productivityToolsContainer" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px;">
-                        <!-- Daily Planning -->
-                        <a href="daily-planning.php" style="text-decoration: none;">
-                            <div style="padding: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; transition: transform 0.2s, box-shadow 0.2s; cursor: pointer; box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);" onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 4px 16px rgba(102, 126, 234, 0.4)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(102, 126, 234, 0.3)';">
-                                <i class="ri-calendar-check-line" style="font-size: 32px; color: white; display: block; margin-bottom: 12px;"></i>
-                                <h4 style="margin: 0 0 6px; color: white; font-size: 16px; font-weight: 600;">Daily Planning</h4>
-                                <p style="margin: 0; color: rgba(255,255,255,0.9); font-size: 13px; line-height: 1.4;">Plan your day with MIT (Most Important Tasks)</p>
-                            </div>
-                        </a>
-
-                        <!-- Morning Ritual -->
-                        <a href="morning-ritual.php" style="text-decoration: none;">
-                            <div style="padding: 20px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); border-radius: 12px; transition: transform 0.2s, box-shadow 0.2s; cursor: pointer; box-shadow: 0 2px 8px rgba(245, 87, 108, 0.3);" onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 4px 16px rgba(245, 87, 108, 0.4)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(245, 87, 108, 0.3)';">
-                                <i class="ri-sun-line" style="font-size: 32px; color: white; display: block; margin-bottom: 12px;"></i>
-                                <h4 style="margin: 0 0 6px; color: white; font-size: 16px; font-weight: 600;">Morning Ritual</h4>
-                                <p style="margin: 0; color: rgba(255,255,255,0.9); font-size: 13px; line-height: 1.4;">Start your day with structured routines</p>
-                            </div>
-                        </a>
-
-                        <!-- Eisenhower Matrix -->
-                        <a href="eisenhower-matrix.php" style="text-decoration: none;">
-                            <div style="padding: 20px; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); border-radius: 12px; transition: transform 0.2s, box-shadow 0.2s; cursor: pointer; box-shadow: 0 2px 8px rgba(79, 172, 254, 0.3);" onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 4px 16px rgba(79, 172, 254, 0.4)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(79, 172, 254, 0.3)';">
-                                <i class="ri-layout-grid-line" style="font-size: 32px; color: white; display: block; margin-bottom: 12px;"></i>
-                                <h4 style="margin: 0 0 6px; color: white; font-size: 16px; font-weight: 600;">Eisenhower Matrix</h4>
-                                <p style="margin: 0; color: rgba(255,255,255,0.9); font-size: 13px; line-height: 1.4;">Prioritize by urgency and importance</p>
-                            </div>
-                        </a>
-
-                        <!-- Pomodoro Timer -->
-                        <a href="pomodoro.php" style="text-decoration: none;">
-                            <div style="padding: 20px; background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); border-radius: 12px; transition: transform 0.2s, box-shadow 0.2s; cursor: pointer; box-shadow: 0 2px 8px rgba(250, 112, 154, 0.3);" onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 4px 16px rgba(250, 112, 154, 0.4)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(250, 112, 154, 0.3)';">
-                                <i class="ri-timer-line" style="font-size: 32px; color: white; display: block; margin-bottom: 12px;"></i>
-                                <h4 style="margin: 0 0 6px; color: white; font-size: 16px; font-weight: 600;">Pomodoro Timer</h4>
-                                <p style="margin: 0; color: rgba(255,255,255,0.9); font-size: 13px; line-height: 1.4;">Work in focused 25-minute intervals</p>
-                            </div>
-                        </a>
-
-                        <!-- Time Boxing -->
-                        <a href="time-boxing.php" style="text-decoration: none;">
-                            <div style="padding: 20px; background: linear-gradient(135deg, #30cfd0 0%, #330867 100%); border-radius: 12px; transition: transform 0.2s, box-shadow 0.2s; cursor: pointer; box-shadow: 0 2px 8px rgba(48, 207, 208, 0.3);" onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 4px 16px rgba(48, 207, 208, 0.4)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(48, 207, 208, 0.3)';">
-                                <i class="ri-calendar-event-line" style="font-size: 32px; color: white; display: block; margin-bottom: 12px;"></i>
-                                <h4 style="margin: 0 0 6px; color: white; font-size: 16px; font-weight: 600;">Time Boxing</h4>
-                                <p style="margin: 0; color: rgba(255,255,255,0.9); font-size: 13px; line-height: 1.4;">Allocate specific time blocks to tasks</p>
-                            </div>
-                        </a>
-
-                        <!-- Focus Mode -->
-                        <a href="focus-mode.php" style="text-decoration: none;">
-                            <div style="padding: 20px; background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); border-radius: 12px; transition: transform 0.2s, box-shadow 0.2s; cursor: pointer; box-shadow: 0 2px 8px rgba(168, 237, 234, 0.3);" onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 4px 16px rgba(168, 237, 234, 0.4)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(168, 237, 234, 0.3)';">
-                                <i class="ri-focus-3-line" style="font-size: 32px; color: #667eea; display: block; margin-bottom: 12px;"></i>
-                                <h4 style="margin: 0 0 6px; color: #667eea; font-size: 16px; font-weight: 600;">Focus Mode</h4>
-                                <p style="margin: 0; color: #764ba2; font-size: 13px; line-height: 1.4;">Minimize distractions and deep work</p>
-                            </div>
-                        </a>
-
-                        <!-- Goals Tracking -->
-                        <a href="goals.php" style="text-decoration: none;">
-                            <div style="padding: 20px; background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); border-radius: 12px; transition: transform 0.2s, box-shadow 0.2s; cursor: pointer; box-shadow: 0 2px 8px rgba(67, 233, 123, 0.3);" onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 4px 16px rgba(67, 233, 123, 0.4)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(67, 233, 123, 0.3)';">
-                                <i class="ri-flag-line" style="font-size: 32px; color: white; display: block; margin-bottom: 12px;"></i>
-                                <h4 style="margin: 0 0 6px; color: white; font-size: 16px; font-weight: 600;">Goals Tracking</h4>
-                                <p style="margin: 0; color: rgba(255,255,255,0.9); font-size: 13px; line-height: 1.4;">Set and track your long-term goals</p>
-                            </div>
-                        </a>
-
-                        <!-- Weekly Review -->
-                        <a href="weekly-review.php" style="text-decoration: none;">
-                            <div style="padding: 20px; background: linear-gradient(135deg, #ff9a56 0%, #ff6a88 100%); border-radius: 12px; transition: transform 0.2s, box-shadow 0.2s; cursor: pointer; box-shadow: 0 2px 8px rgba(255, 154, 86, 0.3);" onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 4px 16px rgba(255, 154, 86, 0.4)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(255, 154, 86, 0.3)';">
-                                <i class="ri-article-line" style="font-size: 32px; color: white; display: block; margin-bottom: 12px;"></i>
-                                <h4 style="margin: 0 0 6px; color: white; font-size: 16px; font-weight: 600;">Weekly Review</h4>
-                                <p style="margin: 0; color: rgba(255,255,255,0.9); font-size: 13px; line-height: 1.4;">Reflect and plan for the week ahead</p>
-                            </div>
-                        </a>
-                    </div>
-                </div>
-
-                <script>
-                function toggleProductivityTools() {
-                    const container = document.getElementById('productivityToolsContainer');
-                    const icon = document.getElementById('productivityToggleIcon');
-
-                    if (container.style.display === 'none') {
-                        container.style.display = 'grid';
-                        icon.className = 'ri-arrow-down-s-line';
-                    } else {
-                        container.style.display = 'none';
-                        icon.className = 'ri-arrow-right-s-line';
-                    }
-                }
-                </script>
-
                 <!-- Filters -->
                 <div class="dashboard-card">
                     <div class="card-body">
@@ -322,8 +216,8 @@ $activeTaskIds = array_column($stmt->fetchAll(), 'task_id');
                             <?php foreach ($tasks as $task): ?>
                             <?php
                                 // Check if this specific task is currently being worked on
-                                // A task is "active" if it has an active time log OR if status is in_progress
-                                $isTaskActive = in_array($task['id'], $activeTaskIds) || $task['status'] === 'in_progress';
+                                // Only check active time_log, not task status
+                                $isTaskActive = in_array($task['id'], $activeTaskIds);
                                 $isOverdue = isOverdue($task['due_date'], $task['status']);
 
                                 // Get priority color

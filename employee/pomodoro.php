@@ -28,16 +28,22 @@ $longBreakMinutes = $user['long_break_duration'] ?? 15;
 $pomodorosUntilLongBreak = $user['pomodoros_until_long_break'] ?? 4;
 
 // Get today's pomodoro sessions
-$stmt = $db->prepare("
-    SELECT COUNT(*) as completed_sessions
-    FROM pomodoro_sessions
-    WHERE user_id = ?
-    AND DATE(start_time) = CURDATE()
-    AND session_type = 'work'
-    AND completed = 1
-");
-$stmt->execute([$currentUser['id']]);
-$todaySessions = $stmt->fetch()['completed_sessions'] ?? 0;
+try {
+    $stmt = $db->prepare("
+        SELECT COUNT(*) as completed_sessions
+        FROM pomodoro_sessions
+        WHERE user_id = ?
+        AND DATE(start_time) = CURDATE()
+        AND session_type = 'work'
+        AND completed = 1
+    ");
+    $stmt->execute([$currentUser['id']]);
+    $todaySessions = $stmt->fetch()['completed_sessions'] ?? 0;
+} catch (PDOException $e) {
+    // Table doesn't exist yet - set to 0
+    $todaySessions = 0;
+    error_log("Pomodoro table issue: " . $e->getMessage());
+}
 
 // Get active tasks
 $stmt = $db->prepare("
