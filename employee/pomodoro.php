@@ -1,4 +1,8 @@
 <?php
+// Enable error reporting for debugging
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 require_once '../config/config.php';
 require_once '../includes/functions.php';
 
@@ -6,8 +10,12 @@ if (!isLoggedIn() || !hasRole('employee')) {
     redirect('../login.php');
 }
 
-$db = getDBConnection();
-$currentUser = getCurrentUser();
+try {
+    $db = getDBConnection();
+    $currentUser = getCurrentUser();
+} catch (Exception $e) {
+    die("Database error: " . $e->getMessage());
+}
 
 // Get user's pomodoro settings
 $stmt = $db->prepare("SELECT * FROM users WHERE id = ?");

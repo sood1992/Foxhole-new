@@ -123,6 +123,78 @@ try {
             }
         }
 
+        // Get employee work sessions (time logs) - FOR ADMIN VIEW
+        if ($currentUser['role'] === 'admin' || $currentUser['role'] === 'manager') {
+            $workSessionSql = "
+                SELECT
+                    tl.id,
+                    tl.start_time,
+                    tl.end_time,
+                    tl.duration_minutes,
+                    tl.is_active,
+                    t.task_name,
+                    p.project_name,
+                    u.full_name as employee_name,
+                    u.id as employee_id
+                FROM time_logs tl
+                JOIN tasks t ON tl.task_id = t.id
+                JOIN projects p ON tl.project_id = p.id
+                JOIN users u ON tl.user_id = u.id
+                WHERE 1=1
+            ";
+
+            if ($start && $end) {
+                $workSessionSql .= " AND DATE(tl.start_time) BETWEEN ? AND ?";
+            }
+
+            $workSessionSql .= " ORDER BY tl.start_time DESC";
+
+            $stmt = $db->prepare($workSessionSql);
+            if ($start && $end) {
+                $stmt->execute([$start, $end]);
+            } else {
+                $stmt->execute();
+            }
+
+            $workSessions = $stmt->fetchAll();
+
+            foreach ($workSessions as $session) {
+                $color = '#06b6d4'; // cyan for work sessions
+                if ($session['is_active']) {
+                    $color = '#f97316'; // orange for active sessions
+                }
+
+                // Create event with time range
+                $eventData = [
+                    'id' => 'work_' . $session['id'],
+                    'title' => '👤 ' . $session['employee_name'] . ': ' . $session['task_name'],
+                    'start' => $session['start_time'],
+                    'backgroundColor' => $color,
+                    'borderColor' => $color,
+                    'extendedProps' => [
+                        'type' => 'work_session',
+                        'sessionId' => $session['id'],
+                        'employee' => $session['employee_name'],
+                        'employeeId' => $session['employee_id'],
+                        'task' => $session['task_name'],
+                        'project' => $session['project_name'],
+                        'duration' => $session['duration_minutes'],
+                        'isActive' => $session['is_active']
+                    ]
+                ];
+
+                // Add end time if session is completed
+                if ($session['end_time']) {
+                    $eventData['end'] = $session['end_time'];
+                } else {
+                    // Active session - show as ongoing
+                    $eventData['title'] = '🔴 ' . $session['employee_name'] . ': ' . $session['task_name'] . ' (Working Now)';
+                }
+
+                $events[] = $eventData;
+            }
+        }
+
         echo json_encode($events);
     }
 

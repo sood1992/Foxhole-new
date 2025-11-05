@@ -171,6 +171,14 @@ $currentUser = getCurrentUser();
                         <div class="legend-color" style="background: #8b5cf6;"></div>
                         <span>Milestones</span>
                     </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #06b6d4;"></div>
+                        <span>👤 Employee Work Sessions</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #f97316;"></div>
+                        <span>🔴 Currently Working</span>
+                    </div>
                 </div>
 
                 <div class="calendar-container">
@@ -271,6 +279,48 @@ $currentUser = getCurrentUser();
                     <div class="detail-row">
                         <div class="detail-label">Assigned To</div>
                         <div class="detail-value">${props.assignedTo || 'Unassigned'}</div>
+                    </div>
+                `;
+            } else if (props.type === 'work_session') {
+                const startTime = new Date(event.start);
+                const endTime = event.end ? new Date(event.end) : null;
+                const statusText = props.isActive ? '🔴 Currently Working' : '✅ Completed';
+                const durationText = props.duration ? `${props.duration} minutes` : 'Ongoing';
+
+                html = `
+                    <div class="detail-row">
+                        <div class="detail-label">Type</div>
+                        <div class="detail-value">Employee Work Session</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Employee</div>
+                        <div class="detail-value"><strong>${props.employee}</strong></div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Task</div>
+                        <div class="detail-value">${props.task}</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Project</div>
+                        <div class="detail-value">${props.project}</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Status</div>
+                        <div class="detail-value">${statusText}</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Start Time</div>
+                        <div class="detail-value">${startTime.toLocaleString()}</div>
+                    </div>
+                    ${endTime ? `
+                    <div class="detail-row">
+                        <div class="detail-label">End Time</div>
+                        <div class="detail-value">${endTime.toLocaleString()}</div>
+                    </div>
+                    ` : ''}
+                    <div class="detail-row">
+                        <div class="detail-label">Duration</div>
+                        <div class="detail-value"><strong>${durationText}</strong></div>
                     </div>
                 `;
             } else if (props.type === 'milestone') {

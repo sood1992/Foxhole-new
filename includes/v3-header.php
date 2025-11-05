@@ -50,6 +50,14 @@ $userAvatar = !empty($currentUser['avatar']) ? $currentUser['avatar'] : '../asse
     </div>
 </div>
 
+<!-- PAGE BREADCRUMB - PERMANENT LOCATION IDENTIFIER -->
+<div class="page-breadcrumb" style="background: var(--synto-bg); border-bottom: 1px solid var(--synto-border); padding: 12px 24px; font-size: 13px; display: flex; align-items: center; gap: 8px; color: var(--synto-text-secondary); position: sticky; top: 70px; z-index: 100;">
+    <i class="ri-home-5-line" style="font-size: 16px; color: var(--synto-primary);"></i>
+    <span id="breadcrumb-path" style="display: flex; align-items: center; gap: 8px;">
+        <!-- Breadcrumb will be populated by JavaScript -->
+    </span>
+</div>
+
 <!-- User Dropdown Menu (Hidden by default) -->
 <div id="userDropdown" style="display: none; position: absolute; top: 70px; right: 30px; background: var(--synto-card-bg); border: 1px solid var(--synto-border); border-radius: var(--synto-radius-xl); box-shadow: var(--synto-shadow-xl); min-width: 220px; z-index: 1000;">
     <div style="padding: 16px; border-bottom: 1px solid var(--synto-border);">

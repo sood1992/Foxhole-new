@@ -548,6 +548,83 @@ function syntoClipboard(text) {
 }
 
 // ============================================
+// BREADCRUMB SYSTEM - PERMANENT PAGE IDENTIFIER
+// ============================================
+const SyntoBreadcrumb = {
+  init() {
+    this.updateBreadcrumb();
+  },
+
+  updateBreadcrumb() {
+    const breadcrumbContainer = document.getElementById('breadcrumb-path');
+    if (!breadcrumbContainer) return;
+
+    const currentPath = window.location.pathname;
+    const currentFile = currentPath.split('/').pop().split('.')[0];
+    const currentDir = currentPath.includes('/admin/') ? 'admin' :
+                       currentPath.includes('/manager/') ? 'manager' :
+                       currentPath.includes('/employee/') ? 'employee' : '';
+
+    // Page mapping with icons
+    const pageMap = {
+      // Admin pages
+      'index': { section: 'Dashboard', page: 'Overview', icon: 'ri-dashboard-line' },
+      'projects': { section: 'Projects', page: 'All Projects', icon: 'ri-folder-line' },
+      'team': { section: 'Team', page: 'Team Members', icon: 'ri-team-line' },
+      'users': { section: 'Team', page: 'Manage Users', icon: 'ri-user-settings-line' },
+      'tasks': { section: 'Tasks', page: 'All Tasks', icon: 'ri-task-line' },
+      'reports': { section: 'Reports', page: 'All Reports', icon: 'ri-file-chart-line' },
+      'analytics': { section: 'Analytics', page: 'Advanced Analytics', icon: 'ri-line-chart-line' },
+      'calendar': { section: 'Calendar', page: 'Full Calendar', icon: 'ri-calendar-line' },
+      'chat': { section: 'Chat', page: 'Messages', icon: 'ri-chat-3-line' },
+      'email-config': { section: 'Settings', page: 'Email Configuration', icon: 'ri-mail-settings-line' },
+      'budgets': { section: 'Finance', page: 'Budgets', icon: 'ri-funds-line' },
+      'profit-loss': { section: 'Finance', page: 'Profit & Loss', icon: 'ri-line-chart-line' },
+      'gamification': { section: 'Gamification', page: 'Leaderboard', icon: 'ri-trophy-line' },
+      'bulk-operations': { section: 'Operations', page: 'Bulk Operations', icon: 'ri-stack-line' },
+      'profile': { section: 'Account', page: 'My Profile', icon: 'ri-user-line' },
+
+      // Employee pages
+      'my-tasks': { section: 'Tasks', page: 'My Tasks', icon: 'ri-task-line' },
+      'create-task': { section: 'Tasks', page: 'Create Task', icon: 'ri-add-line' },
+      'my-projects': { section: 'Projects', page: 'My Projects', icon: 'ri-folder-line' },
+      'time-logs': { section: 'Time Tracking', page: 'Time Logs', icon: 'ri-time-line' },
+      'my-stats': { section: 'Statistics', page: 'My Statistics', icon: 'ri-bar-chart-line' },
+
+      // Productivity Tools
+      'daily-planning': { section: 'Productivity', page: 'Daily Planning', icon: 'ri-calendar-check-line' },
+      'morning-ritual': { section: 'Productivity', page: 'Morning Ritual', icon: 'ri-sun-line' },
+      'eisenhower-matrix': { section: 'Productivity', page: 'Eisenhower Matrix', icon: 'ri-layout-grid-line' },
+      'pomodoro': { section: 'Productivity', page: 'Pomodoro Timer', icon: 'ri-timer-line' },
+      'time-boxing': { section: 'Productivity', page: 'Time Boxing', icon: 'ri-calendar-event-line' },
+      'focus-mode': { section: 'Productivity', page: 'Focus Mode', icon: 'ri-focus-3-line' },
+      'goals': { section: 'Productivity', page: 'Goals Tracking', icon: 'ri-flag-line' },
+      'weekly-review': { section: 'Productivity', page: 'Weekly Review', icon: 'ri-article-line' },
+
+      // Manager pages
+      'create-project': { section: 'Projects', page: 'Create Project', icon: 'ri-folder-add-line' },
+      'manage-users': { section: 'Team', page: 'Manage Users', icon: 'ri-user-add-line' },
+    };
+
+    const pageInfo = pageMap[currentFile] || { section: 'Foxhole', page: currentFile.replace(/-/g, ' '), icon: 'ri-file-line' };
+
+    // Build breadcrumb HTML
+    const roleLabel = currentDir.charAt(0).toUpperCase() + currentDir.slice(1);
+
+    let breadcrumbHTML = `
+      <span style="color: var(--synto-text-primary); font-weight: 500;">${roleLabel}</span>
+      <i class="ri-arrow-right-s-line" style="color: var(--synto-text-tertiary); font-size: 18px;"></i>
+      <i class="${pageInfo.icon}" style="color: var(--synto-primary); font-size: 16px;"></i>
+      <span style="color: var(--synto-text-primary); font-weight: 500;">${pageInfo.section}</span>
+      <i class="ri-arrow-right-s-line" style="color: var(--synto-text-tertiary); font-size: 18px;"></i>
+      <span style="color: var(--synto-text-secondary);">${pageInfo.page}</span>
+    `;
+
+    breadcrumbContainer.innerHTML = breadcrumbHTML;
+  }
+};
+
+// ============================================
 // INITIALIZATION
 // ============================================
 document.addEventListener('DOMContentLoaded', () => {
@@ -557,6 +634,7 @@ document.addEventListener('DOMContentLoaded', () => {
   SyntoCards.init();
   SyntoTable.init();
   SyntoTheme.apply();
+  SyntoBreadcrumb.init(); // Initialize breadcrumb system
 });
 
 // Export for global use
@@ -571,5 +649,6 @@ window.Synto = {
   Form: SyntoForm,
   Theme: SyntoTheme,
   Charts: SyntoCharts,
+  Breadcrumb: SyntoBreadcrumb,
   clipboard: syntoClipboard
 };

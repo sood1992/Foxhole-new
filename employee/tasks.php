@@ -196,115 +196,175 @@ $activeTaskIds = array_column($stmt->fetchAll(), 'task_id');
                     </div>
                 </div>
 
-                <!-- Tasks List -->
-                <div class="dashboard-card">
-                    <div class="card-header">
-                        <h3>Tasks (<?php echo count($tasks); ?>)</h3>
+                <!-- Tasks List - SYNTO MODERN CARD DESIGN -->
+                <div style="margin-top: 32px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h2 style="margin: 0; color: var(--synto-text-primary); font-size: 24px; font-weight: 600;">
+                            <i class="ri-task-line" style="color: var(--synto-primary);"></i> My Tasks
+                            <span style="color: var(--synto-text-secondary); font-size: 18px; font-weight: 400;">(<?php echo count($tasks); ?>)</span>
+                        </h2>
                     </div>
-                    <div class="card-body">
-                        <?php if (empty($tasks)): ?>
-                            <div style="text-align: center; padding: 60px 20px; color: var(--text-secondary);">
-                                <div style="font-size: 64px; margin-bottom: 16px;">📋</div>
-                                <h3>No tasks found</h3>
-                                <p>You don't have any tasks matching these filters.</p>
-                            </div>
-                        <?php else: ?>
-                            <div class="task-list">
-                                <?php foreach ($tasks as $task): ?>
-                                <?php
-                                    // Check if this specific task is currently being worked on
-                                    $isTaskActive = in_array($task['id'], $activeTaskIds);
-                                    $isOverdue = isOverdue($task['due_date'], $task['status']);
-                                ?>
-                                <div class="task-item <?php echo $isOverdue ? 'overdue' : ''; ?>">
-                                    <div class="task-item-header">
-                                        <div style="flex: 1;">
-                                            <div class="task-item-title">
-                                                <a href="task-detail.php?id=<?php echo $task['id']; ?>" style="color: inherit; text-decoration: none;">
-                                                    <?php echo e($task['task_name']); ?>
-                                                </a>
-                                            </div>
-                                            <div class="task-item-meta">
-                                                <span>📁 <?php echo e($task['project_name']); ?></span>
-                                                <?php if ($task['client_name']): ?>
-                                                    <span>👤 <?php echo e($task['client_name']); ?></span>
-                                                <?php endif; ?>
-                                                <span class="badge <?php echo getStatusClass($task['status']); ?>">
-                                                    <?php echo ucfirst(str_replace('_', ' ', $task['status'])); ?>
-                                                </span>
-                                                <span class="badge <?php echo getPriorityClass($task['priority']); ?>">
-                                                    <?php echo ucfirst($task['priority']); ?>
-                                                </span>
-                                            </div>
-                                        </div>
-                                        <div class="task-item-actions">
-                                            <a href="task-detail.php?id=<?php echo $task['id']; ?>" class="btn btn-secondary btn-sm">
-                                                <i class="fas ri-eye-line"></i> View
+
+                    <?php if (empty($tasks)): ?>
+                        <div class="stats-card" style="text-align: center; padding: 80px 20px;">
+                            <div style="font-size: 72px; margin-bottom: 20px; opacity: 0.5;">📋</div>
+                            <h3 style="color: var(--synto-text-primary); margin: 0 0 8px;">No tasks found</h3>
+                            <p style="color: var(--synto-text-secondary); margin: 0;">You don't have any tasks matching these filters.</p>
+                        </div>
+                    <?php else: ?>
+                        <div style="display: grid; gap: 20px;">
+                            <?php foreach ($tasks as $task): ?>
+                            <?php
+                                // Check if this specific task is currently being worked on
+                                $isTaskActive = in_array($task['id'], $activeTaskIds);
+                                $isOverdue = isOverdue($task['due_date'], $task['status']);
+
+                                // Get priority color
+                                $priorityColors = [
+                                    'urgent' => '#EF4444',
+                                    'high' => '#F59E0B',
+                                    'medium' => '#3B82F6',
+                                    'low' => '#10B981'
+                                ];
+                                $priorityColor = $priorityColors[$task['priority']] ?? '#6B7280';
+                            ?>
+                            <!-- SYNTO TASK CARD -->
+                            <div class="stats-card" style="position: relative; border-left: 4px solid <?php echo $priorityColor; ?>; <?php echo $isTaskActive ? 'background: linear-gradient(to right, #EFF6FF 0%, #FFFFFF 100%);' : ''; ?>">
+                                <!-- Active Indicator -->
+                                <?php if ($isTaskActive): ?>
+                                <div style="position: absolute; top: 16px; right: 16px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);">
+                                    <i class="ri-time-line" style="font-size: 14px;"></i> WORKING NOW
+                                </div>
+                                <?php endif; ?>
+
+                                <!-- Task Header -->
+                                <div style="display: flex; gap: 16px; align-items: start; margin-bottom: 16px;">
+                                    <!-- Priority Icon -->
+                                    <div style="width: 48px; height: 48px; border-radius: 12px; background: <?php echo $priorityColor; ?>15; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                        <i class="ri-checkbox-line" style="font-size: 24px; color: <?php echo $priorityColor; ?>;"></i>
+                                    </div>
+
+                                    <!-- Task Content -->
+                                    <div style="flex: 1; min-width: 0;">
+                                        <h3 style="margin: 0 0 8px; font-size: 18px; font-weight: 600; color: var(--synto-text-primary);">
+                                            <a href="task-detail.php?id=<?php echo $task['id']; ?>" style="color: inherit; text-decoration: none; transition: color 0.2s;">
+                                                <?php echo e($task['task_name']); ?>
                                             </a>
+                                        </h3>
+
+                                        <div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px;">
+                                            <!-- Project Badge -->
+                                            <span style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; background: var(--synto-bg); border: 1px solid var(--synto-border); border-radius: 6px; font-size: 13px; color: var(--synto-text-secondary);">
+                                                <i class="ri-folder-line" style="font-size: 14px;"></i>
+                                                <?php echo e($task['project_name']); ?>
+                                            </span>
+
+                                            <!-- Client Badge -->
+                                            <?php if ($task['client_name']): ?>
+                                            <span style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; background: var(--synto-bg); border: 1px solid var(--synto-border); border-radius: 6px; font-size: 13px; color: var(--synto-text-secondary);">
+                                                <i class="ri-user-line" style="font-size: 14px;"></i>
+                                                <?php echo e($task['client_name']); ?>
+                                            </span>
+                                            <?php endif; ?>
+
+                                            <!-- Status Badge -->
+                                            <span class="badge <?php echo getStatusClass($task['status']); ?>" style="font-weight: 500;">
+                                                <?php echo ucfirst(str_replace('_', ' ', $task['status'])); ?>
+                                            </span>
+
+                                            <!-- Priority Badge -->
+                                            <span style="padding: 4px 12px; background: <?php echo $priorityColor; ?>15; color: <?php echo $priorityColor; ?>; border-radius: 6px; font-size: 12px; font-weight: 600; text-transform: uppercase;">
+                                                <?php echo $task['priority']; ?>
+                                            </span>
+
+                                            <!-- Overdue Warning -->
+                                            <?php if ($isOverdue): ?>
+                                            <span style="padding: 4px 12px; background: #FEF2F2; color: #EF4444; border-radius: 6px; font-size: 12px; font-weight: 600;">
+                                                <i class="ri-error-warning-line"></i> OVERDUE
+                                            </span>
+                                            <?php endif; ?>
+                                        </div>
+
+                                        <!-- Task Description -->
+                                        <?php if ($task['description']): ?>
+                                        <div style="margin-bottom: 16px; padding: 12px; background: var(--synto-bg); border-radius: 8px; font-size: 14px; line-height: 1.6; color: var(--synto-text-secondary);">
+                                            <?php echo nl2br(e(substr($task['description'], 0, 200))); ?>
+                                            <?php if (strlen($task['description']) > 200): ?>...<?php endif; ?>
+                                        </div>
+                                        <?php endif; ?>
+
+                                        <!-- Task Metrics -->
+                                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 16px; padding: 16px; background: var(--synto-bg); border-radius: 8px; margin-bottom: 16px;">
+                                            <!-- Estimated Hours -->
+                                            <div>
+                                                <div style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--synto-text-tertiary); margin-bottom: 4px;">
+                                                    <i class="ri-time-line"></i> Estimated
+                                                </div>
+                                                <div style="font-size: 18px; font-weight: 700; color: var(--synto-text-primary);">
+                                                    <?php echo $task['estimated_hours'] ? number_format($task['estimated_hours'], 1) . 'h' : 'N/A'; ?>
+                                                </div>
+                                            </div>
+
+                                            <!-- Actual Hours -->
+                                            <div>
+                                                <div style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--synto-text-tertiary); margin-bottom: 4px;">
+                                                    <i class="ri-timer-line"></i> Actual
+                                                </div>
+                                                <div style="font-size: 18px; font-weight: 700; color: var(--synto-primary);">
+                                                    <?php echo formatHours($task['actual_hours'] ?? 0); ?>h
+                                                </div>
+                                            </div>
+
+                                            <!-- Due Date -->
+                                            <div>
+                                                <div style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--synto-text-tertiary); margin-bottom: 4px;">
+                                                    <i class="ri-calendar-line"></i> Due Date
+                                                </div>
+                                                <div style="font-size: 14px; font-weight: 600; color: <?php echo $isOverdue ? '#EF4444' : 'var(--synto-text-primary)'; ?>;">
+                                                    <?php echo $task['due_date'] ? date('M d, Y', strtotime($task['due_date'])) : 'No deadline'; ?>
+                                                </div>
+                                            </div>
+
+                                            <!-- Completion -->
+                                            <?php if ($task['status'] === 'completed' && $task['completed_date']): ?>
+                                            <div>
+                                                <div style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--synto-text-tertiary); margin-bottom: 4px;">
+                                                    <i class="ri-checkbox-circle-line"></i> Completed
+                                                </div>
+                                                <div style="font-size: 14px; font-weight: 600; color: var(--synto-success);">
+                                                    <?php echo date('M d, Y', strtotime($task['completed_date'])); ?>
+                                                </div>
+                                            </div>
+                                            <?php endif; ?>
+                                        </div>
+
+                                        <!-- Action Buttons -->
+                                        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                                            <a href="task-detail.php?id=<?php echo $task['id']; ?>"
+                                               style="display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; background: var(--synto-bg); border: 1px solid var(--synto-border); border-radius: 8px; color: var(--synto-text-primary); text-decoration: none; font-weight: 500; transition: all 0.2s; font-size: 14px;">
+                                                <i class="ri-eye-line" style="font-size: 16px;"></i> View Details
+                                            </a>
+
                                             <?php if ($task['status'] !== 'completed'): ?>
                                                 <?php if (!$isTaskActive): ?>
                                                     <button onclick="startTimer(<?php echo $task['id']; ?>, <?php echo $task['project_id']; ?>)"
-                                                            class="btn btn-success btn-sm">
-                                                        ▶️ Start Working
+                                                            style="display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; background: linear-gradient(135deg, #10B981 0%, #059669 100%); border: none; border-radius: 8px; color: white; font-weight: 600; cursor: pointer; transition: all 0.2s; font-size: 14px; box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);">
+                                                        <i class="ri-play-circle-line" style="font-size: 18px;"></i> Start Working
                                                     </button>
                                                 <?php else: ?>
                                                     <button onclick="stopTask(<?php echo $task['id']; ?>)"
-                                                            class="btn btn-warning btn-sm">
-                                                        ⏹ Stop Working
+                                                            style="display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%); border: none; border-radius: 8px; color: white; font-weight: 600; cursor: pointer; transition: all 0.2s; font-size: 14px; box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);">
+                                                        <i class="ri-stop-circle-line" style="font-size: 18px;"></i> Stop Working
                                                     </button>
                                                 <?php endif; ?>
                                             <?php endif; ?>
                                         </div>
                                     </div>
-
-                                    <?php if ($task['description']): ?>
-                                    <div style="margin-top: 12px; padding: 12px; background: var(--bg-tertiary); border-radius: var(--radius-sm); font-size: 14px;">
-                                        <?php echo nl2br(e($task['description'])); ?>
-                                    </div>
-                                    <?php endif; ?>
-
-                                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px; margin-top: 16px;">
-                                        <div>
-                                            <div style="font-size: 12px; color: var(--text-secondary);">Estimated Hours</div>
-                                            <div style="font-size: 16px; font-weight: 600;">
-                                                <?php echo $task['estimated_hours'] ? number_format($task['estimated_hours'], 1) . 'h' : 'N/A'; ?>
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <div style="font-size: 12px; color: var(--text-secondary);">Actual Hours</div>
-                                            <div style="font-size: 16px; font-weight: 600;">
-                                                <?php echo formatHours($task['actual_hours'] ?? 0); ?>h
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <div style="font-size: 12px; color: var(--text-secondary);">Due Date</div>
-                                            <div style="font-size: 14px; font-weight: 500;">
-                                                <?php
-                                                if ($task['due_date']) {
-                                                    echo date('M d, Y', strtotime($task['due_date']));
-                                                    if ($isOverdue) {
-                                                        echo ' <span style="color: var(--red);">⚠️ Overdue</span>';
-                                                    }
-                                                } else {
-                                                    echo 'No deadline';
-                                                }
-                                                ?>
-                                            </div>
-                                        </div>
-                                        <?php if ($task['status'] === 'completed' && $task['completed_date']): ?>
-                                        <div>
-                                            <div style="font-size: 12px; color: var(--text-secondary);">Completed</div>
-                                            <div style="font-size: 14px; font-weight: 500; color: var(--green);">
-                                                ✓ <?php echo date('M d, Y', strtotime($task['completed_date'])); ?>
-                                            </div>
-                                        </div>
-                                        <?php endif; ?>
-                                    </div>
                                 </div>
-                                <?php endforeach; ?>
                             </div>
-                        <?php endif; ?>
-                    </div>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
