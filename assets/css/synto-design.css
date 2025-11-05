@@ -1,0 +1,900 @@
+/**
+ * FOXHOLE V3 - SYNTO DASHBOARD TEMPLATE DESIGN
+ * Based on Synto CodeIgniter Tailwind CSS Dashboard Template
+ * Version: 3.1.0 (Synto Edition)
+ * Date: November 2025
+ */
+
+/* ============================================
+   IMPORT FONTS - INTER
+   ============================================ */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* RemixIcon CDN for Synto icons */
+@import url('https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css');
+
+/* ============================================
+   SYNTO COLOR SYSTEM & VARIABLES
+   ============================================ */
+:root {
+  /* Synto Primary Colors */
+  --synto-primary: #4F46E5;        /* indigo-600 */
+  --synto-primary-dark: #4338CA;   /* indigo-700 */
+  --synto-secondary: #0EA5E9;      /* sky-500 */
+
+  /* Synto Neutral Colors */
+  --synto-bg: #F9FAFB;            /* gray-50 */
+  --synto-card-bg: #FFFFFF;       /* white */
+  --synto-text-primary: #111827;  /* gray-900 */
+  --synto-text-secondary: #6B7280; /* gray-500 */
+  --synto-border: #E5E7EB;        /* gray-200 */
+
+  /* Synto Status Colors */
+  --synto-success: #10B981;       /* green-500 */
+  --synto-warning: #F59E0B;       /* amber-500 */
+  --synto-danger: #EF4444;        /* red-500 */
+  --synto-info: #3B82F6;          /* blue-500 */
+
+  /* Synto Sidebar Colors */
+  --synto-sidebar-from: #1e293b;  /* slate-800 */
+  --synto-sidebar-to: #334155;    /* slate-700 */
+  --synto-sidebar-hover: #475569; /* slate-600 */
+  --synto-sidebar-active: #4F46E5; /* indigo-600 */
+
+  /* Synto Spacing (Tailwind scale) */
+  --synto-spacing-0: 0;
+  --synto-spacing-1: 0.25rem;     /* 4px */
+  --synto-spacing-2: 0.5rem;      /* 8px */
+  --synto-spacing-3: 0.75rem;     /* 12px */
+  --synto-spacing-4: 1rem;        /* 16px */
+  --synto-spacing-5: 1.25rem;     /* 20px */
+  --synto-spacing-6: 1.5rem;      /* 24px */
+  --synto-spacing-8: 2rem;        /* 32px */
+  --synto-spacing-10: 2.5rem;     /* 40px */
+  --synto-spacing-12: 3rem;       /* 48px */
+
+  /* Synto Border Radius */
+  --synto-radius-sm: 0.25rem;     /* 4px */
+  --synto-radius-md: 0.375rem;    /* 6px */
+  --synto-radius-lg: 0.5rem;      /* 8px */
+  --synto-radius-xl: 0.75rem;     /* 12px */
+  --synto-radius-2xl: 1rem;       /* 16px */
+  --synto-radius-full: 9999px;
+
+  /* Synto Shadows */
+  --synto-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --synto-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+  --synto-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  --synto-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  --synto-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+}
+
+/* ============================================
+   GLOBAL SYNTO OVERRIDES
+   ============================================ */
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  background: var(--synto-bg);
+  color: var(--synto-text-primary);
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+/* ============================================
+   SYNTO SIDEBAR REDESIGN
+   ============================================ */
+.sidebar {
+  background: linear-gradient(180deg, var(--synto-sidebar-from) 0%, var(--synto-sidebar-to) 100%);
+  box-shadow: var(--synto-shadow-lg);
+}
+
+.sidebar-main-panel {
+  background: transparent;
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-logo img {
+  filter: brightness(0) invert(1);
+  opacity: 0.9;
+}
+
+.main-menu-item {
+  position: relative;
+  color: #94a3b8;
+  transition: all 0.3s ease;
+  border-radius: var(--synto-radius-lg);
+  margin: var(--synto-spacing-1) var(--synto-spacing-2);
+}
+
+.main-menu-item:hover {
+  background: var(--synto-sidebar-hover);
+  color: #ffffff;
+  transform: translateX(2px);
+}
+
+.main-menu-item.active {
+  background: linear-gradient(135deg, var(--synto-primary) 0%, #6366f1 100%);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
+}
+
+.main-menu-item.active::before {
+  content: '';
+  position: absolute;
+  left: -8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 60%;
+  background: #ffffff;
+  border-radius: 0 4px 4px 0;
+}
+
+/* Sidebar Sub Panel */
+.sidebar-sub-panel {
+  background: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(10px);
+}
+
+.menu-title {
+  color: #94a3b8;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: var(--synto-spacing-4) var(--synto-spacing-5);
+  margin-top: var(--synto-spacing-4);
+}
+
+.menu-title:first-child {
+  margin-top: 0;
+}
+
+.menu-item {
+  color: #cbd5e1;
+  padding: var(--synto-spacing-3) var(--synto-spacing-5);
+  margin: var(--synto-spacing-1) var(--synto-spacing-3);
+  border-radius: var(--synto-radius-lg);
+  transition: all 0.2s ease;
+  position: relative;
+  font-size: 14px;
+}
+
+.menu-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  padding-left: 1.5rem;
+}
+
+.menu-item.active {
+  background: rgba(79, 70, 229, 0.2);
+  color: #ffffff;
+  border-left: 3px solid var(--synto-primary);
+  padding-left: calc(1.25rem - 3px);
+}
+
+.menu-item i {
+  margin-right: var(--synto-spacing-3);
+  width: 18px;
+  text-align: center;
+  opacity: 0.8;
+}
+
+.menu-item.active i {
+  opacity: 1;
+  color: var(--synto-primary);
+}
+
+/* ============================================
+   SYNTO HEADER REDESIGN
+   ============================================ */
+.header {
+  background: var(--synto-card-bg);
+  border-bottom: 1px solid var(--synto-border);
+  box-shadow: var(--synto-shadow-sm);
+  backdrop-filter: blur(8px);
+}
+
+.header-search {
+  position: relative;
+  flex: 1;
+  max-width: 500px;
+}
+
+.search-box {
+  width: 100%;
+  padding: var(--synto-spacing-3) var(--synto-spacing-10);
+  background: #F3F4F6;
+  border: 1px solid var(--synto-border);
+  border-radius: var(--synto-radius-lg);
+  font-size: 14px;
+  transition: all 0.2s ease;
+  font-family: 'Inter', sans-serif;
+}
+
+.search-box:focus {
+  background: var(--synto-card-bg);
+  border-color: var(--synto-primary);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+  outline: none;
+}
+
+.search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--synto-text-secondary);
+  font-size: 16px;
+}
+
+.icon-button {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--synto-radius-lg);
+  background: transparent;
+  border: none;
+  color: var(--synto-text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-button:hover {
+  background: #F3F4F6;
+  color: var(--synto-text-primary);
+}
+
+.icon-button .badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 8px;
+  height: 8px;
+  background: var(--synto-danger);
+  border-radius: var(--synto-radius-full);
+  border: 2px solid var(--synto-card-bg);
+}
+
+.user-menu {
+  display: flex;
+  align-items: center;
+  gap: var(--synto-spacing-3);
+  padding: var(--synto-spacing-2) var(--synto-spacing-4);
+  border-radius: var(--synto-radius-lg);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.user-menu:hover {
+  background: #F3F4F6;
+}
+
+.user-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--synto-radius-full);
+  border: 2px solid var(--synto-border);
+  object-fit: cover;
+}
+
+.user-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--synto-text-primary);
+}
+
+/* User Dropdown */
+#userDropdown {
+  background: var(--synto-card-bg);
+  border: 1px solid var(--synto-border);
+  border-radius: var(--synto-radius-xl);
+  box-shadow: var(--synto-shadow-xl);
+  animation: slideDown 0.2s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+#userDropdown a {
+  font-size: 14px;
+  border-radius: var(--synto-radius-md);
+  margin: 0 var(--synto-spacing-2);
+}
+
+#userDropdown a:hover {
+  background: #F3F4F6 !important;
+}
+
+/* ============================================
+   SYNTO DASHBOARD CARDS
+   ============================================ */
+.stats-card,
+.card {
+  background: var(--synto-card-bg);
+  border: 1px solid var(--synto-border);
+  border-radius: var(--synto-radius-lg);
+  padding: var(--synto-spacing-6);
+  transition: all 0.3s ease;
+  box-shadow: var(--synto-shadow-sm);
+}
+
+.stats-card:hover,
+.card:hover {
+  box-shadow: var(--synto-shadow-lg);
+  transform: translateY(-2px);
+}
+
+.card-header {
+  border-bottom: 1px solid var(--synto-border);
+  padding-bottom: var(--synto-spacing-4);
+  margin-bottom: var(--synto-spacing-4);
+}
+
+.card-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--synto-text-primary);
+  margin: 0;
+}
+
+.stat-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--synto-radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+}
+
+.stat-icon.primary {
+  background: #EEF2FF;
+  color: var(--synto-primary);
+}
+
+.stat-icon.success {
+  background: #ECFDF5;
+  color: var(--synto-success);
+}
+
+.stat-icon.warning {
+  background: #FFFBEB;
+  color: var(--synto-warning);
+}
+
+.stat-icon.danger {
+  background: #FEF2F2;
+  color: var(--synto-danger);
+}
+
+.stat-label {
+  font-size: 14px;
+  color: var(--synto-text-secondary);
+  margin-bottom: var(--synto-spacing-1);
+}
+
+.stat-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--synto-text-primary);
+  margin: 0;
+}
+
+.stat-change {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--synto-spacing-1);
+  font-size: 12px;
+  padding: var(--synto-spacing-1) var(--synto-spacing-2);
+  border-radius: var(--synto-radius-full);
+  font-weight: 500;
+}
+
+.stat-change.positive {
+  background: #ECFDF5;
+  color: var(--synto-success);
+}
+
+.stat-change.negative {
+  background: #FEF2F2;
+  color: var(--synto-danger);
+}
+
+/* ============================================
+   SYNTO TABLES
+   ============================================ */
+.data-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: var(--synto-card-bg);
+  border: 1px solid var(--synto-border);
+  border-radius: var(--synto-radius-lg);
+  overflow: hidden;
+}
+
+.data-table thead {
+  background: #F9FAFB;
+}
+
+.data-table th {
+  padding: var(--synto-spacing-4) var(--synto-spacing-6);
+  text-align: left;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--synto-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid var(--synto-border);
+}
+
+.data-table td {
+  padding: var(--synto-spacing-4) var(--synto-spacing-6);
+  font-size: 14px;
+  color: var(--synto-text-primary);
+  border-bottom: 1px solid #F3F4F6;
+}
+
+.data-table tbody tr {
+  transition: all 0.2s ease;
+}
+
+.data-table tbody tr:hover {
+  background: #F9FAFB;
+}
+
+.data-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Table Avatar Cell */
+.table-user {
+  display: flex;
+  align-items: center;
+  gap: var(--synto-spacing-3);
+}
+
+.table-avatar {
+  position: relative;
+}
+
+.table-avatar img {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--synto-radius-full);
+  object-fit: cover;
+}
+
+.table-avatar .status-dot {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 12px;
+  height: 12px;
+  border-radius: var(--synto-radius-full);
+  border: 2px solid var(--synto-card-bg);
+}
+
+.status-dot.online {
+  background: var(--synto-success);
+  animation: pulse 2s infinite;
+}
+
+.status-dot.offline {
+  background: var(--synto-text-secondary);
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.table-user-info h4 {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--synto-text-primary);
+  margin: 0 0 2px 0;
+}
+
+.table-user-info p {
+  font-size: 12px;
+  color: var(--synto-text-secondary);
+  margin: 0;
+}
+
+/* Progress Bar in Table */
+.progress-wrapper {
+  display: flex;
+  align-items: center;
+  gap: var(--synto-spacing-3);
+}
+
+.progress-bar-container {
+  flex: 1;
+  height: 8px;
+  background: #E5E7EB;
+  border-radius: var(--synto-radius-full);
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: var(--synto-primary);
+  border-radius: var(--synto-radius-full);
+  transition: width 0.6s ease;
+}
+
+.progress-text {
+  font-size: 12px;
+  color: var(--synto-text-secondary);
+  white-space: nowrap;
+  min-width: 60px;
+}
+
+/* ============================================
+   SYNTO BADGES
+   ============================================ */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--synto-spacing-1);
+  padding: var(--synto-spacing-1) var(--synto-spacing-3);
+  border-radius: var(--synto-radius-md);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1;
+}
+
+.badge-primary {
+  background: #EEF2FF;
+  color: var(--synto-primary);
+}
+
+.badge-success {
+  background: #ECFDF5;
+  color: var(--synto-success);
+}
+
+.badge-warning {
+  background: #FFFBEB;
+  color: var(--synto-warning);
+}
+
+.badge-danger {
+  background: #FEF2F2;
+  color: var(--synto-danger);
+}
+
+.badge-info {
+  background: #EFF6FF;
+  color: var(--synto-info);
+}
+
+.badge-secondary {
+  background: #F3F4F6;
+  color: var(--synto-text-secondary);
+}
+
+/* ============================================
+   SYNTO BUTTONS
+   ============================================ */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--synto-spacing-2);
+  padding: var(--synto-spacing-3) var(--synto-spacing-5);
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: var(--synto-radius-lg);
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  font-family: 'Inter', sans-serif;
+}
+
+.btn-primary {
+  background: var(--synto-primary);
+  color: #ffffff;
+}
+
+.btn-primary:hover {
+  background: var(--synto-primary-dark);
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+}
+
+.btn-success {
+  background: var(--synto-success);
+  color: #ffffff;
+}
+
+.btn-success:hover {
+  background: #059669;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.btn-danger {
+  background: var(--synto-danger);
+  color: #ffffff;
+}
+
+.btn-danger:hover {
+  background: #DC2626;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.btn-outline {
+  background: transparent;
+  border: 1px solid var(--synto-border);
+  color: var(--synto-text-primary);
+}
+
+.btn-outline:hover {
+  background: #F9FAFB;
+  border-color: var(--synto-primary);
+  color: var(--synto-primary);
+}
+
+.btn-sm {
+  padding: var(--synto-spacing-2) var(--synto-spacing-3);
+  font-size: 12px;
+}
+
+.btn-lg {
+  padding: var(--synto-spacing-4) var(--synto-spacing-6);
+  font-size: 16px;
+}
+
+/* ============================================
+   SYNTO FORMS
+   ============================================ */
+.form-group {
+  margin-bottom: var(--synto-spacing-5);
+}
+
+.form-label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--synto-text-primary);
+  margin-bottom: var(--synto-spacing-2);
+}
+
+.form-control,
+.form-input,
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="date"],
+input[type="time"],
+textarea,
+select {
+  width: 100%;
+  padding: var(--synto-spacing-3) var(--synto-spacing-4);
+  font-size: 14px;
+  font-family: 'Inter', sans-serif;
+  color: var(--synto-text-primary);
+  background: var(--synto-card-bg);
+  border: 1px solid var(--synto-border);
+  border-radius: var(--synto-radius-lg);
+  transition: all 0.2s ease;
+}
+
+.form-control:focus,
+.form-input:focus,
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: var(--synto-primary);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+/* ============================================
+   SYNTO CUSTOM SCROLLBAR
+   ============================================ */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #F3F4F6;
+  border-radius: var(--synto-radius-full);
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #9CA3AF;
+  border-radius: var(--synto-radius-full);
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #6B7280;
+}
+
+/* Apply to sidebar */
+.sidebar-sub-panel,
+.menu-section {
+  scrollbar-width: thin;
+  scrollbar-color: #9CA3AF #F3F4F6;
+}
+
+/* ============================================
+   SYNTO ANIMATIONS
+   ============================================ */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-fade-up {
+  animation: fadeInUp 0.4s ease-out;
+}
+
+.animate-slide-in {
+  animation: slideInRight 0.3s ease-out;
+}
+
+/* ============================================
+   SYNTO GRADIENT TEXT
+   ============================================ */
+.gradient-text {
+  background: linear-gradient(135deg, var(--synto-primary) 0%, #8b5cf6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ============================================
+   SYNTO TASK CARDS
+   ============================================ */
+.task-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--synto-spacing-4);
+  background: #F9FAFB;
+  border-radius: var(--synto-radius-lg);
+  transition: all 0.2s ease;
+  margin-bottom: var(--synto-spacing-3);
+}
+
+.task-card:hover {
+  background: #F3F4F6;
+  cursor: pointer;
+}
+
+.task-card-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--synto-radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  margin-right: var(--synto-spacing-3);
+}
+
+.task-card-content h4 {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--synto-text-primary);
+  margin: 0 0 4px 0;
+}
+
+.task-card-content p {
+  font-size: 12px;
+  color: var(--synto-text-secondary);
+  margin: 0;
+}
+
+/* ============================================
+   SYNTO RESPONSIVE UTILITIES
+   ============================================ */
+@media (max-width: 768px) {
+  .sidebar {
+    transform: translateX(-100%);
+    position: fixed;
+    z-index: 1000;
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+  }
+
+  .header-search {
+    max-width: 200px;
+  }
+
+  .user-name {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .stats-card,
+  .card {
+    padding: var(--synto-spacing-4);
+  }
+
+  .stat-value {
+    font-size: 24px;
+  }
+
+  .data-table {
+    font-size: 12px;
+  }
+
+  .data-table th,
+  .data-table td {
+    padding: var(--synto-spacing-3);
+  }
+}
+
+/* ============================================
+   SYNTO UTILITY CLASSES
+   ============================================ */
+.text-primary { color: var(--synto-primary) !important; }
+.text-success { color: var(--synto-success) !important; }
+.text-warning { color: var(--synto-warning) !important; }
+.text-danger { color: var(--synto-danger) !important; }
+.text-info { color: var(--synto-info) !important; }
+.text-secondary { color: var(--synto-text-secondary) !important; }
+
+.bg-primary { background: var(--synto-primary) !important; }
+.bg-success { background: var(--synto-success) !important; }
+.bg-warning { background: var(--synto-warning) !important; }
+.bg-danger { background: var(--synto-danger) !important; }
+.bg-info { background: var(--synto-info) !important; }
+
+.rounded-sm { border-radius: var(--synto-radius-sm) !important; }
+.rounded { border-radius: var(--synto-radius-md) !important; }
+.rounded-lg { border-radius: var(--synto-radius-lg) !important; }
+.rounded-xl { border-radius: var(--synto-radius-xl) !important; }
+.rounded-full { border-radius: var(--synto-radius-full) !important; }
+
+.shadow-sm { box-shadow: var(--synto-shadow-sm) !important; }
+.shadow { box-shadow: var(--synto-shadow) !important; }
+.shadow-md { box-shadow: var(--synto-shadow-md) !important; }
+.shadow-lg { box-shadow: var(--synto-shadow-lg) !important; }
+.shadow-xl { box-shadow: var(--synto-shadow-xl) !important; }

@@ -1,48 +1,48 @@
 <?php
 /**
- * V3 Two-Panel Sidebar for Employee
- * Vien Admin Panel Design
+ * V3 Two-Panel Sidebar for Employee - SYNTO EDITION
+ * Synto Dashboard Template Design
  */
 
 // Get current page for active menu highlighting
 $current_page = basename($_SERVER['PHP_SELF']);
 ?>
 
-<div class="sidebar">
+<div class="sidebar custom-scrollbar">
     <!-- Main Panel (Icons) -->
     <div class="sidebar-main-panel">
-        <div class="sidebar-logo">
-            <img src="../assets/images/neofox.png" alt="<?php echo SITE_NAME; ?>">
+        <div class="sidebar-logo" style="padding: 20px; text-align: center;">
+            <img src="../assets/images/neofox.png" alt="<?php echo SITE_NAME; ?>" style="height: 32px;">
         </div>
 
         <div class="main-menu">
             <a href="../employee/index.php" class="main-menu-item <?php echo ($current_page == 'index.php') ? 'active' : ''; ?>"
                data-menu="dashboard" title="Dashboard">
-                <i class="fas fa-home"></i>
+                <i class="ri-dashboard-line" style="font-size: 20px;"></i>
             </a>
-            <a href="../employee/tasks.php" class="main-menu-item <?php echo (in_array($current_page, ['tasks.php', 'create-task.php'])) ? 'active' : ''; ?>"
+            <a href="../employee/tasks.php" class="main-menu-item <?php echo (in_array($current_page, ['tasks.php', 'create-task.php', 'task-detail.php'])) ? 'active' : ''; ?>"
                data-menu="tasks" title="My Tasks">
-                <i class="fas fa-tasks"></i>
+                <i class="ri-task-line" style="font-size: 20px;"></i>
             </a>
             <a href="../employee/time-logs.php" class="main-menu-item <?php echo ($current_page == 'time-logs.php') ? 'active' : ''; ?>"
                data-menu="time" title="Time Logs">
-                <i class="fas fa-clock"></i>
+                <i class="ri-time-line" style="font-size: 20px;"></i>
             </a>
             <a href="../employee/my-stats.php" class="main-menu-item <?php echo ($current_page == 'my-stats.php') ? 'active' : ''; ?>"
                data-menu="stats" title="My Stats">
-                <i class="fas fa-chart-bar"></i>
+                <i class="ri-bar-chart-box-line" style="font-size: 20px;"></i>
             </a>
             <a href="../employee/eisenhower-matrix.php" class="main-menu-item <?php echo (in_array($current_page, ['eisenhower-matrix.php', 'pomodoro.php', 'daily-planning.php', 'goals.php', 'morning-ritual.php', 'time-boxing.php', 'weekly-review.php', 'focus-mode.php'])) ? 'active' : ''; ?>"
                data-menu="productivity" title="Productivity">
-                <i class="fas fa-th"></i>
+                <i class="ri-focus-2-line" style="font-size: 20px;"></i>
             </a>
             <a href="../employee/calendar.php" class="main-menu-item <?php echo ($current_page == 'calendar.php') ? 'active' : ''; ?>"
                data-menu="calendar" title="Calendar">
-                <i class="fas fa-calendar"></i>
+                <i class="ri-calendar-line" style="font-size: 20px;"></i>
             </a>
             <a href="../employee/chat.php" class="main-menu-item <?php echo ($current_page == 'chat.php') ? 'active' : ''; ?>"
                data-menu="chat" title="Team Chat">
-                <i class="fas fa-comments"></i>
+                <i class="ri-chat-3-line" style="font-size: 20px;"></i>
             </a>
         </div>
     </div>
@@ -51,129 +51,129 @@ $current_page = basename($_SERVER['PHP_SELF']);
     <div class="sidebar-sub-panel">
         <!-- Dashboard Section -->
         <div class="menu-section" data-menu="dashboard">
-            <div class="menu-title">Dashboard</div>
+            <div class="menu-title">DASHBOARD</div>
             <a href="../employee/index.php" class="menu-item <?php echo ($current_page == 'index.php') ? 'active' : ''; ?>">
-                <i class="fas fa-tachometer-alt"></i> Overview
+                <i class="ri-speed-line"></i> Overview
             </a>
             <a href="../employee/index.php#tasks" class="menu-item">
-                <i class="fas fa-list"></i> My Tasks
+                <i class="ri-list-check"></i> My Tasks
             </a>
             <a href="../employee/index.php#activity" class="menu-item">
-                <i class="fas fa-clock"></i> Recent Activity
+                <i class="ri-history-line"></i> Recent Activity
             </a>
         </div>
 
         <!-- Tasks Section -->
         <div class="menu-section" data-menu="tasks">
-            <div class="menu-title">Tasks</div>
+            <div class="menu-title">MY TASKS</div>
             <a href="../employee/tasks.php" class="menu-item <?php echo ($current_page == 'tasks.php') ? 'active' : ''; ?>">
-                <i class="fas fa-list-check"></i> All My Tasks
+                <i class="ri-list-check-2"></i> All My Tasks
             </a>
             <a href="../employee/create-task.php" class="menu-item <?php echo ($current_page == 'create-task.php') ? 'active' : ''; ?>">
-                <i class="fas fa-plus"></i> Create Task
+                <i class="ri-add-circle-line"></i> Create Task
             </a>
             <a href="../employee/tasks.php?status=todo" class="menu-item">
-                <i class="fas fa-circle"></i> To Do
+                <i class="ri-checkbox-blank-circle-line"></i> To Do
             </a>
             <a href="../employee/tasks.php?status=in_progress" class="menu-item">
-                <i class="fas fa-spinner"></i> In Progress
+                <i class="ri-loader-2-line"></i> In Progress
             </a>
             <a href="../employee/tasks.php?status=completed" class="menu-item">
-                <i class="fas fa-check"></i> Completed
+                <i class="ri-checkbox-circle-line"></i> Completed
             </a>
             <a href="../employee/tasks.php?status=blocked" class="menu-item">
-                <i class="fas fa-ban"></i> Blocked
+                <i class="ri-error-warning-line"></i> Blocked
             </a>
         </div>
 
         <!-- Time Logs Section -->
         <div class="menu-section" data-menu="time">
-            <div class="menu-title">Time Tracking</div>
+            <div class="menu-title">TIME TRACKING</div>
             <a href="../employee/time-logs.php" class="menu-item <?php echo ($current_page == 'time-logs.php') ? 'active' : ''; ?>">
-                <i class="fas fa-clock"></i> My Time Logs
+                <i class="ri-time-line"></i> My Time Logs
             </a>
             <a href="../employee/time-logs.php?period=today" class="menu-item">
-                <i class="fas fa-calendar-day"></i> Today
+                <i class="ri-calendar-check-line"></i> Today
             </a>
             <a href="../employee/time-logs.php?period=week" class="menu-item">
-                <i class="fas fa-calendar-week"></i> This Week
+                <i class="ri-calendar-event-line"></i> This Week
             </a>
             <a href="../employee/time-logs.php?period=month" class="menu-item">
-                <i class="fas fa-calendar"></i> This Month
+                <i class="ri-calendar-2-line"></i> This Month
             </a>
         </div>
 
         <!-- Stats Section -->
         <div class="menu-section" data-menu="stats">
-            <div class="menu-title">Performance</div>
+            <div class="menu-title">PERFORMANCE</div>
             <a href="../employee/my-stats.php" class="menu-item <?php echo ($current_page == 'my-stats.php') ? 'active' : ''; ?>">
-                <i class="fas fa-chart-line"></i> My Statistics
+                <i class="ri-line-chart-line"></i> My Statistics
             </a>
             <a href="../employee/my-stats.php#achievements" class="menu-item">
-                <i class="fas fa-trophy"></i> Achievements
+                <i class="ri-trophy-line"></i> Achievements
             </a>
             <a href="../employee/my-stats.php#badges" class="menu-item">
-                <i class="fas fa-award"></i> Badges
+                <i class="ri-medal-line"></i> Badges
             </a>
             <a href="../employee/my-stats.php#leaderboard" class="menu-item">
-                <i class="fas fa-crown"></i> Leaderboard
+                <i class="ri-vip-crown-line"></i> Leaderboard
             </a>
         </div>
 
         <!-- Productivity Section -->
         <div class="menu-section" data-menu="productivity">
-            <div class="menu-title">Productivity</div>
+            <div class="menu-title">PRODUCTIVITY TOOLS</div>
             <a href="../employee/daily-planning.php" class="menu-item <?php echo ($current_page == 'daily-planning.php') ? 'active' : ''; ?>">
-                <i class="fas fa-sun"></i> Daily Planning
+                <i class="ri-sun-line"></i> Daily Planning
             </a>
             <a href="../employee/morning-ritual.php" class="menu-item <?php echo ($current_page == 'morning-ritual.php') ? 'active' : ''; ?>">
-                <i class="fas fa-sunrise"></i> Morning Ritual
+                <i class="ri-contrast-2-line"></i> Morning Ritual
             </a>
             <a href="../employee/eisenhower-matrix.php" class="menu-item <?php echo ($current_page == 'eisenhower-matrix.php') ? 'active' : ''; ?>">
-                <i class="fas fa-th"></i> Eisenhower Matrix
+                <i class="ri-grid-line"></i> Eisenhower Matrix
             </a>
             <a href="../employee/pomodoro.php" class="menu-item <?php echo ($current_page == 'pomodoro.php') ? 'active' : ''; ?>">
-                <i class="fas fa-stopwatch"></i> Pomodoro Timer
+                <i class="ri-timer-line"></i> Pomodoro Timer
             </a>
             <a href="../employee/time-boxing.php" class="menu-item <?php echo ($current_page == 'time-boxing.php') ? 'active' : ''; ?>">
-                <i class="fas fa-calendar-check"></i> Time Boxing
+                <i class="ri-calendar-check-fill"></i> Time Boxing
             </a>
             <a href="../employee/focus-mode.php" class="menu-item <?php echo ($current_page == 'focus-mode.php') ? 'active' : ''; ?>">
-                <i class="fas fa-brain"></i> Focus Mode
+                <i class="ri-focus-2-line"></i> Focus Mode
             </a>
             <a href="../employee/goals.php" class="menu-item <?php echo ($current_page == 'goals.php') ? 'active' : ''; ?>">
-                <i class="fas fa-bullseye"></i> Goals
+                <i class="ri-bullseye-line"></i> Goals
             </a>
             <a href="../employee/weekly-review.php" class="menu-item <?php echo ($current_page == 'weekly-review.php') ? 'active' : ''; ?>">
-                <i class="fas fa-calendar-week"></i> Weekly Review
+                <i class="ri-calendar-todo-line"></i> Weekly Review
             </a>
         </div>
 
         <!-- Calendar Section -->
         <div class="menu-section" data-menu="calendar">
-            <div class="menu-title">Calendar</div>
+            <div class="menu-title">CALENDAR</div>
             <a href="../employee/calendar.php" class="menu-item <?php echo ($current_page == 'calendar.php') ? 'active' : ''; ?>">
-                <i class="fas fa-calendar-alt"></i> My Calendar
+                <i class="ri-calendar-2-line"></i> My Calendar
             </a>
             <a href="../employee/calendar.php#today" class="menu-item">
-                <i class="fas fa-calendar-day"></i> Today
+                <i class="ri-calendar-check-line"></i> Today
             </a>
             <a href="../employee/calendar.php#week" class="menu-item">
-                <i class="fas fa-calendar-week"></i> This Week
+                <i class="ri-calendar-event-line"></i> This Week
             </a>
         </div>
 
         <!-- Chat Section -->
         <div class="menu-section" data-menu="chat">
-            <div class="menu-title">Team Chat</div>
+            <div class="menu-title">TEAM CHAT</div>
             <a href="../employee/chat.php" class="menu-item <?php echo ($current_page == 'chat.php') ? 'active' : ''; ?>">
-                <i class="fas fa-comments"></i> Team Chat
+                <i class="ri-message-3-line"></i> Team Chat
             </a>
             <a href="../employee/chat.php#general" class="menu-item">
-                <i class="fas fa-users"></i> General
+                <i class="ri-group-line"></i> General
             </a>
-            <a href="../logout.php" class="menu-item" style="margin-top: 20px; color: var(--danger);">
-                <i class="fas fa-sign-out-alt"></i> Logout
+            <a href="../logout.php" class="menu-item" style="margin-top: 20px; color: var(--synto-danger); border-top: 1px solid rgba(255,255,255,0.1); padding-top: 12px;">
+                <i class="ri-logout-box-line"></i> Logout
             </a>
         </div>
     </div>

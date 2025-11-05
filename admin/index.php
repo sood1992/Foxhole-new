@@ -79,9 +79,16 @@ $teamProductivity = $db->query("
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - <?php echo SITE_NAME; ?> V3</title>
+    <title>Admin Dashboard - <?php echo SITE_NAME; ?> V3 Synto Edition</title>
+
+    <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Base V3 Design System -->
     <link rel="stylesheet" href="../assets/css/vien-v3.css">
+
+    <!-- Synto Dashboard Template Design -->
+    <link rel="stylesheet" href="../assets/css/synto-design.css">
 </head>
 <body>
     <div class="app-container">
@@ -107,9 +114,9 @@ $teamProductivity = $db->query("
                 <div class="row">
                     <!-- Active Team -->
                     <div class="col-lg-3 col-md-6">
-                        <div class="dashboard-card">
+                        <div class="dashboard-card stats-card">
                             <div class="card-icon info">
-                                <i class="fas fa-users"></i>
+                                <i class="ri-team-line"></i>
                             </div>
                             <div class="card-value"><?php echo $stats['employees']; ?></div>
                             <div class="card-label">Active Team Members</div>
@@ -119,9 +126,9 @@ $teamProductivity = $db->query("
 
                     <!-- Active Projects -->
                     <div class="col-lg-3 col-md-6">
-                        <div class="dashboard-card">
+                        <div class="dashboard-card stats-card">
                             <div class="card-icon warning">
-                                <i class="fas fa-folder-open"></i>
+                                <i class="ri-folder-open-line"></i>
                             </div>
                             <div class="card-value"><?php echo $stats['active_projects']; ?></div>
                             <div class="card-label">Active Projects</div>
@@ -131,16 +138,16 @@ $teamProductivity = $db->query("
 
                     <!-- Completed This Month -->
                     <div class="col-lg-3 col-md-6">
-                        <div class="dashboard-card">
+                        <div class="dashboard-card stats-card">
                             <div class="card-icon success">
-                                <i class="fas fa-check-circle"></i>
+                                <i class="ri-checkbox-circle-line"></i>
                             </div>
                             <div class="card-value"><?php echo $stats['completed_month']; ?></div>
                             <div class="card-label">Completed This Month</div>
                             <?php if ($stats['completed_trend'] > 0): ?>
-                                <div class="card-trend up"><?php echo $stats['completed_trend']; ?>%</div>
+                                <div class="card-trend up">+<?php echo $stats['completed_trend']; ?>%</div>
                             <?php elseif ($stats['completed_trend'] < 0): ?>
-                                <div class="card-trend down"><?php echo abs($stats['completed_trend']); ?>%</div>
+                                <div class="card-trend down">-<?php echo abs($stats['completed_trend']); ?>%</div>
                             <?php else: ?>
                                 <div class="card-trend up">No Change</div>
                             <?php endif; ?>
@@ -149,9 +156,9 @@ $teamProductivity = $db->query("
 
                     <!-- Hours Logged -->
                     <div class="col-lg-3 col-md-6">
-                        <div class="dashboard-card">
+                        <div class="dashboard-card stats-card">
                             <div class="card-icon primary">
-                                <i class="fas fa-clock"></i>
+                                <i class="ri-time-line"></i>
                             </div>
                             <div class="card-value"><?php echo $stats['hours_week']; ?>h</div>
                             <div class="card-label">Hours This Week</div>
@@ -333,9 +340,9 @@ $teamProductivity = $db->query("
                         <a href="projects.php" style="text-decoration: none;">
                             <div class="card hover-lift" style="cursor: pointer;">
                                 <div class="card-body" style="text-align: center; padding: 30px;">
-                                    <i class="fas fa-folder-plus" style="font-size: 48px; color: #667eea; margin-bottom: 16px;"></i>
+                                    <i class="ri-folder-add-line" style="font-size: 48px; color: var(--synto-primary); margin-bottom: 16px;"></i>
                                     <h4 style="margin-bottom: 8px;">Create Project</h4>
-                                    <p style="color: var(--text-secondary); font-size: 13px; margin: 0;">
+                                    <p style="color: var(--synto-text-secondary); font-size: 13px; margin: 0;">
                                         Start a new project and assign team members
                                     </p>
                                 </div>
@@ -346,9 +353,9 @@ $teamProductivity = $db->query("
                         <a href="users.php?action=add" style="text-decoration: none;">
                             <div class="card hover-lift" style="cursor: pointer;">
                                 <div class="card-body" style="text-align: center; padding: 30px;">
-                                    <i class="fas fa-user-plus" style="font-size: 48px; color: #17b06b; margin-bottom: 16px;"></i>
+                                    <i class="ri-user-add-line" style="font-size: 48px; color: var(--synto-success); margin-bottom: 16px;"></i>
                                     <h4 style="margin-bottom: 8px;">Add Team Member</h4>
-                                    <p style="color: var(--text-secondary); font-size: 13px; margin: 0;">
+                                    <p style="color: var(--synto-text-secondary); font-size: 13px; margin: 0;">
                                         Invite new users to join your team
                                     </p>
                                 </div>
@@ -359,9 +366,9 @@ $teamProductivity = $db->query("
                         <a href="analytics.php" style="text-decoration: none;">
                             <div class="card hover-lift" style="cursor: pointer;">
                                 <div class="card-body" style="text-align: center; padding: 30px;">
-                                    <i class="fas fa-chart-line" style="font-size: 48px; color: #f8b739; margin-bottom: 16px;"></i>
+                                    <i class="ri-line-chart-line" style="font-size: 48px; color: var(--synto-warning); margin-bottom: 16px;"></i>
                                     <h4 style="margin-bottom: 8px;">View Analytics</h4>
-                                    <p style="color: var(--text-secondary); font-size: 13px; margin: 0;">
+                                    <p style="color: var(--synto-text-secondary); font-size: 13px; margin: 0;">
                                         Analyze team performance and metrics
                                     </p>
                                 </div>
@@ -411,5 +418,8 @@ $teamProductivity = $db->query("
         });
     });
     </script>
+
+    <!-- Synto Dashboard Interactions -->
+    <script src="../assets/js/synto-interactions.js"></script>
 </body>
 </html>
