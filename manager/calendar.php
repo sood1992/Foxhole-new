@@ -34,6 +34,67 @@ $currentUser = getCurrentUser();
         font-family: 'Inter', sans-serif;
     }
 
+    /* Style FullCalendar header buttons with Synto design */
+    .fc .fc-button {
+        background: var(--synto-primary);
+        border: none;
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-weight: 500;
+        color: white;
+        transition: all 0.2s;
+        text-transform: capitalize;
+    }
+
+    .fc .fc-button:hover {
+        background: #4338CA;
+        box-shadow: 0 2px 8px rgba(79, 70, 229, 0.3);
+    }
+
+    .fc .fc-button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    .fc .fc-button-active {
+        background: #4338CA !important;
+        box-shadow: 0 2px 8px rgba(79, 70, 229, 0.4) !important;
+    }
+
+    .fc .fc-button-primary:not(:disabled).fc-button-active {
+        background: var(--synto-primary);
+        border-color: var(--synto-primary);
+    }
+
+    /* Today button styling */
+    .fc .fc-today-button {
+        background: var(--synto-success) !important;
+    }
+
+    .fc .fc-today-button:hover {
+        background: #059669 !important;
+    }
+
+    /* Prev/Next buttons */
+    .fc .fc-prev-button,
+    .fc .fc-next-button {
+        background: var(--synto-bg) !important;
+        color: var(--synto-text-primary) !important;
+        border: 1px solid var(--synto-border) !important;
+    }
+
+    .fc .fc-prev-button:hover,
+    .fc .fc-next-button:hover {
+        background: var(--synto-border) !important;
+    }
+
+    /* Calendar title */
+    .fc .fc-toolbar-title {
+        font-size: 24px;
+        font-weight: 600;
+        color: var(--synto-text-primary);
+    }
+
     .fc-event {
         cursor: pointer;
         border-radius: 4px;
