@@ -216,7 +216,8 @@ $activeTaskIds = array_column($stmt->fetchAll(), 'task_id');
                             <?php foreach ($tasks as $task): ?>
                             <?php
                                 // Check if this specific task is currently being worked on
-                                $isTaskActive = in_array($task['id'], $activeTaskIds);
+                                // A task is "active" if it has an active time log OR if status is in_progress
+                                $isTaskActive = in_array($task['id'], $activeTaskIds) || $task['status'] === 'in_progress';
                                 $isOverdue = isOverdue($task['due_date'], $task['status']);
 
                                 // Get priority color
