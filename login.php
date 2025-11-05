@@ -79,12 +79,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - <?php echo SITE_NAME; ?> V3</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <title>Login - <?php echo SITE_NAME; ?> V3 Synto Edition</title>
+
+    <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Base V3 Design System -->
     <link rel="stylesheet" href="assets/css/vien-v3.css">
+
+    <!-- Synto Dashboard Template Design -->
+    <link rel="stylesheet" href="assets/css/synto-design.css">
 </head>
 <body>
     <div class="auth-page">
@@ -99,7 +103,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <?php if ($error): ?>
                 <div class="alert alert-error">
                     <div class="alert-icon">
-                        <i class="fas fa-exclamation-circle"></i>
+                        <i class="ri-error-warning-line"></i>
                     </div>
                     <div class="alert-content">
                         <?php echo htmlspecialchars($error); ?>
@@ -122,7 +126,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 <div class="form-group" style="margin-bottom: 0;">
                     <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-sign-in-alt"></i> Sign In
+                        <i class="ri-login-box-line"></i> Sign In
                     </button>
                 </div>
             </form>
@@ -133,36 +137,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             <!-- Demo Accounts Section -->
             <div class="social-login">
-                <p style="text-align: center; font-size: 12px; color: var(--text-secondary); margin-bottom: 15px; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;">
+                <p style="text-align: center; font-size: 12px; color: var(--synto-text-secondary); margin-bottom: 15px; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;">
                     Demo Credentials
                 </p>
                 <div style="display: flex; flex-direction: column; gap: 10px;">
-                    <div style="padding: 12px; background: var(--light); border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+                    <div style="padding: 12px; background: #F3F4F6; border-radius: var(--synto-radius-lg); border: 1px solid var(--synto-border);">
                         <div style="display: flex; justify-content: space-between; align-items: center; font-size: 13px;">
-                            <span style="font-weight: 600; color: var(--heading-color);">
-                                <i class="fas fa-user-shield" style="color: #667eea;"></i> Admin
+                            <span style="font-weight: 600; color: var(--synto-text-primary);">
+                                <i class="ri-shield-user-line" style="color: var(--synto-primary);"></i> Admin
                             </span>
-                            <span style="color: var(--text-secondary); font-family: 'Courier New', monospace;">
+                            <span style="color: var(--synto-text-secondary); font-family: 'Courier New', monospace;">
                                 admin / admin123
                             </span>
                         </div>
                     </div>
-                    <div style="padding: 12px; background: var(--light); border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+                    <div style="padding: 12px; background: #F3F4F6; border-radius: var(--synto-radius-lg); border: 1px solid var(--synto-border);">
                         <div style="display: flex; justify-content: space-between; align-items: center; font-size: 13px;">
-                            <span style="font-weight: 600; color: var(--heading-color);">
-                                <i class="fas fa-user-tie" style="color: #17b06b;"></i> Manager
+                            <span style="font-weight: 600; color: var(--synto-text-primary);">
+                                <i class="ri-briefcase-line" style="color: var(--synto-success);"></i> Manager
                             </span>
-                            <span style="color: var(--text-secondary); font-family: 'Courier New', monospace;">
+                            <span style="color: var(--synto-text-secondary); font-family: 'Courier New', monospace;">
                                 john_manager / admin123
                             </span>
                         </div>
                     </div>
-                    <div style="padding: 12px; background: var(--light); border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+                    <div style="padding: 12px; background: #F3F4F6; border-radius: var(--synto-radius-lg); border: 1px solid var(--synto-border);">
                         <div style="display: flex; justify-content: space-between; align-items: center; font-size: 13px;">
-                            <span style="font-weight: 600; color: var(--heading-color);">
-                                <i class="fas fa-user" style="color: #f8b739;"></i> Employee
+                            <span style="font-weight: 600; color: var(--synto-text-primary);">
+                                <i class="ri-user-3-line" style="color: var(--synto-warning);"></i> Employee
                             </span>
-                            <span style="color: var(--text-secondary); font-family: 'Courier New', monospace;">
+                            <span style="color: var(--synto-text-secondary); font-family: 'Courier New', monospace;">
                                 sarah_employee / admin123
                             </span>
                         </div>
@@ -172,8 +176,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
 
         <!-- Version Badge -->
-        <div style="position: fixed; bottom: 20px; right: 20px; background: rgba(255,255,255,0.9); padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: 600; color: #667eea; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
-            <i class="fas fa-sparkles"></i> Foxhole V3
+        <div style="position: fixed; bottom: 20px; right: 20px; background: rgba(255,255,255,0.95); padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: 600; color: var(--synto-primary); box-shadow: var(--synto-shadow-lg); border: 1px solid var(--synto-border);">
+            <i class="ri-sparkling-line"></i> Foxhole V3.1 Synto
         </div>
     </div>
 
@@ -198,5 +202,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     });
     </script>
+
+    <!-- Synto Dashboard Interactions -->
+    <script src="assets/js/synto-interactions.js"></script>
 </body>
 </html>

@@ -84,6 +84,9 @@ $availableTasks = $stmt->fetchAll();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo e($task['task_name']); ?> - <?php echo SITE_NAME; ?></title>
     <link rel="stylesheet" href="../assets/css/vien-v3.css">
+
+    <!-- Synto Dashboard Template Design -->
+    <link rel="stylesheet" href="../assets/css/synto-design.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         .task-detail-header {
@@ -253,16 +256,16 @@ $availableTasks = $stmt->fetchAll();
 
                                 <?php if ($task['status'] !== 'review'): ?>
                                     <button onclick="submitForReview(<?php echo $task['id']; ?>)" class="btn btn-success">
-                                        <i class="fas fa-check"></i> Submit for Review
+                                        <i class="fas ri-check-line"></i> Submit for Review
                                     </button>
                                 <?php endif; ?>
 
                                 <button onclick="markAsCompleted(<?php echo $task['id']; ?>)" class="btn" style="background: #10b981; color: white;">
-                                    <i class="fas fa-check-double"></i> Mark Completed
+                                    <i class="fas ri-check-line-double"></i> Mark Completed
                                 </button>
                             <?php else: ?>
                                 <span style="color: var(--success); font-weight: 600; font-size: 18px;">
-                                    <i class="fas fa-check-circle"></i> Task Completed
+                                    <i class="fas ri-checkbox-circle-line"></i> Task Completed
                                 </span>
                             <?php endif; ?>
                         </div>
@@ -368,7 +371,7 @@ $availableTasks = $stmt->fetchAll();
                             <?php endforeach; ?>
                         </select>
                         <button onclick="addDependency()" class="btn btn-primary">
-                            <i class="fas fa-plus"></i> Add Dependency
+                            <i class="fas ri-add-line"></i> Add Dependency
                         </button>
                     </div>
                     <?php elseif (empty($dependencies)): ?>
@@ -382,7 +385,7 @@ $availableTasks = $stmt->fetchAll();
                 <!-- Comments Section -->
                 <div class="comments-section">
                     <h3 style="margin: 0 0 20px; color: var(--text-primary);">
-                        <i class="fas fa-comments"></i> Updates & Comments (<?php echo count($comments); ?>)
+                        <i class="fas ri-chat-3-line"></i> Updates & Comments (<?php echo count($comments); ?>)
                     </h3>
 
                     <!-- Add Comment Form -->
@@ -407,7 +410,7 @@ $availableTasks = $stmt->fetchAll();
                     <div id="commentsList">
                         <?php if (empty($comments)): ?>
                             <div style="text-align: center; padding: 40px; color: var(--text-secondary);">
-                                <i class="fas fa-comments" style="font-size: 48px; opacity: 0.3; margin-bottom: 12px;"></i>
+                                <i class="fas ri-chat-3-line" style="font-size: 48px; opacity: 0.3; margin-bottom: 12px;"></i>
                                 <p>No comments yet. Be the first to add an update!</p>
                             </div>
                         <?php else: ?>
@@ -677,5 +680,8 @@ $availableTasks = $stmt->fetchAll();
             });
         }
     </script>
+
+    <!-- Synto Dashboard Interactions -->
+    <script src="../assets/js/synto-interactions.js"></script>
 </body>
 </html>

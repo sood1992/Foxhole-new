@@ -88,6 +88,9 @@ $teamData = $teamActivity->fetchAll();
     <title>Manager Dashboard - <?php echo SITE_NAME; ?> V3</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../assets/css/vien-v3.css">
+
+    <!-- Synto Dashboard Template Design -->
+    <link rel="stylesheet" href="../assets/css/synto-design.css">
 </head>
 <body>
     <div class="app-container">
@@ -110,7 +113,7 @@ $teamData = $teamActivity->fetchAll();
                     <div class="col-lg-3 col-md-6">
                         <div class="dashboard-card">
                             <div class="card-icon primary">
-                                <i class="fas fa-folder"></i>
+                                <i class="fas ri-folder-line"></i>
                             </div>
                             <div class="card-value"><?php echo $stats['my_projects']; ?></div>
                             <div class="card-label">My Projects</div>
@@ -119,7 +122,7 @@ $teamData = $teamActivity->fetchAll();
                     <div class="col-lg-3 col-md-6">
                         <div class="dashboard-card">
                             <div class="card-icon warning">
-                                <i class="fas fa-tasks"></i>
+                                <i class="fas ri-task-line"></i>
                             </div>
                             <div class="card-value"><?php echo $stats['active_tasks']; ?></div>
                             <div class="card-label">Active Tasks</div>
@@ -128,7 +131,7 @@ $teamData = $teamActivity->fetchAll();
                     <div class="col-lg-3 col-md-6">
                         <div class="dashboard-card">
                             <div class="card-icon success">
-                                <i class="fas fa-check-circle"></i>
+                                <i class="fas ri-checkbox-circle-line"></i>
                             </div>
                             <div class="card-value"><?php echo $stats['completed_week']; ?></div>
                             <div class="card-label">Completed This Week</div>
@@ -137,7 +140,7 @@ $teamData = $teamActivity->fetchAll();
                     <div class="col-lg-3 col-md-6">
                         <div class="dashboard-card">
                             <div class="card-icon info">
-                                <i class="fas fa-users"></i>
+                                <i class="fas ri-team-line"></i>
                             </div>
                             <div class="card-value"><?php echo $stats['team_members']; ?></div>
                             <div class="card-label">Team Members</div>
@@ -155,7 +158,7 @@ $teamData = $teamActivity->fetchAll();
                             </p>
                         </div>
                         <a href="team.php" class="btn btn-outline btn-sm">
-                            <i class="fas fa-eye"></i> View All
+                            <i class="fas ri-eye-line"></i> View All
                         </a>
                     </div>
                     <div class="card-body" style="padding: 0;">
@@ -214,13 +217,13 @@ $teamData = $teamActivity->fetchAll();
                             </p>
                         </div>
                         <a href="projects.php" class="btn btn-primary btn-sm">
-                            <i class="fas fa-plus"></i> New Project
+                            <i class="fas ri-add-line"></i> New Project
                         </a>
                     </div>
                     <div class="card-body">
                         <?php if (empty($projectsData)): ?>
                             <div style="text-align: center; padding: 60px 20px;">
-                                <i class="fas fa-folder-open" style="font-size: 48px; color: var(--text-tertiary); margin-bottom: 16px;"></i>
+                                <i class="fas ri-folder-line-open" style="font-size: 48px; color: var(--text-tertiary); margin-bottom: 16px;"></i>
                                 <h3 style="color: var(--heading-color); margin-bottom: 8px;">No Projects Assigned</h3>
                                 <p style="color: var(--text-secondary); margin: 0;">Contact admin to get projects assigned to you.</p>
                             </div>
@@ -259,7 +262,7 @@ $teamData = $teamActivity->fetchAll();
                                             </div>
                                         </div>
                                         <a href="projects.php?id=<?php echo $project['id']; ?>" class="btn btn-outline btn-sm">
-                                            <i class="fas fa-eye"></i> View
+                                            <i class="fas ri-eye-line"></i> View
                                         </a>
                                     </div>
                                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px;">
@@ -313,5 +316,8 @@ $teamData = $teamActivity->fetchAll();
             </div>
         </div>
     </div>
+
+    <!-- Synto Dashboard Interactions -->
+    <script src="../assets/js/synto-interactions.js"></script>
 </body>
 </html>

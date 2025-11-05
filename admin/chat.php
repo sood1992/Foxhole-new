@@ -24,6 +24,9 @@ $projects = $db->query("
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Team Chat V3 - <?php echo SITE_NAME; ?></title>
     <link rel="stylesheet" href="../assets/css/vien-v3.css">
+
+    <!-- Synto Dashboard Template Design -->
+    <link rel="stylesheet" href="../assets/css/synto-design.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
     .chat-container {
@@ -203,7 +206,7 @@ $projects = $db->query("
 
             <div class="content-wrapper">
                 <div class="page-header">
-                    <h1><i class="fas fa-comments"></i> Team Chat</h1>
+                    <h1><i class="fas ri-chat-3-line"></i> Team Chat</h1>
                 </div>
 
                 <div class="chat-container">
@@ -211,14 +214,14 @@ $projects = $db->query("
                     <div class="chat-channels">
                         <h3>Channels</h3>
                         <div class="channel-item active" data-channel-type="team" data-channel-id="">
-                            <span><i class="fas fa-users"></i></span>
+                            <span><i class="fas ri-team-line"></i></span>
                             <span>General Team</span>
                         </div>
 
                         <h3 style="margin-top: 20px;">Projects</h3>
                         <?php foreach ($projects as $project): ?>
                         <div class="channel-item" data-channel-type="project" data-channel-id="<?php echo $project['id']; ?>">
-                            <span><i class="fas fa-folder"></i></span>
+                            <span><i class="fas ri-folder-line"></i></span>
                             <span><?php echo e($project['project_name']); ?></span>
                         </div>
                         <?php endforeach; ?>
@@ -227,12 +230,12 @@ $projects = $db->query("
                     <!-- Chat Main -->
                     <div class="chat-main">
                         <div class="chat-header">
-                            <h3 id="channelName"><i class="fas fa-users"></i> General Team</h3>
+                            <h3 id="channelName"><i class="fas ri-team-line"></i> General Team</h3>
                         </div>
 
                         <div class="chat-messages" id="chatMessages">
                             <div class="empty-state">
-                                <div class="empty-state-icon"><i class="fas fa-comments"></i></div>
+                                <div class="empty-state-icon"><i class="fas ri-chat-3-line"></i></div>
                                 <p>No messages yet. Start the conversation!</p>
                             </div>
                         </div>
@@ -313,7 +316,7 @@ $projects = $db->query("
         if (messages.length === 0) {
             container.innerHTML = `
                 <div class="empty-state">
-                    <div class="empty-state-icon"><i class="fas fa-comments"></i></div>
+                    <div class="empty-state-icon"><i class="fas ri-chat-3-line"></i></div>
                     <p>No messages yet. Start the conversation!</p>
                 </div>
             `;
@@ -418,5 +421,8 @@ $projects = $db->query("
     });
     </script>
     <script src="../assets/js/theme.js"></script>
+
+    <!-- Synto Dashboard Interactions -->
+    <script src="../assets/js/synto-interactions.js"></script>
 </body>
 </html>

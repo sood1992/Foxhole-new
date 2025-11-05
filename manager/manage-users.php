@@ -153,6 +153,9 @@ $pageTitle = $action === 'add' ? 'Add User' : ($action === 'edit' ? 'Edit User' 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo $pageTitle; ?> V3 - <?php echo SITE_NAME; ?></title>
     <link rel="stylesheet" href="../assets/css/vien-v3.css">
+
+    <!-- Synto Dashboard Template Design -->
+    <link rel="stylesheet" href="../assets/css/synto-design.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -167,11 +170,11 @@ $pageTitle = $action === 'add' ? 'Add User' : ($action === 'edit' ? 'Edit User' 
                     <!-- User List View -->
                     <div class="page-header">
                         <div>
-                            <h1><i class="fas fa-users"></i> <?php echo $pageTitle; ?></h1>
+                            <h1><i class="fas ri-team-line"></i> <?php echo $pageTitle; ?></h1>
                             <p class="page-subtitle">Manage team members and their permissions</p>
                         </div>
                         <div class="page-actions">
-                            <a href="manage-users.php?action=add" class="btn btn-primary"><i class="fas fa-plus"></i> Add User</a>
+                            <a href="manage-users.php?action=add" class="btn btn-primary"><i class="fas ri-add-line"></i> Add User</a>
                         </div>
                     </div>
 
@@ -222,7 +225,7 @@ $pageTitle = $action === 'add' ? 'Add User' : ($action === 'edit' ? 'Edit User' 
                                             </td>
                                             <td>
                                                 <a href="manage-users.php?action=edit&id=<?php echo $member['id']; ?>"
-                                                   class="btn btn-secondary btn-sm"><i class="fas fa-edit"></i> Edit</a>
+                                                   class="btn btn-secondary btn-sm"><i class="fas ri-edit-line"></i> Edit</a>
                                             </td>
                                         </tr>
                                         <?php endforeach; ?>
@@ -236,7 +239,7 @@ $pageTitle = $action === 'add' ? 'Add User' : ($action === 'edit' ? 'Edit User' 
                     <!-- Add/Edit Form -->
                     <div class="page-header">
                         <div>
-                            <h1><i class="fas fa-user-<?php echo $action === 'add' ? 'plus' : 'edit'; ?>"></i> <?php echo $pageTitle; ?></h1>
+                            <h1><i class="fas ri-user-line-<?php echo $action === 'add' ? 'plus' : 'edit'; ?>"></i> <?php echo $pageTitle; ?></h1>
                             <p class="page-subtitle"><?php echo $action === 'add' ? 'Add a new team member' : 'Update team member information'; ?></p>
                         </div>
                         <div class="page-actions">
@@ -340,5 +343,8 @@ $pageTitle = $action === 'add' ? 'Add User' : ($action === 'edit' ? 'Edit User' 
     </div>
 
     <script src="../assets/js/theme.js"></script>
+
+    <!-- Synto Dashboard Interactions -->
+    <script src="../assets/js/synto-interactions.js"></script>
 </body>
 </html>

@@ -31,6 +31,9 @@ $tasks = $stmt->fetchAll();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Focus Mode - <?php echo SITE_NAME; ?></title>
     <link rel="stylesheet" href="../assets/css/vien-v3.css">
+
+    <!-- Synto Dashboard Template Design -->
+    <link rel="stylesheet" href="../assets/css/synto-design.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body.focus-active {
@@ -223,7 +226,7 @@ $tasks = $stmt->fetchAll();
                 <!-- Break Reminder Settings -->
                 <div class="dashboard-card" style="margin-top:20px;">
                     <div class="card-header">
-                        <h3><i class="fas fa-bell"></i> Break Reminders</h3>
+                        <h3><i class="fas ri-notification-3-line"></i> Break Reminders</h3>
                     </div>
                     <div class="card-body">
                         <div class="break-reminder-settings">
@@ -492,5 +495,8 @@ $tasks = $stmt->fetchAll();
         loadBreakSettings();
     </script>
     <script src="../assets/js/theme.js"></script>
+
+    <!-- Synto Dashboard Interactions -->
+    <script src="../assets/js/synto-interactions.js"></script>
 </body>
 </html>

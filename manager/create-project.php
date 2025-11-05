@@ -113,6 +113,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Project V3 - <?php echo SITE_NAME; ?></title>
     <link rel="stylesheet" href="../assets/css/vien-v3.css">
+
+    <!-- Synto Dashboard Template Design -->
+    <link rel="stylesheet" href="../assets/css/synto-design.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         .user-select-grid {
@@ -175,7 +178,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="content-wrapper">
                 <div class="page-header">
                     <div>
-                        <h1><i class="fas fa-plus-circle"></i> Create New Project</h1>
+                        <h1><i class="fas ri-add-line-circle"></i> Create New Project</h1>
                         <p class="page-subtitle">Create a new project and assign team members to work on it</p>
                     </div>
                     <div class="page-actions">
@@ -284,7 +287,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <div style="border-top: 2px solid var(--border); padding-top: 24px; display: flex; gap: 12px; justify-content: flex-end;">
                                 <a href="projects.php" class="btn btn-secondary">Cancel</a>
                                 <button type="submit" class="btn btn-primary">
-                                    <i class="fas fa-check"></i> Create Project
+                                    <i class="fas ri-check-line"></i> Create Project
                                 </button>
                             </div>
                         </form>
@@ -295,5 +298,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 
     <script src="../assets/js/theme.js"></script>
+
+    <!-- Synto Dashboard Interactions -->
+    <script src="../assets/js/synto-interactions.js"></script>
 </body>
 </html>

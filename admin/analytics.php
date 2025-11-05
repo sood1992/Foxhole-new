@@ -98,6 +98,9 @@ $hourlyDist = $db->query("
     <title>Analytics - <?php echo SITE_NAME; ?> V3</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../assets/css/vien-v3.css">
+
+    <!-- Synto Dashboard Template Design -->
+    <link rel="stylesheet" href="../assets/css/synto-design.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
 <body>
@@ -121,7 +124,7 @@ $hourlyDist = $db->query("
                         <span style="color: var(--text-secondary);">to</span>
                         <input type="date" name="end_date" value="<?php echo $endDate; ?>" class="form-control" style="width: auto;">
                         <button type="submit" class="btn btn-primary btn-sm">
-                            <i class="fas fa-filter"></i> Filter
+                            <i class="fas ri-filter-line"></i> Filter
                         </button>
                     </form>
                 </div>
@@ -150,7 +153,7 @@ $hourlyDist = $db->query("
                     <div class="card">
                         <div class="card-header">
                             <div>
-                                <h3 style="margin: 0;"><i class="fas fa-users"></i> Employee Productivity</h3>
+                                <h3 style="margin: 0;"><i class="fas ri-team-line"></i> Employee Productivity</h3>
                                 <p style="font-size: 13px; color: var(--text-secondary); margin: 4px 0 0 0;">
                                     Top 10 employees this month
                                 </p>
@@ -167,7 +170,7 @@ $hourlyDist = $db->query("
                     <div class="card">
                         <div class="card-header">
                             <div>
-                                <h3 style="margin: 0;"><i class="fas fa-folder"></i> Project Status Distribution</h3>
+                                <h3 style="margin: 0;"><i class="fas ri-folder-line"></i> Project Status Distribution</h3>
                                 <p style="font-size: 13px; color: var(--text-secondary); margin: 4px 0 0 0;">
                                     Projects by status
                                 </p>
@@ -184,7 +187,7 @@ $hourlyDist = $db->query("
                     <div class="card">
                         <div class="card-header">
                             <div>
-                                <h3 style="margin: 0;"><i class="fas fa-chart-line"></i> Task Completion Trend</h3>
+                                <h3 style="margin: 0;"><i class="fas ri-line-chart-line"></i> Task Completion Trend</h3>
                                 <p style="font-size: 13px; color: var(--text-secondary); margin: 4px 0 0 0;">
                                     Tasks completed over last 12 weeks
                                 </p>
@@ -218,7 +221,7 @@ $hourlyDist = $db->query("
                     <div class="card">
                         <div class="card-header">
                             <div>
-                                <h3 style="margin: 0;"><i class="fas fa-clock"></i> Peak Working Hours</h3>
+                                <h3 style="margin: 0;"><i class="fas ri-time-line"></i> Peak Working Hours</h3>
                                 <p style="font-size: 13px; color: var(--text-secondary); margin: 4px 0 0 0;">
                                     Session starts by hour (last 30 days)
                                 </p>
@@ -387,5 +390,8 @@ $hourlyDist = $db->query("
         }
     });
     </script>
+
+    <!-- Synto Dashboard Interactions -->
+    <script src="../assets/js/synto-interactions.js"></script>
 </body>
 </html>

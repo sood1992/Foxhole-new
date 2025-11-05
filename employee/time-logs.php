@@ -62,6 +62,9 @@ $projectData = $projectSummary->fetchAll();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Time Logs V3 - <?php echo SITE_NAME; ?></title>
     <link rel="stylesheet" href="../assets/css/vien-v3.css">
+
+    <!-- Synto Dashboard Template Design -->
+    <link rel="stylesheet" href="../assets/css/synto-design.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <?php include '../includes/quick-actions-assets.php'; ?>
 </head>
@@ -96,7 +99,7 @@ $projectData = $projectSummary->fetchAll();
                 <div class="stats-grid">
                     <div class="dashboard-card">
                         <div class="card-icon gradient-blue">
-                            <i class="fas fa-clock"></i>
+                            <i class="fas ri-time-line"></i>
                         </div>
                         <div class="card-content">
                             <div class="card-label">Total Hours</div>
@@ -107,7 +110,7 @@ $projectData = $projectSummary->fetchAll();
 
                     <div class="dashboard-card">
                         <div class="card-icon gradient-green">
-                            <i class="fas fa-list"></i>
+                            <i class="fas ri-list-check"></i>
                         </div>
                         <div class="card-content">
                             <div class="card-label">Sessions</div>
@@ -118,7 +121,7 @@ $projectData = $projectSummary->fetchAll();
 
                     <div class="dashboard-card">
                         <div class="card-icon gradient-orange">
-                            <i class="fas fa-chart-bar"></i>
+                            <i class="fas ri-bar-chart-box-line"></i>
                         </div>
                         <div class="card-content">
                             <div class="card-label">Avg Session</div>
@@ -133,7 +136,7 @@ $projectData = $projectSummary->fetchAll();
                 <!-- Project Summary -->
                 <div class="dashboard-card" style="margin-bottom: 24px;">
                     <div class="card-header">
-                        <h3><i class="fas fa-folder"></i> Time by Project</h3>
+                        <h3><i class="fas ri-folder-line"></i> Time by Project</h3>
                     </div>
                     <div class="card-body">
                         <?php if (empty($projectData)): ?>
@@ -225,5 +228,8 @@ $projectData = $projectSummary->fetchAll();
     </div>
 
     <script src="../assets/js/theme.js"></script>
+
+    <!-- Synto Dashboard Interactions -->
+    <script src="../assets/js/synto-interactions.js"></script>
 </body>
 </html>

@@ -23,6 +23,9 @@ $tasks = $stmt->fetchAll();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Time Boxing - <?php echo SITE_NAME; ?></title>
     <link rel="stylesheet" href="../assets/css/vien-v3.css">
+
+    <!-- Synto Dashboard Template Design -->
+    <link rel="stylesheet" href="../assets/css/synto-design.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         .time-grid {
@@ -94,9 +97,9 @@ $tasks = $stmt->fetchAll();
             <?php include '../includes/v3-header.php'; ?>
             <div class="content-wrapper">
                 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
-                    <h1><i class="fas fa-calendar-check"></i> Time Boxing</h1>
+                    <h1><i class="fas ri-calendar-line-check"></i> Time Boxing</h1>
                     <button onclick="showAddBoxModal()" class="btn btn-primary">
-                        <i class="fas fa-plus"></i> Add Time Block
+                        <i class="fas ri-add-line"></i> Add Time Block
                     </button>
                 </div>
 
@@ -224,7 +227,7 @@ $tasks = $stmt->fetchAll();
                     boxEl.className = 'time-box';
                     boxEl.innerHTML = `
                         <div class="time-box-header">
-                            <span><i class="fas fa-clock"></i> ${box.start_time} - ${box.end_time}</span>
+                            <span><i class="fas ri-time-line"></i> ${box.start_time} - ${box.end_time}</span>
                             <i class="fas fa-times" onclick="deleteTimeBox(${box.id}, event)" style="cursor:pointer;"></i>
                         </div>
                         <div><strong>${box.description || 'Work block'}</strong></div>
@@ -320,5 +323,8 @@ $tasks = $stmt->fetchAll();
         loadTimeBoxes();
     </script>
     <script src="../assets/js/theme.js"></script>
+
+    <!-- Synto Dashboard Interactions -->
+    <script src="../assets/js/synto-interactions.js"></script>
 </body>
 </html>

@@ -20,6 +20,9 @@ $endDate = $_GET['end_date'] ?? date('Y-m-t');
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profit & Loss Report - <?php echo SITE_NAME; ?></title>
     <link rel="stylesheet" href="../assets/css/vien-v3.css">
+
+    <!-- Synto Dashboard Template Design -->
+    <link rel="stylesheet" href="../assets/css/synto-design.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         .pl-summary {
@@ -158,9 +161,9 @@ $endDate = $_GET['end_date'] ?? date('Y-m-t');
 
             <div class="content-wrapper">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
-                    <h1 style="margin: 0;"><i class="fas fa-chart-line"></i> Profit & Loss Report</h1>
+                    <h1 style="margin: 0;"><i class="fas ri-line-chart-line"></i> Profit & Loss Report</h1>
                     <button onclick="exportToCSV()" class="btn btn-primary">
-                        <i class="fas fa-download"></i> Export CSV
+                        <i class="fas ri-download-line"></i> Export CSV
                     </button>
                 </div>
 
@@ -234,7 +237,7 @@ $endDate = $_GET['end_date'] ?? date('Y-m-t');
                         <tbody id="projectsTableBody">
                             <tr>
                                 <td colspan="9" style="text-align: center; padding: 40px;">
-                                    <i class="fas fa-spinner fa-spin"></i> Loading data...
+                                    <i class="fas ri-loader-2-line fa-spin"></i> Loading data...
                                 </td>
                             </tr>
                         </tbody>
@@ -341,7 +344,7 @@ $endDate = $_GET['end_date'] ?? date('Y-m-t');
                         </td>
                         <td>
                             <a href="project-budget.php?id=${project.id}" class="btn btn-sm btn-secondary">
-                                <i class="fas fa-edit"></i> Manage
+                                <i class="fas ri-edit-line"></i> Manage
                             </a>
                         </td>
                     </tr>
@@ -429,5 +432,8 @@ $endDate = $_GET['end_date'] ?? date('Y-m-t');
         });
     </script>
     <script src="../assets/js/theme.js"></script>
+
+    <!-- Synto Dashboard Interactions -->
+    <script src="../assets/js/synto-interactions.js"></script>
 </body>
 </html>

@@ -13,6 +13,9 @@ $currentUser = getCurrentUser();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Morning Ritual - <?php echo SITE_NAME; ?></title>
     <link rel="stylesheet" href="../assets/css/vien-v3.css">
+
+    <!-- Synto Dashboard Template Design -->
+    <link rel="stylesheet" href="../assets/css/synto-design.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         .ritual-item {
@@ -167,7 +170,7 @@ $currentUser = getCurrentUser();
                         <div class="add-ritual-form">
                             <input type="text" id="newRitualName" class="form-control" placeholder="Add a new ritual (e.g., Meditate for 10 minutes)" style="flex:1;">
                             <button onclick="addRitual()" class="btn btn-primary">
-                                <i class="fas fa-plus"></i> Add
+                                <i class="fas ri-add-line"></i> Add
                             </button>
                         </div>
                     </div>
@@ -243,12 +246,12 @@ $currentUser = getCurrentUser();
             list.innerHTML = rituals.map(ritual => `
                 <div class="ritual-item ${ritual.completed_today > 0 ? 'completed' : ''}">
                     <div class="ritual-checkbox" onclick="toggleRitual(${ritual.id}, ${ritual.completed_today > 0 ? 1 : 0})">
-                        ${ritual.completed_today > 0 ? '<i class="fas fa-check"></i>' : ''}
+                        ${ritual.completed_today > 0 ? '<i class="fas ri-check-line"></i>' : ''}
                     </div>
                     <div class="ritual-name">${ritual.ritual_name}</div>
                     <div class="ritual-actions">
                         <span class="ritual-delete" onclick="deleteRitual(${ritual.id})">
-                            <i class="fas fa-trash"></i>
+                            <i class="fas ri-delete-bin-line"></i>
                         </span>
                     </div>
                 </div>
@@ -358,5 +361,8 @@ $currentUser = getCurrentUser();
         loadRituals();
     </script>
     <script src="../assets/js/theme.js"></script>
+
+    <!-- Synto Dashboard Interactions -->
+    <script src="../assets/js/synto-interactions.js"></script>
 </body>
 </html>

@@ -140,6 +140,9 @@ foreach ($employeeSummaryData as $emp) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reports V3 - <?php echo SITE_NAME; ?></title>
     <link rel="stylesheet" href="../assets/css/vien-v3.css">
+
+    <!-- Synto Dashboard Template Design -->
+    <link rel="stylesheet" href="../assets/css/synto-design.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -151,7 +154,7 @@ foreach ($employeeSummaryData as $emp) {
 
             <div class="content-wrapper">
                 <div class="page-header">
-                    <h1><i class="fas fa-chart-bar"></i> Reports & Analytics</h1>
+                    <h1><i class="fas ri-bar-chart-box-line"></i> Reports & Analytics</h1>
                     <button onclick="window.print()" class="btn btn-secondary btn-sm">
                         <i class="fas fa-print"></i> Print Report
                     </button>
@@ -217,7 +220,7 @@ foreach ($employeeSummaryData as $emp) {
                                 <div class="stat-value"><?php echo formatHours($totalHours); ?></div>
                                 <div class="stat-change">Logged</div>
                             </div>
-                            <div class="stat-icon"><i class="fas fa-clock"></i></div>
+                            <div class="stat-icon"><i class="fas ri-time-line"></i></div>
                         </div>
                     </div>
 
@@ -228,7 +231,7 @@ foreach ($employeeSummaryData as $emp) {
                                 <div class="stat-value"><?php echo $totalTasks; ?></div>
                                 <div class="stat-change">Done</div>
                             </div>
-                            <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+                            <div class="stat-icon"><i class="fas ri-checkbox-circle-line"></i></div>
                         </div>
                     </div>
 
@@ -239,7 +242,7 @@ foreach ($employeeSummaryData as $emp) {
                                 <div class="stat-value"><?php echo count($projectSummaryData); ?></div>
                                 <div class="stat-change">In Period</div>
                             </div>
-                            <div class="stat-icon"><i class="fas fa-folder"></i></div>
+                            <div class="stat-icon"><i class="fas ri-folder-line"></i></div>
                         </div>
                     </div>
 
@@ -250,7 +253,7 @@ foreach ($employeeSummaryData as $emp) {
                                 <div class="stat-value"><?php echo count($employeeSummaryData) > 0 ? formatHours($totalHours / count($employeeSummaryData)) : '0.00'; ?></div>
                                 <div class="stat-change">Hours</div>
                             </div>
-                            <div class="stat-icon"><i class="fas fa-chart-line"></i></div>
+                            <div class="stat-icon"><i class="fas ri-line-chart-line"></i></div>
                         </div>
                     </div>
                 </div>
@@ -438,5 +441,8 @@ foreach ($employeeSummaryData as $emp) {
         }
     </script>
     <script src="../assets/js/theme.js"></script>
+
+    <!-- Synto Dashboard Interactions -->
+    <script src="../assets/js/synto-interactions.js"></script>
 </body>
 </html>

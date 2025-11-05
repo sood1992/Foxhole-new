@@ -80,6 +80,9 @@ foreach ($projects as $project) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Budget Tracking V3 - <?php echo SITE_NAME; ?></title>
     <link rel="stylesheet" href="../assets/css/vien-v3.css">
+
+    <!-- Synto Dashboard Template Design -->
+    <link rel="stylesheet" href="../assets/css/synto-design.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <?php include '../includes/quick-actions-assets.php'; ?>
 </head>
@@ -145,7 +148,7 @@ foreach ($projects as $project) {
                                 <div class="stat-value"><?php echo ($totalBudget - $totalActual) >= 0 ? '' : '-'; ?>₹<?php echo number_format(abs($totalBudget - $totalActual), 0); ?></div>
                                 <div class="stat-change"><?php echo ($totalBudget - $totalActual) >= 0 ? 'Under Budget' : 'Over Budget'; ?></div>
                             </div>
-                            <div class="stat-icon"><i class="fas <?php echo ($totalBudget - $totalActual) >= 0 ? 'fa-check-circle' : 'fa-exclamation-triangle'; ?>"></i></div>
+                            <div class="stat-icon"><i class="fas <?php echo ($totalBudget - $totalActual) >= 0 ? 'ri-checkbox-circle-line' : 'fa-exclamation-triangle'; ?>"></i></div>
                         </div>
                     </div>
                 </div>
@@ -328,5 +331,8 @@ foreach ($projects as $project) {
         </div>
     </div>
     <script src="../assets/js/theme.js"></script>
+
+    <!-- Synto Dashboard Interactions -->
+    <script src="../assets/js/synto-interactions.js"></script>
 </body>
 </html>

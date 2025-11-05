@@ -58,6 +58,9 @@ $managers = $db->query("SELECT id, full_name FROM users WHERE role IN ('admin', 
     <title>Projects - <?php echo SITE_NAME; ?> V3</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../assets/css/vien-v3.css">
+
+    <!-- Synto Dashboard Template Design -->
+    <link rel="stylesheet" href="../assets/css/synto-design.css">
 </head>
 <body>
     <div class="app-container">
@@ -77,7 +80,7 @@ $managers = $db->query("SELECT id, full_name FROM users WHERE role IN ('admin', 
 
                 <?php if (isset($successMessage)): ?>
                     <div class="alert alert-success" style="margin-bottom: 20px;">
-                        <i class="fas fa-check-circle"></i> <?php echo e($successMessage); ?>
+                        <i class="fas ri-checkbox-circle-line"></i> <?php echo e($successMessage); ?>
                     </div>
                 <?php endif; ?>
                 <?php if (isset($errorMessage)): ?>
@@ -152,7 +155,7 @@ $managers = $db->query("SELECT id, full_name FROM users WHERE role IN ('admin', 
                             </div>
                             <div style="grid-column: span 2;">
                                 <button type="submit" name="create_project" class="btn btn-primary">
-                                    <i class="fas fa-plus"></i> Create Project
+                                    <i class="fas ri-add-line"></i> Create Project
                                 </button>
                             </div>
                         </form>
@@ -172,7 +175,7 @@ $managers = $db->query("SELECT id, full_name FROM users WHERE role IN ('admin', 
                     <div class="card-body" style="padding: 0;">
                         <?php if (empty($projects)): ?>
                             <div style="text-align: center; padding: 60px 20px;">
-                                <i class="fas fa-folder-open" style="font-size: 48px; color: var(--text-tertiary); margin-bottom: 16px;"></i>
+                                <i class="fas ri-folder-line-open" style="font-size: 48px; color: var(--text-tertiary); margin-bottom: 16px;"></i>
                                 <p style="color: var(--text-secondary); margin: 0;">No projects created yet.</p>
                             </div>
                         <?php else: ?>
@@ -258,7 +261,7 @@ $managers = $db->query("SELECT id, full_name FROM users WHERE role IN ('admin', 
                                             </td>
                                             <td>
                                                 <a href="project-detail.php?id=<?php echo $project['id']; ?>" class="btn btn-primary btn-sm">
-                                                    <i class="fas fa-eye"></i> View
+                                                    <i class="fas ri-eye-line"></i> View
                                                 </a>
                                             </td>
                                         </tr>
@@ -286,5 +289,8 @@ $managers = $db->query("SELECT id, full_name FROM users WHERE role IN ('admin', 
         });
     });
     </script>
+
+    <!-- Synto Dashboard Interactions -->
+    <script src="../assets/js/synto-interactions.js"></script>
 </body>
 </html>

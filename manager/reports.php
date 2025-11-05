@@ -61,6 +61,9 @@ $teamReports = $stmt->fetchAll();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reports V3 - <?php echo SITE_NAME; ?></title>
     <link rel="stylesheet" href="../assets/css/vien-v3.css">
+
+    <!-- Synto Dashboard Template Design -->
+    <link rel="stylesheet" href="../assets/css/synto-design.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <?php include '../includes/quick-actions-assets.php'; ?>
 </head>
@@ -75,7 +78,7 @@ $teamReports = $stmt->fetchAll();
                 <!-- Page Header -->
                 <div class="page-header">
                     <div>
-                        <h1><i class="fas fa-chart-bar"></i> Reports</h1>
+                        <h1><i class="fas ri-bar-chart-box-line"></i> Reports</h1>
                         <p class="page-subtitle">View project and team performance metrics</p>
                     </div>
                 </div>
@@ -100,7 +103,7 @@ $teamReports = $stmt->fetchAll();
                 <!-- Project Reports -->
                 <div class="dashboard-card" style="margin-bottom: var(--space-6);">
                     <div class="card-header">
-                        <h3><i class="fas fa-folder-open"></i> Project Reports</h3>
+                        <h3><i class="fas ri-folder-line-open"></i> Project Reports</h3>
                     </div>
                     <div class="card-body">
                         <?php if (empty($projectReports)): ?>
@@ -150,7 +153,7 @@ $teamReports = $stmt->fetchAll();
                 <!-- Team Member Reports -->
                 <div class="dashboard-card">
                     <div class="card-header">
-                        <h3><i class="fas fa-users"></i> Team Performance</h3>
+                        <h3><i class="fas ri-team-line"></i> Team Performance</h3>
                     </div>
                     <div class="card-body">
                         <?php if (empty($teamReports)): ?>
@@ -196,5 +199,8 @@ $teamReports = $stmt->fetchAll();
     </div>
 
     <script src="../assets/js/theme.js"></script>
+
+    <!-- Synto Dashboard Interactions -->
+    <script src="../assets/js/synto-interactions.js"></script>
 </body>
 </html>

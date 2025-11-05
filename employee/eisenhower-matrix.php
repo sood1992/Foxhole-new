@@ -43,6 +43,9 @@ foreach ($tasks as $task) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Eisenhower Matrix - <?php echo SITE_NAME; ?></title>
     <link rel="stylesheet" href="../assets/css/vien-v3.css">
+
+    <!-- Synto Dashboard Template Design -->
+    <link rel="stylesheet" href="../assets/css/synto-design.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         .matrix-container {
@@ -180,7 +183,7 @@ foreach ($tasks as $task) {
                         <div class="quadrant-tasks">
                             <?php if (empty($quadrants['urgent-important'])): ?>
                                 <div class="empty-quadrant">
-                                    <i class="fas fa-check-circle"></i>
+                                    <i class="fas ri-checkbox-circle-line"></i>
                                     <p>No urgent tasks!</p>
                                 </div>
                             <?php else: ?>
@@ -206,7 +209,7 @@ foreach ($tasks as $task) {
                     <div class="quadrant" style="border-color: #3b82f6;">
                         <div class="quadrant-header">
                             <div class="quadrant-icon" style="background: #3b82f6;">
-                                <i class="fas fa-calendar-alt"></i>
+                                <i class="fas ri-calendar-line-alt"></i>
                             </div>
                             <div class="quadrant-title">
                                 <h3>Schedule</h3>
@@ -219,7 +222,7 @@ foreach ($tasks as $task) {
                         <div class="quadrant-tasks">
                             <?php if (empty($quadrants['not-urgent-important'])): ?>
                                 <div class="empty-quadrant">
-                                    <i class="fas fa-calendar-check"></i>
+                                    <i class="fas ri-calendar-line-check"></i>
                                     <p>No tasks to schedule</p>
                                 </div>
                             <?php else: ?>
@@ -245,7 +248,7 @@ foreach ($tasks as $task) {
                     <div class="quadrant" style="border-color: #f59e0b;">
                         <div class="quadrant-header">
                             <div class="quadrant-icon" style="background: #f59e0b;">
-                                <i class="fas fa-user-clock"></i>
+                                <i class="fas ri-user-line-clock"></i>
                             </div>
                             <div class="quadrant-title">
                                 <h3>Delegate</h3>
@@ -258,7 +261,7 @@ foreach ($tasks as $task) {
                         <div class="quadrant-tasks">
                             <?php if (empty($quadrants['urgent-not-important'])): ?>
                                 <div class="empty-quadrant">
-                                    <i class="fas fa-tasks"></i>
+                                    <i class="fas ri-task-line"></i>
                                     <p>No tasks here</p>
                                 </div>
                             <?php else: ?>
@@ -284,7 +287,7 @@ foreach ($tasks as $task) {
                     <div class="quadrant" style="border-color: #6b7280;">
                         <div class="quadrant-header">
                             <div class="quadrant-icon" style="background: #6b7280;">
-                                <i class="fas fa-trash-alt"></i>
+                                <i class="fas ri-delete-bin-line-alt"></i>
                             </div>
                             <div class="quadrant-title">
                                 <h3>Eliminate</h3>
@@ -297,7 +300,7 @@ foreach ($tasks as $task) {
                         <div class="quadrant-tasks">
                             <?php if (empty($quadrants['not-urgent-not-important'])): ?>
                                 <div class="empty-quadrant">
-                                    <i class="fas fa-check"></i>
+                                    <i class="fas ri-check-line"></i>
                                     <p>No low-priority tasks</p>
                                 </div>
                             <?php else: ?>
@@ -324,5 +327,8 @@ foreach ($tasks as $task) {
     </div>
 
     <script src="../assets/js/theme.js"></script>
+
+    <!-- Synto Dashboard Interactions -->
+    <script src="../assets/js/synto-interactions.js"></script>
 </body>
 </html>

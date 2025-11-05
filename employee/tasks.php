@@ -79,6 +79,9 @@ $activeTaskIds = array_column($stmt->fetchAll(), 'task_id');
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Tasks V3 - <?php echo SITE_NAME; ?></title>
     <link rel="stylesheet" href="../assets/css/vien-v3.css">
+
+    <!-- Synto Dashboard Template Design -->
+    <link rel="stylesheet" href="../assets/css/synto-design.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -114,7 +117,7 @@ $activeTaskIds = array_column($stmt->fetchAll(), 'task_id');
 
                     <div class="dashboard-card">
                         <div class="card-icon gradient-orange">
-                            <i class="fas fa-spinner"></i>
+                            <i class="fas ri-loader-2-line"></i>
                         </div>
                         <div class="card-content">
                             <div class="card-label">In Progress</div>
@@ -124,7 +127,7 @@ $activeTaskIds = array_column($stmt->fetchAll(), 'task_id');
 
                     <div class="dashboard-card">
                         <div class="card-icon gradient-purple">
-                            <i class="fas fa-eye"></i>
+                            <i class="fas ri-eye-line"></i>
                         </div>
                         <div class="card-content">
                             <div class="card-label">In Review</div>
@@ -134,7 +137,7 @@ $activeTaskIds = array_column($stmt->fetchAll(), 'task_id');
 
                     <div class="dashboard-card">
                         <div class="card-icon gradient-green">
-                            <i class="fas fa-check-double"></i>
+                            <i class="fas ri-check-line-double"></i>
                         </div>
                         <div class="card-content">
                             <div class="card-label">Done Today</div>
@@ -147,7 +150,7 @@ $activeTaskIds = array_column($stmt->fetchAll(), 'task_id');
                 <?php if (!empty($activeTaskIds)): ?>
                 <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 16px 20px; border-radius: 12px; margin-bottom: 24px; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);">
                     <div style="display: flex; align-items: center; gap: 12px;">
-                        <i class="fas fa-clock" style="font-size: 24px;"></i>
+                        <i class="fas ri-time-line" style="font-size: 24px;"></i>
                         <div style="flex: 1;">
                             <strong style="font-size: 15px;">Background Tracking Active</strong>
                             <p style="margin: 4px 0 0; opacity: 0.9; font-size: 13px;">
@@ -236,7 +239,7 @@ $activeTaskIds = array_column($stmt->fetchAll(), 'task_id');
                                         </div>
                                         <div class="task-item-actions">
                                             <a href="task-detail.php?id=<?php echo $task['id']; ?>" class="btn btn-secondary btn-sm">
-                                                <i class="fas fa-eye"></i> View
+                                                <i class="fas ri-eye-line"></i> View
                                             </a>
                                             <?php if ($task['status'] !== 'completed'): ?>
                                                 <?php if (!$isTaskActive): ?>
@@ -326,7 +329,7 @@ $activeTaskIds = array_column($stmt->fetchAll(), 'task_id');
                     // Show success message
                     const message = document.createElement('div');
                     message.style.cssText = 'position: fixed; top: 20px; right: 20px; background: #10b981; color: white; padding: 16px 24px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 9999;';
-                    message.innerHTML = '<i class="fas fa-check-circle"></i> Task started - tracking in background';
+                    message.innerHTML = '<i class="fas ri-checkbox-circle-line"></i> Task started - tracking in background';
                     document.body.appendChild(message);
                     setTimeout(() => {
                         message.remove();
@@ -377,5 +380,8 @@ $activeTaskIds = array_column($stmt->fetchAll(), 'task_id');
         }
     </script>
     <script src="../assets/js/theme.js"></script>
+
+    <!-- Synto Dashboard Interactions -->
+    <script src="../assets/js/synto-interactions.js"></script>
 </body>
 </html>

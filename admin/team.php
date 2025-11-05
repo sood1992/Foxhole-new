@@ -32,6 +32,9 @@ $teamMembers = $db->query("
     <title>Team Management - <?php echo SITE_NAME; ?> V3</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../assets/css/vien-v3.css">
+
+    <!-- Synto Dashboard Template Design -->
+    <link rel="stylesheet" href="../assets/css/synto-design.css">
 </head>
 <body>
     <div class="app-container">
@@ -51,7 +54,7 @@ $teamMembers = $db->query("
 
                 <?php if (isset($_SESSION['success_message'])): ?>
                     <div class="alert alert-success" style="margin-bottom: 20px;">
-                        <i class="fas fa-check-circle"></i>
+                        <i class="fas ri-checkbox-circle-line"></i>
                         <?php
                         echo e($_SESSION['success_message']);
                         unset($_SESSION['success_message']);
@@ -64,7 +67,7 @@ $teamMembers = $db->query("
                     <div class="col-lg-3 col-md-6">
                         <div class="dashboard-card">
                             <div class="card-icon primary">
-                                <i class="fas fa-users"></i>
+                                <i class="fas ri-team-line"></i>
                             </div>
                             <div class="card-value"><?php echo count($teamMembers); ?></div>
                             <div class="card-label">Total Members</div>
@@ -73,7 +76,7 @@ $teamMembers = $db->query("
                     <div class="col-lg-3 col-md-6">
                         <div class="dashboard-card">
                             <div class="card-icon success">
-                                <i class="fas fa-user-check"></i>
+                                <i class="fas ri-user-line-check"></i>
                             </div>
                             <div class="card-value">
                                 <?php
@@ -89,7 +92,7 @@ $teamMembers = $db->query("
                     <div class="col-lg-3 col-md-6">
                         <div class="dashboard-card">
                             <div class="card-icon info">
-                                <i class="fas fa-tasks"></i>
+                                <i class="fas ri-task-line"></i>
                             </div>
                             <div class="card-value">
                                 <?php
@@ -103,7 +106,7 @@ $teamMembers = $db->query("
                     <div class="col-lg-3 col-md-6">
                         <div class="dashboard-card">
                             <div class="card-icon warning">
-                                <i class="fas fa-clock"></i>
+                                <i class="fas ri-time-line"></i>
                             </div>
                             <div class="card-value">
                                 <?php
@@ -127,12 +130,12 @@ $teamMembers = $db->query("
                         </div>
                         <div style="display: flex; gap: 12px; align-items: center;">
                             <div style="position: relative;">
-                                <i class="fas fa-search" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-tertiary);"></i>
+                                <i class="fas ri-search-line" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-tertiary);"></i>
                                 <input type="text" id="searchInput" placeholder="Search team members..."
                                        class="form-control" style="padding-left: 36px; width: 250px;">
                             </div>
                             <a href="users.php?action=add" class="btn btn-primary btn-sm">
-                                <i class="fas fa-plus"></i> Add Member
+                                <i class="fas ri-add-line"></i> Add Member
                             </a>
                         </div>
                     </div>
@@ -207,11 +210,11 @@ $teamMembers = $db->query("
                                             <div style="display: flex; gap: 6px;">
                                                 <a href="users.php?action=edit&id=<?php echo $member['id']; ?>"
                                                    class="btn btn-outline btn-sm btn-icon" title="Edit">
-                                                    <i class="fas fa-edit"></i>
+                                                    <i class="fas ri-edit-line"></i>
                                                 </a>
                                                 <a href="reports.php?employee=<?php echo $member['id']; ?>&type=monthly"
                                                    class="btn btn-outline btn-sm btn-icon" title="Reports">
-                                                    <i class="fas fa-chart-bar"></i>
+                                                    <i class="fas ri-bar-chart-box-line"></i>
                                                 </a>
                                             </div>
                                         </td>
@@ -251,5 +254,8 @@ $teamMembers = $db->query("
         });
     });
     </script>
+
+    <!-- Synto Dashboard Interactions -->
+    <script src="../assets/js/synto-interactions.js"></script>
 </body>
 </html>

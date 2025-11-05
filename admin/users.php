@@ -179,6 +179,9 @@ $pageTitle = $action === 'add' ? 'Add Team Member' : 'Edit Team Member';
     <title><?php echo $pageTitle; ?> - <?php echo SITE_NAME; ?> V3</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../assets/css/vien-v3.css">
+
+    <!-- Synto Dashboard Template Design -->
+    <link rel="stylesheet" href="../assets/css/synto-design.css">
 </head>
 <body>
     <div class="app-container">
@@ -220,7 +223,7 @@ $pageTitle = $action === 'add' ? 'Add Team Member' : 'Edit Team Member';
 
                         <?php if ($success): ?>
                             <div class="alert alert-success" style="margin-bottom: 24px;">
-                                <i class="fas fa-check-circle"></i> <?php echo e($success); ?>
+                                <i class="fas ri-checkbox-circle-line"></i> <?php echo e($success); ?>
                             </div>
                         <?php endif; ?>
 
@@ -339,7 +342,7 @@ $pageTitle = $action === 'add' ? 'Add Team Member' : 'Edit Team Member';
                             <div class="col-lg-3 col-md-6">
                                 <div class="dashboard-card">
                                     <div class="card-icon primary">
-                                        <i class="fas fa-folder"></i>
+                                        <i class="fas ri-folder-line"></i>
                                     </div>
                                     <div class="card-value"><?php echo $userStats['projects'] ?? 0; ?></div>
                                     <div class="card-label">Projects</div>
@@ -348,7 +351,7 @@ $pageTitle = $action === 'add' ? 'Add Team Member' : 'Edit Team Member';
                             <div class="col-lg-3 col-md-6">
                                 <div class="dashboard-card">
                                     <div class="card-icon info">
-                                        <i class="fas fa-tasks"></i>
+                                        <i class="fas ri-task-line"></i>
                                     </div>
                                     <div class="card-value"><?php echo $userStats['total_tasks'] ?? 0; ?></div>
                                     <div class="card-label">Total Tasks</div>
@@ -357,7 +360,7 @@ $pageTitle = $action === 'add' ? 'Add Team Member' : 'Edit Team Member';
                             <div class="col-lg-3 col-md-6">
                                 <div class="dashboard-card">
                                     <div class="card-icon success">
-                                        <i class="fas fa-check-circle"></i>
+                                        <i class="fas ri-checkbox-circle-line"></i>
                                     </div>
                                     <div class="card-value"><?php echo $userStats['completed_tasks'] ?? 0; ?></div>
                                     <div class="card-label">Completed</div>
@@ -366,7 +369,7 @@ $pageTitle = $action === 'add' ? 'Add Team Member' : 'Edit Team Member';
                             <div class="col-lg-3 col-md-6">
                                 <div class="dashboard-card">
                                     <div class="card-icon warning">
-                                        <i class="fas fa-clock"></i>
+                                        <i class="fas ri-time-line"></i>
                                     </div>
                                     <div class="card-value"><?php echo formatHours($userStats['total_minutes'] ?? 0); ?>h</div>
                                     <div class="card-label">Total Hours</div>
@@ -392,5 +395,8 @@ $pageTitle = $action === 'add' ? 'Add Team Member' : 'Edit Team Member';
         });
     });
     </script>
+
+    <!-- Synto Dashboard Interactions -->
+    <script src="../assets/js/synto-interactions.js"></script>
 </body>
 </html>

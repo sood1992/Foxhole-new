@@ -104,6 +104,9 @@ $budgetPercentage = $project['budget'] > 0 ? round(($budgetUsed / $project['budg
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo e($project['project_name']); ?> V3 - <?php echo SITE_NAME; ?></title>
     <link rel="stylesheet" href="../assets/css/vien-v3.css">
+
+    <!-- Synto Dashboard Template Design -->
+    <link rel="stylesheet" href="../assets/css/synto-design.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <?php include '../includes/quick-actions-assets.php'; ?>
 </head>
@@ -246,7 +249,7 @@ $budgetPercentage = $project['budget'] > 0 ? round(($budgetUsed / $project['budg
                 <?php if (!empty($teamMembers)): ?>
                 <div class="card" style="margin-bottom: var(--space-6);">
                     <div class="card-header">
-                        <h3><i class="fas fa-users"></i> Team Members (<?php echo count($teamMembers); ?>)</h3>
+                        <h3><i class="fas ri-team-line"></i> Team Members (<?php echo count($teamMembers); ?>)</h3>
                     </div>
                     <div class="card-body">
                         <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: var(--space-4);">
@@ -273,7 +276,7 @@ $budgetPercentage = $project['budget'] > 0 ? round(($budgetUsed / $project['budg
                 <!-- All Tasks -->
                 <div class="card">
                     <div class="card-header">
-                        <h3><i class="fas fa-check-square"></i> All Tasks (<?php echo $taskStats['total_tasks']; ?>)</h3>
+                        <h3><i class="fas ri-check-line-square"></i> All Tasks (<?php echo $taskStats['total_tasks']; ?>)</h3>
                         <a href="tasks.php?project=<?php echo $projectId; ?>" class="btn btn-primary btn-sm">+ Add Task</a>
                     </div>
                     <div class="card-body">
@@ -343,5 +346,8 @@ $budgetPercentage = $project['budget'] > 0 ? round(($budgetUsed / $project['budg
     </div>
 
     <script src="../assets/js/theme.js"></script>
+
+    <!-- Synto Dashboard Interactions -->
+    <script src="../assets/js/synto-interactions.js"></script>
 </body>
 </html>

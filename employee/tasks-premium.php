@@ -102,6 +102,9 @@ $activeTimeLog = getActiveTimeLog($currentUser['id']);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Tasks V3 - <?php echo SITE_NAME; ?></title>
     <link rel="stylesheet" href="../assets/css/vien-v3.css">
+
+    <!-- Synto Dashboard Template Design -->
+    <link rel="stylesheet" href="../assets/css/synto-design.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
     /* Task-specific premium styles */
@@ -443,7 +446,7 @@ $activeTimeLog = getActiveTimeLog($currentUser['id']);
                 <!-- Page Header -->
                 <div class="page-header">
                     <div>
-                        <h1 class="page-title"><i class="fas fa-check-circle"></i> My Tasks</h1>
+                        <h1 class="page-title"><i class="fas ri-checkbox-circle-line"></i> My Tasks</h1>
                         <p class="page-description">Manage your tasks across all projects</p>
                     </div>
                 </div>
@@ -485,7 +488,7 @@ $activeTimeLog = getActiveTimeLog($currentUser['id']);
 
                     <div class="stat-card">
                         <div class="stat-icon gradient-purple">
-                            <i class="fas fa-eye"></i>
+                            <i class="fas ri-eye-line"></i>
                         </div>
                         <div class="stat-details">
                             <p class="stat-label">In Review</p>
@@ -496,7 +499,7 @@ $activeTimeLog = getActiveTimeLog($currentUser['id']);
 
                     <div class="stat-card">
                         <div class="stat-icon gradient-green">
-                            <i class="fas fa-check"></i>
+                            <i class="fas ri-check-line"></i>
                         </div>
                         <div class="stat-details">
                             <p class="stat-label">Completed</p>
@@ -646,5 +649,8 @@ $activeTimeLog = getActiveTimeLog($currentUser['id']);
         });
     }
     </script>
+
+    <!-- Synto Dashboard Interactions -->
+    <script src="../assets/js/synto-interactions.js"></script>
 </body>
 </html>

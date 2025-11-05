@@ -175,6 +175,9 @@ $trend_data = $productivityTrend->fetchAll();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Statistics V3 - <?php echo SITE_NAME; ?></title>
     <link rel="stylesheet" href="../assets/css/vien-v3.css">
+
+    <!-- Synto Dashboard Template Design -->
+    <link rel="stylesheet" href="../assets/css/synto-design.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <?php include '../includes/quick-actions-assets.php'; ?>
@@ -193,7 +196,7 @@ $trend_data = $productivityTrend->fetchAll();
                 <div class="stats-grid" id="achievements">
                     <div class="dashboard-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
                         <div class="card-icon" style="background: rgba(255,255,255,0.2);">
-                            <i class="fas fa-star"></i>
+                            <i class="fas ri-star-line"></i>
                         </div>
                         <div class="card-content">
                             <div class="card-label" style="color: rgba(255,255,255,0.9);">Total Points</div>
@@ -215,7 +218,7 @@ $trend_data = $productivityTrend->fetchAll();
 
                     <div class="dashboard-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white;">
                         <div class="card-icon" style="background: rgba(255,255,255,0.2);">
-                            <i class="fas fa-trophy"></i>
+                            <i class="fas ri-trophy-line"></i>
                         </div>
                         <div class="card-content">
                             <div class="card-label" style="color: rgba(255,255,255,0.9);">Badges Earned</div>
@@ -226,7 +229,7 @@ $trend_data = $productivityTrend->fetchAll();
 
                     <div class="dashboard-card" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); color: white;">
                         <div class="card-icon" style="background: rgba(255,255,255,0.2);">
-                            <i class="fas fa-chart-line"></i>
+                            <i class="fas ri-line-chart-line"></i>
                         </div>
                         <div class="card-content">
                             <div class="card-label" style="color: rgba(255,255,255,0.9);">Productivity Score</div>
@@ -237,11 +240,11 @@ $trend_data = $productivityTrend->fetchAll();
                 </div>
 
                 <!-- Time Period Stats -->
-                <h3 style="margin: 32px 0 16px; color: var(--text-primary);"><i class="fas fa-clock"></i> Time Tracking</h3>
+                <h3 style="margin: 32px 0 16px; color: var(--text-primary);"><i class="fas ri-time-line"></i> Time Tracking</h3>
                 <div class="stats-grid">
                     <div class="dashboard-card">
                         <div class="card-icon gradient-blue">
-                            <i class="fas fa-calendar-day"></i>
+                            <i class="fas ri-calendar-line-day"></i>
                         </div>
                         <div class="card-content">
                             <div class="card-label">Today</div>
@@ -252,7 +255,7 @@ $trend_data = $productivityTrend->fetchAll();
 
                     <div class="dashboard-card">
                         <div class="card-icon gradient-green">
-                            <i class="fas fa-calendar-week"></i>
+                            <i class="fas ri-calendar-line-week"></i>
                         </div>
                         <div class="card-content">
                             <div class="card-label">This Week</div>
@@ -263,7 +266,7 @@ $trend_data = $productivityTrend->fetchAll();
 
                     <div class="dashboard-card">
                         <div class="card-icon gradient-orange">
-                            <i class="fas fa-calendar-alt"></i>
+                            <i class="fas ri-calendar-line-alt"></i>
                         </div>
                         <div class="card-content">
                             <div class="card-label">This Month</div>
@@ -274,11 +277,11 @@ $trend_data = $productivityTrend->fetchAll();
                 </div>
 
                 <!-- Performance Stats -->
-                <h3 style="margin: 32px 0 16px; color: var(--text-primary);"><i class="fas fa-chart-line"></i> Performance</h3>
+                <h3 style="margin: 32px 0 16px; color: var(--text-primary);"><i class="fas ri-line-chart-line"></i> Performance</h3>
                 <div class="stats-grid">
                     <div class="dashboard-card">
                         <div class="card-icon gradient-purple">
-                            <i class="fas fa-check-circle"></i>
+                            <i class="fas ri-checkbox-circle-line"></i>
                         </div>
                         <div class="card-content">
                             <div class="card-label">Completed This Month</div>
@@ -315,7 +318,7 @@ $trend_data = $productivityTrend->fetchAll();
                     <!-- Productivity Trend -->
                     <div class="dashboard-card">
                         <div class="card-header">
-                            <h3><i class="fas fa-chart-bar"></i> 7-Day Productivity Trend</h3>
+                            <h3><i class="fas ri-bar-chart-box-line"></i> 7-Day Productivity Trend</h3>
                         </div>
                         <div class="card-body">
                             <canvas id="trendChart" height="250"></canvas>
@@ -325,7 +328,7 @@ $trend_data = $productivityTrend->fetchAll();
                     <!-- Task Breakdown -->
                     <div class="dashboard-card">
                         <div class="card-header">
-                            <h3><i class="fas fa-tasks"></i> Task Breakdown</h3>
+                            <h3><i class="fas ri-task-line"></i> Task Breakdown</h3>
                         </div>
                         <div class="card-body">
                             <canvas id="taskChart" height="250"></canvas>
@@ -336,7 +339,7 @@ $trend_data = $productivityTrend->fetchAll();
                 <!-- Recent Achievements -->
                 <div class="dashboard-card" style="margin-top: 32px;">
                     <div class="card-header">
-                        <h3><i class="fas fa-trophy"></i> Recent Achievements</h3>
+                        <h3><i class="fas ri-trophy-line"></i> Recent Achievements</h3>
                     </div>
                     <div class="card-body">
                         <?php if (empty($achievements)): ?>
@@ -371,7 +374,7 @@ $trend_data = $productivityTrend->fetchAll();
                 <!-- Badges Section -->
                 <div class="dashboard-card" style="margin-top: 32px;" id="badges">
                     <div class="card-header">
-                        <h3><i class="fas fa-award"></i> My Badges (<?php echo count($earnedBadges); ?>)</h3>
+                        <h3><i class="fas ri-medal-line"></i> My Badges (<?php echo count($earnedBadges); ?>)</h3>
                     </div>
                     <div class="card-body">
                         <?php if (empty($earnedBadges)): ?>
@@ -403,7 +406,7 @@ $trend_data = $productivityTrend->fetchAll();
                 <!-- Leaderboard Section -->
                 <div class="dashboard-card" style="margin-top: 32px;" id="leaderboard">
                     <div class="card-header">
-                        <h3><i class="fas fa-crown"></i> Leaderboard - Top Performers</h3>
+                        <h3><i class="fas ri-vip-crown-line"></i> Leaderboard - Top Performers</h3>
                     </div>
                     <div class="card-body">
                         <table class="data-table">
@@ -504,5 +507,8 @@ $trend_data = $productivityTrend->fetchAll();
         }
     });
     </script>
+
+    <!-- Synto Dashboard Interactions -->
+    <script src="../assets/js/synto-interactions.js"></script>
 </body>
 </html>

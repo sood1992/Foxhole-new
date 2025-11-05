@@ -95,6 +95,9 @@ $config = array_merge([
     <title>Email Configuration - <?php echo SITE_NAME; ?> V3</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../assets/css/vien-v3.css">
+
+    <!-- Synto Dashboard Template Design -->
+    <link rel="stylesheet" href="../assets/css/synto-design.css">
     <style>
         .password-field {
             position: relative;
@@ -197,13 +200,13 @@ $config = array_merge([
 
                 <?php if ($success): ?>
                     <div class="alert alert-success" style="margin-bottom: 24px;">
-                        <i class="fas fa-check-circle"></i> <?php echo e($success); ?>
+                        <i class="fas ri-checkbox-circle-line"></i> <?php echo e($success); ?>
                     </div>
                 <?php endif; ?>
 
                 <!-- Email System Overview -->
                 <div class="info-box">
-                    <h4><i class="fas fa-envelope"></i> Email System Overview</h4>
+                    <h4><i class="fas ri-mail-line"></i> Email System Overview</h4>
                     <p style="margin: 8px 0; color: var(--text-secondary); font-size: 14px;">
                         Configure how the system sends email notifications for task assignments, updates, and automated reports.
                     </p>
@@ -269,7 +272,7 @@ $config = array_merge([
                     <div class="card smtp-settings <?php echo !$config['use_smtp'] ? 'disabled' : ''; ?>" id="smtpSettings">
                         <div class="card-header">
                             <div>
-                                <h3 style="margin: 0;"><i class="fas fa-cog"></i> SMTP Server Settings</h3>
+                                <h3 style="margin: 0;"><i class="fas ri-settings-3-line"></i> SMTP Server Settings</h3>
                                 <p style="font-size: 13px; color: var(--text-secondary); margin: 4px 0 0 0;">
                                     Enter your SMTP server credentials
                                 </p>
@@ -327,7 +330,7 @@ $config = array_merge([
                                                    value=""
                                                    placeholder="<?php echo !empty($config['smtp_password']) ? '••••••••••••' : 'Enter password'; ?>">
                                             <span class="password-toggle" onclick="togglePassword()">
-                                                <i class="fas fa-eye"></i>
+                                                <i class="fas ri-eye-line"></i>
                                             </span>
                                         </div>
                                         <small class="form-text">
@@ -343,7 +346,7 @@ $config = array_merge([
 
                             <!-- Common SMTP Providers -->
                             <div class="providers-box">
-                                <h4><i class="fas fa-list"></i> Common SMTP Settings</h4>
+                                <h4><i class="fas ri-list-check"></i> Common SMTP Settings</h4>
                                 <div class="provider-list">
                                     <div class="provider-item">
                                         <strong>Gmail:</strong> smtp.gmail.com | Port 587 | TLS | Use App Password
@@ -396,12 +399,12 @@ $config = array_merge([
 
             if (field.type === 'password') {
                 field.type = 'text';
-                toggle.classList.remove('fa-eye');
-                toggle.classList.add('fa-eye-slash');
+                toggle.classList.remove('ri-eye-line');
+                toggle.classList.add('ri-eye-line-slash');
             } else {
                 field.type = 'password';
-                toggle.classList.remove('fa-eye-slash');
-                toggle.classList.add('fa-eye');
+                toggle.classList.remove('ri-eye-line-slash');
+                toggle.classList.add('ri-eye-line');
             }
         }
 
@@ -416,5 +419,8 @@ $config = array_merge([
             });
         });
     </script>
+
+    <!-- Synto Dashboard Interactions -->
+    <script src="../assets/js/synto-interactions.js"></script>
 </body>
 </html>

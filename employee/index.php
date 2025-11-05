@@ -100,6 +100,9 @@ $weekSummaryData = $weekSummary->fetchAll();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Dashboard V3 - <?php echo SITE_NAME; ?></title>
     <link rel="stylesheet" href="../assets/css/vien-v3.css">
+
+    <!-- Synto Dashboard Template Design -->
+    <link rel="stylesheet" href="../assets/css/synto-design.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -147,7 +150,7 @@ $weekSummaryData = $weekSummary->fetchAll();
                 <div class="stats-grid">
                     <div class="dashboard-card">
                         <div class="card-icon gradient-blue">
-                            <i class="fas fa-tasks"></i>
+                            <i class="fas ri-task-line"></i>
                         </div>
                         <div class="card-content">
                             <div class="card-label">My Tasks</div>
@@ -158,7 +161,7 @@ $weekSummaryData = $weekSummary->fetchAll();
 
                     <div class="dashboard-card">
                         <div class="card-icon gradient-green">
-                            <i class="fas fa-check-circle"></i>
+                            <i class="fas ri-checkbox-circle-line"></i>
                         </div>
                         <div class="card-content">
                             <div class="card-label">Completed</div>
@@ -169,7 +172,7 @@ $weekSummaryData = $weekSummary->fetchAll();
 
                     <div class="dashboard-card">
                         <div class="card-icon gradient-orange">
-                            <i class="fas fa-clock"></i>
+                            <i class="fas ri-time-line"></i>
                         </div>
                         <div class="card-content">
                             <div class="card-label">Hours Logged</div>
@@ -180,7 +183,7 @@ $weekSummaryData = $weekSummary->fetchAll();
 
                     <div class="dashboard-card">
                         <div class="card-icon gradient-purple">
-                            <i class="fas fa-folder"></i>
+                            <i class="fas ri-folder-line"></i>
                         </div>
                         <div class="card-content">
                             <div class="card-label">Projects</div>
@@ -416,7 +419,7 @@ $weekSummaryData = $weekSummary->fetchAll();
                     // Show success message
                     const message = document.createElement('div');
                     message.style.cssText = 'position: fixed; top: 20px; right: 20px; background: #10b981; color: white; padding: 16px 24px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 9999; animation: slideIn 0.3s ease;';
-                    message.innerHTML = '<i class="fas fa-check-circle"></i> Task started - tracking in background';
+                    message.innerHTML = '<i class="fas ri-checkbox-circle-line"></i> Task started - tracking in background';
                     document.body.appendChild(message);
                     setTimeout(() => {
                         message.remove();
@@ -493,5 +496,8 @@ $weekSummaryData = $weekSummary->fetchAll();
         }
     </script>
     <script src="../assets/js/theme.js"></script>
+
+    <!-- Synto Dashboard Interactions -->
+    <script src="../assets/js/synto-interactions.js"></script>
 </body>
 </html>

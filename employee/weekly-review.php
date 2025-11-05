@@ -43,6 +43,9 @@ $focusTime = $stmt->fetch()['total_hours'] ?? 0;
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Weekly Review - <?php echo SITE_NAME; ?></title>
     <link rel="stylesheet" href="../assets/css/vien-v3.css">
+
+    <!-- Synto Dashboard Template Design -->
+    <link rel="stylesheet" href="../assets/css/synto-design.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         .review-section {
@@ -112,7 +115,7 @@ $focusTime = $stmt->fetch()['total_hours'] ?? 0;
         <div class="main-content">
             <?php include '../includes/v3-header.php'; ?>
             <div class="content-wrapper">
-                <h1><i class="fas fa-calendar-week"></i> Weekly Review</h1>
+                <h1><i class="fas ri-calendar-line-week"></i> Weekly Review</h1>
                 <p style="color:var(--text-secondary);margin-bottom:30px;">
                     Week of <?php echo date('M j', strtotime($weekStart)); ?> - <?php echo date('M j, Y', strtotime($weekStart . ' +6 days')); ?>
                 </p>
@@ -139,7 +142,7 @@ $focusTime = $stmt->fetch()['total_hours'] ?? 0;
                 <!-- Review Form -->
                 <div class="dashboard-card review-section">
                     <div class="card-header">
-                        <h3><i class="fas fa-trophy"></i> Wins This Week</h3>
+                        <h3><i class="fas ri-trophy-line"></i> Wins This Week</h3>
                     </div>
                     <div class="card-body">
                         <textarea id="wins" class="form-control" rows="4" placeholder="What went well? What are you proud of?"><?php echo e($review['wins'] ?? ''); ?></textarea>
@@ -176,7 +179,7 @@ $focusTime = $stmt->fetch()['total_hours'] ?? 0;
                 <!-- Rating Sliders -->
                 <div class="dashboard-card review-section">
                     <div class="card-header">
-                        <h3><i class="fas fa-star"></i> Self-Assessment</h3>
+                        <h3><i class="fas ri-star-line"></i> Self-Assessment</h3>
                     </div>
                     <div class="card-body">
                         <div class="slider-container">
@@ -236,5 +239,8 @@ $focusTime = $stmt->fetch()['total_hours'] ?? 0;
         }
     </script>
     <script src="../assets/js/theme.js"></script>
+
+    <!-- Synto Dashboard Interactions -->
+    <script src="../assets/js/synto-interactions.js"></script>
 </body>
 </html>

@@ -17,6 +17,9 @@ $goals = $stmt->fetchAll();
     <meta charset="UTF-8">
     <title>Goals - <?php echo SITE_NAME; ?></title>
     <link rel="stylesheet" href="../assets/css/vien-v3.css">
+
+    <!-- Synto Dashboard Template Design -->
+    <link rel="stylesheet" href="../assets/css/synto-design.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -28,7 +31,7 @@ $goals = $stmt->fetchAll();
                 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
                     <h1><i class="fas fa-bullseye"></i> My Goals</h1>
                     <button onclick="showAddGoalModal()" class="btn btn-primary">
-                        <i class="fas fa-plus"></i> New Goal
+                        <i class="fas ri-add-line"></i> New Goal
                     </button>
                 </div>
 
@@ -137,5 +140,8 @@ $goals = $stmt->fetchAll();
         }
     </script>
     <script src="../assets/js/theme.js"></script>
+
+    <!-- Synto Dashboard Interactions -->
+    <script src="../assets/js/synto-interactions.js"></script>
 </body>
 </html>
