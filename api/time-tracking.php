@@ -10,6 +10,13 @@ if (!isLoggedIn()) {
     exit;
 }
 
+// Restrict time tracking to admins and managers only
+if (!hasRole('admin') && !hasRole('manager')) {
+    http_response_code(403);
+    echo json_encode(['success' => false, 'message' => 'Time tracking is only available for admins and managers']);
+    exit;
+}
+
 $db = getDBConnection();
 $userId = $_SESSION['user_id'];
 

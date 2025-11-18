@@ -67,8 +67,7 @@ foreach ($tasks as $task) {
     }
 }
 
-// Check active timer
-$activeTimeLog = getActiveTimeLog($currentUser['id']);
+// Timer removed - employees now use simple status updates
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -141,13 +140,6 @@ $activeTimeLog = getActiveTimeLog($currentUser['id']);
                     </div>
                 </div>
 
-                <!-- Active Timer Alert -->
-                <?php if ($activeTimeLog): ?>
-                <div class="alert alert-info">
-                    ⏱️ Timer is running for task: <strong><?php echo e($activeTimeLog['task_name'] ?? 'Unknown'); ?></strong>
-                    <a href="index.php" style="margin-left: 10px;">Go to Dashboard to stop</a>
-                </div>
-                <?php endif; ?>
 
                 <!-- Filters -->
                 <div class="dashboard-card">
@@ -200,7 +192,6 @@ $activeTimeLog = getActiveTimeLog($currentUser['id']);
                             <div class="task-list">
                                 <?php foreach ($tasks as $task): ?>
                                 <?php
-                                    $canStartTimer = !$activeTimeLog || $activeTimeLog['task_id'] != $task['id'];
                                     $isOverdue = isOverdue($task['due_date'], $task['status']);
                                 ?>
                                 <div class="task-item <?php echo $isOverdue ? 'overdue' : ''; ?>">
@@ -221,15 +212,24 @@ $activeTimeLog = getActiveTimeLog($currentUser['id']);
                                             </div>
                                         </div>
                                         <div class="task-item-actions">
-                                            <?php if ($task['status'] !== 'completed'): ?>
-                                                <?php if ($canStartTimer): ?>
-                                                    <button onclick="startTimer(<?php echo $task['id']; ?>, <?php echo $task['project_id']; ?>)"
-                                                            class="btn btn-success btn-sm">
-                                                        ▶️ Start
-                                                    </button>
-                                                <?php else: ?>
-                                                    <span class="badge status-progress">⏱️ Active</span>
-                                                <?php endif; ?>
+                                            <?php if ($task['status'] === 'todo'): ?>
+                                                <button onclick="startWorking(<?php echo $task['id']; ?>)"
+                                                        class="btn btn-success btn-sm">
+                                                    🚀 Start Working
+                                                </button>
+                                            <?php elseif ($task['status'] === 'in_progress'): ?>
+                                                <button onclick="openCommentModal(<?php echo $task['id']; ?>, '<?php echo addslashes($task['task_name']); ?>')"
+                                                        class="btn btn-secondary btn-sm" style="margin-right: 8px;">
+                                                    💬 Add Progress
+                                                </button>
+                                                <button onclick="submitForReview(<?php echo $task['id']; ?>, '<?php echo addslashes($task['task_name']); ?>')"
+                                                        class="btn btn-primary btn-sm">
+                                                    ✅ Submit for Review
+                                                </button>
+                                            <?php elseif ($task['status'] === 'review'): ?>
+                                                <span class="badge status-review">👀 In Review</span>
+                                            <?php elseif ($task['status'] === 'completed'): ?>
+                                                <span class="badge status-completed">✅ Completed</span>
                                             <?php endif; ?>
                                         </div>
                                     </div>
@@ -287,33 +287,137 @@ $activeTimeLog = getActiveTimeLog($currentUser['id']);
         </div>
     </div>
 
+    <!-- Comment Modal -->
+    <div id="commentModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
+        <div style="background: var(--bg-primary); padding: var(--space-6); border-radius: var(--radius-lg); width: 90%; max-width: 500px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-4);">
+                <h3 style="margin: 0;" id="commentModalTitle">Add Progress Comment</h3>
+                <button onclick="closeCommentModal()" style="background: none; border: none; font-size: 24px; cursor: pointer; color: var(--text-secondary);">&times;</button>
+            </div>
+
+            <div style="margin-bottom: var(--space-4);">
+                <label style="display: block; margin-bottom: var(--space-2); font-weight: 500;">Your Progress Update</label>
+                <textarea id="progressComment" rows="4" placeholder="Describe what you've accomplished, any blockers, or next steps..." style="width: 100%; padding: var(--space-2); border: 1px solid var(--border-color); border-radius: var(--radius-md); background: var(--bg-secondary);"></textarea>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; gap: var(--space-3);">
+                <button type="button" onclick="closeCommentModal()" class="btn btn-secondary">Cancel</button>
+                <button type="button" onclick="addProgressComment()" class="btn btn-primary">Add Comment</button>
+            </div>
+        </div>
+    </div>
+
     <script src="../assets/js/main.js"></script>
     <script>
-        function startTimer(taskId, projectId) {
-            if (confirm('Start tracking time for this task?')) {
-                fetch('../api/time-tracking.php', {
+        let currentTaskId = null;
+
+        // Start working on a task
+        function startWorking(taskId) {
+            if (confirm('Start working on this task? Time tracking will begin automatically.')) {
+                fetch('../api/task-status.php', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        action: 'start',
-                        task_id: taskId,
-                        project_id: projectId
+                        action: 'start_working',
+                        task_id: taskId
                     })
                 })
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        window.location.href = 'index.php';
+                        alert(data.message);
+                        location.reload();
                     } else {
-                        alert(data.message || 'Failed to start timer');
+                        alert(data.message || 'Failed to start working');
                     }
                 })
                 .catch(error => {
-                    alert('Error starting timer');
-                    console.error(error);
+                    alert('Error: ' + error.message);
                 });
             }
         }
+
+        // Open comment modal
+        function openCommentModal(taskId, taskName) {
+            currentTaskId = taskId;
+            document.getElementById('commentModalTitle').textContent = 'Add Progress for: ' + taskName;
+            document.getElementById('progressComment').value = '';
+            document.getElementById('commentModal').style.display = 'flex';
+        }
+
+        // Close comment modal
+        function closeCommentModal() {
+            document.getElementById('commentModal').style.display = 'none';
+            currentTaskId = null;
+        }
+
+        // Add progress comment
+        function addProgressComment() {
+            const comment = document.getElementById('progressComment').value.trim();
+
+            if (!comment) {
+                alert('Please enter a comment');
+                return;
+            }
+
+            fetch('../api/task-status.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    action: 'add_progress_comment',
+                    task_id: currentTaskId,
+                    comment: comment
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Progress comment added!');
+                    closeCommentModal();
+                } else {
+                    alert(data.message || 'Failed to add comment');
+                }
+            })
+            .catch(error => {
+                alert('Error: ' + error.message);
+            });
+        }
+
+        // Submit for review with optional comment
+        function submitForReview(taskId, taskName) {
+            const comment = prompt(`Submit "${taskName}" for review?\n\nOptional: Add a completion note or summary:`, '');
+
+            if (comment !== null) { // null means cancelled
+                fetch('../api/task-status.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'submit_for_review',
+                        task_id: taskId,
+                        comment: comment
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert(data.message);
+                        location.reload();
+                    } else {
+                        alert(data.message || 'Failed to submit for review');
+                    }
+                })
+                .catch(error => {
+                    alert('Error: ' + error.message);
+                });
+            }
+        }
+
+        // Close modal on outside click
+        document.getElementById('commentModal')?.addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeCommentModal();
+            }
+        });
     </script>
     <script src="../assets/js/theme.js"></script>
 </body>

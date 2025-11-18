@@ -92,8 +92,7 @@ $stats = [
 $totalTasks = array_sum($stats);
 $completionRate = $totalTasks > 0 ? round(($stats['completed'] / $totalTasks) * 100) : 0;
 
-// Check active timer
-$activeTimeLog = getActiveTimeLog($currentUser['id']);
+// Timer removed - employees now use simple status updates
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -448,16 +447,6 @@ $activeTimeLog = getActiveTimeLog($currentUser['id']);
                     </div>
                 </div>
 
-                <!-- Active Timer Banner -->
-                <?php if ($activeTimeLog): ?>
-                <div class="active-timer-banner">
-                    <div class="timer-info">
-                        <div class="timer-pulse"></div>
-                        <span>Timer active on task</span>
-                    </div>
-                    <button class="btn btn-secondary btn-sm" onclick="location.href='index.php#timer'">View Timer</button>
-                </div>
-                <?php endif; ?>
 
                 <!-- Stats -->
                 <div class="stats-grid">
@@ -625,26 +614,8 @@ $activeTimeLog = getActiveTimeLog($currentUser['id']);
 
     <script src="../assets/js/theme.js"></script>
     <script>
-    function startTimer(taskId, projectId) {
-        fetch('../api/time-tracking.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                action: 'start',
-                task_id: taskId,
-                project_id: projectId
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert('Timer started!');
-                location.reload();
-            } else {
-                alert('Error: ' + data.message);
-            }
-        });
-    }
+    // Timer function removed - employees now use simple status updates
+    // Task cards no longer show timer buttons
     </script>
 </body>
 </html>

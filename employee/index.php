@@ -9,8 +9,7 @@ if (!isLoggedIn() || !hasRole('employee')) {
 $db = getDBConnection();
 $currentUser = getCurrentUser();
 
-// Check if user has active time tracking
-$activeTimeLog = getActiveTimeLog($currentUser['id']);
+// Timer removed - automatic time tracking based on task status
 
 // Get statistics
 $stats = [];
@@ -100,37 +99,6 @@ $weekSummaryData = $weekSummary->fetchAll();
             <?php include '../includes/v3-header.php'; ?>
 
             <div class="content-wrapper">
-                <!-- Active Time Tracker -->
-                <?php if ($activeTimeLog): ?>
-                <?php
-                    $startTime = strtotime($activeTimeLog['start_time']);
-                    $elapsed = time() - $startTime;
-                    $hours = floor($elapsed / 3600);
-                    $minutes = floor(($elapsed % 3600) / 60);
-                    $seconds = $elapsed % 60;
-                ?>
-                <div class="time-tracker">
-                    <div class="time-tracker-active">
-                        <div>
-                            <div style="font-size: 14px; margin-bottom: 8px; opacity: 0.9;">Currently Working On:</div>
-                            <div class="timer-task">
-                                <strong><?php echo e($activeTimeLog['task_name'] ?? 'Task'); ?></strong>
-                                <span style="opacity: 0.8; margin-left: 8px;">
-                                    (<?php echo e($activeTimeLog['project_name'] ?? 'Project'); ?>)
-                                </span>
-                            </div>
-                        </div>
-                        <div style="text-align: right;">
-                            <div class="timer-display" id="timer">
-                                <?php printf('%02d:%02d:%02d', $hours, $minutes, $seconds); ?>
-                            </div>
-                            <button onclick="stopTimer(<?php echo $activeTimeLog['id']; ?>)" class="btn btn-danger" style="margin-top: 12px;">
-                                ⏹ Stop Timer
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                <?php endif; ?>
 
                 <!-- Stats Grid -->
                 <div class="stats-grid">
@@ -187,7 +155,6 @@ $weekSummaryData = $weekSummary->fetchAll();
                     <div class="card-body">
                         <div class="task-list">
                             <?php foreach ($tasksData as $task): ?>
-                            <?php $canStartTimer = !$activeTimeLog || $activeTimeLog['task_id'] != $task['id']; ?>
                             <div class="task-item <?php echo isOverdue($task['due_date'], $task['status']) ? 'overdue' : ''; ?>">
                                 <div class="task-item-header">
                                     <div>
@@ -206,15 +173,20 @@ $weekSummaryData = $weekSummary->fetchAll();
                                         </div>
                                     </div>
                                     <div class="task-item-actions">
-                                        <?php if ($canStartTimer): ?>
-                                            <button onclick="startTimer(<?php echo $task['id']; ?>, <?php echo $task['project_id']; ?>)"
+                                        <?php if ($task['status'] === 'todo'): ?>
+                                            <button onclick="startWorking(<?php echo $task['id']; ?>)"
                                                     class="btn btn-success btn-sm">
-                                                ▶️ Start
+                                                🚀 Start Working
                                             </button>
-                                        <?php else: ?>
-                                            <span class="badge status-progress">⏱️ Active</span>
+                                        <?php elseif ($task['status'] === 'in_progress'): ?>
+                                            <button onclick="submitForReview(<?php echo $task['id']; ?>, '<?php echo addslashes($task['task_name']); ?>')"
+                                                    class="btn btn-primary btn-sm">
+                                                ✅ Submit
+                                            </button>
+                                        <?php elseif ($task['status'] === 'review'): ?>
+                                            <span class="badge status-review">👀 In Review</span>
                                         <?php endif; ?>
-                                        <a href="tasks.php?id=<?php echo $task['id']; ?>" class="btn btn-secondary btn-sm">View</a>
+                                        <a href="tasks.php" class="btn btn-secondary btn-sm">View All</a>
                                     </div>
                                 </div>
                                 <?php if ($task['description']): ?>
@@ -388,76 +360,61 @@ $weekSummaryData = $weekSummary->fetchAll();
     </div>
 
     <script>
-        // Timer functions
-        <?php if ($activeTimeLog): ?>
-        let startTime = <?php echo $startTime; ?>;
+        // Task status management functions
 
-        function updateTimer() {
-            const now = Math.floor(Date.now() / 1000);
-            const elapsed = now - startTime;
-            const hours = Math.floor(elapsed / 3600);
-            const minutes = Math.floor((elapsed % 3600) / 60);
-            const seconds = elapsed % 60;
-
-            document.getElementById('timer').textContent =
-                String(hours).padStart(2, '0') + ':' +
-                String(minutes).padStart(2, '0') + ':' +
-                String(seconds).padStart(2, '0');
-        }
-
-        setInterval(updateTimer, 1000);
-        <?php endif; ?>
-
-        function startTimer(taskId, projectId) {
-            if (confirm('Start tracking time for this task?')) {
-                fetch('../api/time-tracking.php', {
+        // Start working on a task
+        function startWorking(taskId) {
+            if (confirm('Start working on this task? Time tracking will begin automatically.')) {
+                fetch('../api/task-status.php', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        action: 'start',
-                        task_id: taskId,
-                        project_id: projectId
+                        action: 'start_working',
+                        task_id: taskId
                     })
                 })
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        window.location.reload();
+                        alert(data.message);
+                        location.reload();
                     } else {
-                        alert(data.message || 'Failed to start timer');
+                        alert(data.message || 'Failed to start working');
                     }
                 })
                 .catch(error => {
-                    alert('Error starting timer');
-                    console.error(error);
+                    alert('Error: ' + error.message);
                 });
             }
         }
 
-        function stopTimer(logId) {
-            const notes = prompt('Add notes for this work session (optional):');
+        // Submit for review with optional comment
+        function submitForReview(taskId, taskName) {
+            const comment = prompt(`Submit "${taskName}" for review?\n\nOptional: Add a completion note or summary:`, '');
 
-            fetch('../api/time-tracking.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    action: 'stop',
-                    log_id: logId,
-                    notes: notes
+            if (comment !== null) { // null means cancelled
+                fetch('../api/task-status.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'submit_for_review',
+                        task_id: taskId,
+                        comment: comment
+                    })
                 })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    window.location.reload();
-                } else {
-                    alert(data.message || 'Failed to stop timer');
-                }
-            })
-            .catch(error => {
-                alert('Error stopping timer');
-                console.error(error);
-            });
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert(data.message);
+                        location.reload();
+                    } else {
+                        alert(data.message || 'Failed to submit for review');
+                    }
+                })
+                .catch(error => {
+                    alert('Error: ' + error.message);
+                });
+            }
         }
     </script>
     <script src="../assets/js/theme.js"></script>
