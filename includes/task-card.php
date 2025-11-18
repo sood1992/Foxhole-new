@@ -47,11 +47,14 @@
     </div>
 
     <div class="task-footer">
+        <!-- Timer button hidden - tracking still works in background via API -->
+        <?php /*
         <div class="task-actions">
             <button class="task-action-btn" onclick="startTimer(<?php echo $task['id']; ?>, <?php echo $task['project_id']; ?>)">
                 ▶ Start
             </button>
         </div>
+        */ ?>
 
         <?php if ($task['due_date']): ?>
         <div class="task-due-date <?php echo isOverdue($task['due_date'], $task['status']) ? 'overdue' : ''; ?>">
