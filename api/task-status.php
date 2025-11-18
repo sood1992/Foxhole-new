@@ -147,9 +147,30 @@ try {
             // TODO: Send notification to project manager
             // $notificationStmt = $db->prepare("INSERT INTO notifications ...");
 
+            // Calculate total time spent on this task
+            $stmt = $db->prepare("
+                SELECT SUM(duration_minutes) as total_minutes
+                FROM time_logs
+                WHERE task_id = ? AND user_id = ? AND end_time IS NOT NULL
+            ");
+            $stmt->execute([$taskId, $currentUser['id']]);
+            $totalMinutes = $stmt->fetch()['total_minutes'] ?? 0;
+            $totalHours = round($totalMinutes / 60, 1);
+
+            $timeMessage = '';
+            if ($totalMinutes > 0) {
+                if ($totalHours < 1) {
+                    $timeMessage = " You spent " . round($totalMinutes) . " minutes on this task.";
+                } else {
+                    $timeMessage = " You spent " . $totalHours . " hours on this task.";
+                }
+            }
+
             echo json_encode([
                 'success' => true,
-                'message' => 'Task submitted for review successfully. Time tracking stopped automatically.'
+                'message' => 'Task submitted for review successfully!' . $timeMessage,
+                'time_spent_minutes' => $totalMinutes,
+                'time_spent_hours' => $totalHours
             ]);
             break;
 
