@@ -141,6 +141,11 @@ try {
             throw new Exception('Project ID is required');
         }
 
+        // Check if user has permission to view this project
+        if (!hasRole('admin') && !hasRole('manager')) {
+            throw new Exception('Only managers and admins can view project details');
+        }
+
         $stmt = $db->prepare("
             SELECT p.*,
                    (SELECT COUNT(*) FROM tasks WHERE project_id = p.id) as task_count,
@@ -153,6 +158,11 @@ try {
 
         if (!$project) {
             throw new Exception('Project not found');
+        }
+
+        // Verify manager can only view their own projects (unless admin)
+        if (!hasRole('admin') && $project['assigned_manager'] != $currentUser['id']) {
+            throw new Exception('You can only view your own projects');
         }
 
         echo json_encode([

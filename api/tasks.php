@@ -17,41 +17,79 @@ $currentUser = getCurrentUser();
 $input = json_decode(file_get_contents('php://input'), true);
 
 try {
-    // GET: Get tasks list
+    // GET: Get task(s)
     if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-        $exclude = isset($_GET['exclude']) ? intval($_GET['exclude']) : 0;
+        // Check if fetching a specific task
+        $taskId = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
-        $sql = "
-            SELECT
-                t.id,
-                t.task_name,
-                t.status,
-                t.priority,
-                p.project_name
-            FROM tasks t
-            JOIN projects p ON t.project_id = p.id
-            WHERE 1=1
-        ";
+        if ($taskId) {
+            // Fetch single task details
+            $stmt = $db->prepare("
+                SELECT t.*, p.project_name, p.assigned_manager
+                FROM tasks t
+                JOIN projects p ON t.project_id = p.id
+                WHERE t.id = ?
+            ");
+            $stmt->execute([$taskId]);
+            $task = $stmt->fetch();
 
-        if ($exclude) {
-            $sql .= " AND t.id != ?";
-        }
+            if (!$task) {
+                throw new Exception('Task not found');
+            }
 
-        $sql .= " ORDER BY p.project_name, t.task_name LIMIT 200";
+            // Check if user has permission to view this task
+            if (!hasRole('admin') && !hasRole('manager')) {
+                // Employees can only view their own tasks
+                if ($task['assigned_to'] != $currentUser['id']) {
+                    throw new Exception('You can only view tasks assigned to you');
+                }
+            } else {
+                // Managers can only view tasks in their projects (unless admin)
+                if (!hasRole('admin') && $task['assigned_manager'] != $currentUser['id']) {
+                    throw new Exception('You can only view tasks in your own projects');
+                }
+            }
 
-        $stmt = $db->prepare($sql);
-        if ($exclude) {
-            $stmt->execute([$exclude]);
+            echo json_encode([
+                'success' => true,
+                'task' => $task
+            ]);
         } else {
-            $stmt->execute();
+            // Fetch tasks list
+            $exclude = isset($_GET['exclude']) ? intval($_GET['exclude']) : 0;
+
+            $sql = "
+                SELECT
+                    t.id,
+                    t.task_name,
+                    t.status,
+                    t.priority,
+                    p.project_name
+                FROM tasks t
+                JOIN projects p ON t.project_id = p.id
+                WHERE 1=1
+            ";
+
+            if ($exclude) {
+                $sql .= " AND t.id != ?";
+            }
+
+            $sql .= " ORDER BY p.project_name, t.task_name LIMIT 200";
+
+            $stmt = $db->prepare($sql);
+            if ($exclude) {
+                $stmt->execute([$exclude]);
+            } else {
+                $stmt->execute();
+            }
+
+            $tasks = $stmt->fetchAll();
+
+            echo json_encode([
+                'success' => true,
+                'tasks' => $tasks
+            ]);
         }
-
-        $tasks = $stmt->fetchAll();
-
-        echo json_encode([
-            'success' => true,
-            'tasks' => $tasks
-        ]);
     }
     // PUT: Update a task
     elseif ($_SERVER['REQUEST_METHOD'] === 'PUT') {
