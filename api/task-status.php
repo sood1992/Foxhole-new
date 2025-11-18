@@ -56,7 +56,7 @@ try {
 
             // Add a comment
             $stmt = $db->prepare("
-                INSERT INTO comments (task_id, user_id, comment, created_at)
+                INSERT INTO task_comments (task_id, user_id, comment, created_at)
                 VALUES (?, ?, ?, NOW())
             ");
             $stmt->execute([$taskId, $currentUser['id'], 'Started working on this task']);
@@ -139,7 +139,7 @@ try {
             // Add a comment with the submission note
             $submissionComment = !empty($comment) ? $comment : 'Submitted task for review';
             $stmt = $db->prepare("
-                INSERT INTO comments (task_id, user_id, comment, created_at)
+                INSERT INTO task_comments (task_id, user_id, comment, created_at)
                 VALUES (?, ?, ?, NOW())
             ");
             $stmt->execute([$taskId, $currentUser['id'], $submissionComment]);
@@ -196,7 +196,7 @@ try {
 
             // Add the comment
             $stmt = $db->prepare("
-                INSERT INTO comments (task_id, user_id, comment, created_at)
+                INSERT INTO task_comments (task_id, user_id, comment, created_at)
                 VALUES (?, ?, ?, NOW())
             ");
             $stmt->execute([$taskId, $currentUser['id'], $comment]);

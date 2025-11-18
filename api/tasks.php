@@ -214,7 +214,7 @@ try {
         $db->prepare("DELETE FROM time_logs WHERE task_id = ?")->execute([$taskId]);
 
         // Delete task comments
-        $db->prepare("DELETE FROM comments WHERE task_id = ?")->execute([$taskId]);
+        $db->prepare("DELETE FROM task_comments WHERE task_id = ?")->execute([$taskId]);
 
         // Delete the task
         $deleteStmt = $db->prepare("DELETE FROM tasks WHERE id = ?");
