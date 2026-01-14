@@ -157,7 +157,10 @@ $current_page = basename($_SERVER['PHP_SELF']);
             <a href="../manager/chat.php?type=group" class="menu-item">
                 <i class="fas fa-users"></i> Group Chats
             </a>
-            <a href="../logout.php" class="menu-item" style="margin-top: 20px; color: var(--danger);">
+            <a href="../profile.php" class="menu-item <?php echo ($current_page == 'profile.php') ? 'active' : ''; ?>" style="margin-top: 20px;">
+                <i class="fas fa-user-circle"></i> Profile
+            </a>
+            <a href="../logout.php" class="menu-item" style="color: var(--danger);">
                 <i class="fas fa-sign-out-alt"></i> Logout
             </a>
         </div>

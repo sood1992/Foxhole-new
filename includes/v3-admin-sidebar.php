@@ -145,7 +145,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
             <a href="../admin/email-test.php" class="menu-item <?php echo ($current_page == 'email-test.php') ? 'active' : ''; ?>">
                 <i class="fas fa-vial"></i> Test Emails
             </a>
-            <a href="../admin/profile.php" class="menu-item">
+            <a href="../profile.php" class="menu-item <?php echo ($current_page == 'profile.php') ? 'active' : ''; ?>">
                 <i class="fas fa-user-circle"></i> Profile
             </a>
             <a href="../logout.php" class="menu-item">
