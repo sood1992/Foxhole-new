@@ -1,0 +1,33 @@
+# Session files
+sessions/
+*.sess
+
+# User uploaded files
+uploads/
+
+# System files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+error_log
+
+# Environment files
+.env
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Database backup files
+*.sql.backup
+*.sql.bak
